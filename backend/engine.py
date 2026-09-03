@@ -457,7 +457,6 @@ class VolitionEngine:
         selected_index = max(selection_pool, key=lambda index: plans[index].confidence)
         market = markets[selected_index]
         plan = plans[selected_index]
-        opinions = await self.committee.deliberate(market, plan)
         gates = self.risk.evaluate(plan, account, market, self.kill_switch)
         simulation = None
         if plan.strategy != StrategyKind.NO_TRADE:
@@ -490,6 +489,8 @@ class VolitionEngine:
                     )
                 )
 
+        opinions = await self.committee.deliberate(market, plan, account, simulation)
+
         pending_order = self._pending_order_for(plan.symbol)
         gates.append(
             GateResult(
@@ -512,7 +513,8 @@ class VolitionEngine:
                     f"{sum(opinion.verdict == 'support' for opinion in opinions)} support / "
                     f"{sum(opinion.verdict == 'oppose' for opinion in opinions)} oppose"
                 ),
-                limit="at least 2 support; at most 1 oppose",
+                limit="advisory target: at least 2 support; at most 1 oppose",
+                severity="warning",
             )
         )
         approved = self.risk.approved(gates)
@@ -540,7 +542,7 @@ class VolitionEngine:
                     "Alpaca CLI evidence gathered",
                     "Trading API submission blocked before POST /v2/orders",
                 ],
-                message="The risk constitution or committee vetoed this proposal. No order was sent.",
+                message="The deterministic risk constitution or stress test vetoed this proposal. No order was sent.",
             )
             status = DecisionStatus.REJECTED
 
@@ -743,7 +745,8 @@ class VolitionEngine:
                     name="AI committee consensus",
                     passed=True,
                     observed="3 support / 0 oppose",
-                    limit="at least 2 support; at most 1 oppose",
+                    limit="advisory target: at least 2 support; at most 1 oppose",
+                    severity="warning",
                 )
             )
             decision_id = f"demo-decision-{index + 1}"

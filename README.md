@@ -99,7 +99,9 @@ flowchart LR
 AI interprets evidence. Code alone owns contract geometry, quantity, risk,
 permission, and final authority.
 
-The AI committee accepts any OpenAI-compatible endpoint. The hosted deployment
+The AI committee accepts any OpenAI-compatible endpoint. Its opinions are
+unit-normalised, account-relative advisory evidence; deterministic risk and
+Monte Carlo gates alone control order permission. The hosted deployment
 runs Qwen 2.5 3B privately through Ollama on the Oracle server; a deterministic
 fallback keeps the risk loop available if inference fails. Every opinion and
 the operations strip label the actual source clearly.

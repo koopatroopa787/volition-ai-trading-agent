@@ -24,7 +24,7 @@ The final authority is unit-tested Python with no model in the loop. It blocks a
 - Expiration between 7 and 35 days.
 - Minimum open interest of 500 per leg.
 - Maximum bid/ask spread of 8% per leg.
-- Market open, kill switch clear, and AI committee consensus.
+- Market open and kill switch clear. AI committee opinions are recorded as advisory evidence; they cannot replace or bypass deterministic permission checks.
 
 Every accepted, rejected, or no-trade outcome produces a hash-chained decision passport with the evidence snapshot, three opinions, all gate results, proposed legs, and the execution receipt. This makes the agent's behavior explainable and tamper-evident.
 

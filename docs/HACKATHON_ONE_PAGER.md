@@ -8,7 +8,7 @@ Most trading agents can recommend a trade, but a production-style agent must als
 
 Every 15 minutes during the regular US session, Volition ranks a 20-symbol liquid universe using lightweight Alpaca market evidence. It deep-scans five names, loads their option chains, classifies trend and volatility, and routes each market to a concrete defined-risk structure: bull call spread, bear put spread, iron condor, long straddle/strangle, or cash.
 
-Three independent committee roles then challenge the proposal: Regime Sentinel, Volatility Architect, and Adversarial Skeptic. The hosted build runs Qwen 2.5 3B privately through an OpenAI-compatible Ollama endpoint; each role receives only bounded market and structure evidence and returns a structured support/oppose opinion. A deterministic fallback preserves the risk loop if inference fails, and the interface labels which source produced every opinion. The model cannot invent option symbols, resize the order, or override a gate.
+Three independent committee roles then challenge the proposal: Regime Sentinel, Volatility Architect, and Adversarial Skeptic. The hosted build runs Qwen 2.5 3B privately through an OpenAI-compatible Ollama endpoint; each role receives bounded, unit-normalised market, account, structure, and stress evidence and returns a structured support/oppose opinion. Those opinions are auditable advisory evidence; deterministic code alone owns order permission. A deterministic fallback preserves the reasoning surface if inference fails, and the interface labels which source produced every opinion. The model cannot invent option symbols, resize the order, or override a gate.
 
 A reproducible Monte Carlo stress test generates 2,500 underlying paths for the live loop (up to 20,000 in Strategy Lab), settles every proposed leg at expiry, includes estimated spread cost, and measures probability of profit, expected P&L, 95% value at risk, expected shortfall, and near-max-loss probability. It is a stress test—not a price forecast—and may veto but never approve a trade by itself.
 
@@ -23,7 +23,7 @@ Before an order can reach Alpaca, code verifies:
 - daily drawdown and open-position limits are clear;
 - expiry is 7–35 DTE, quotes are fresh, open interest is sufficient, and spreads are within tolerance;
 - no active entry order already exists for that symbol;
-- Monte Carlo thresholds pass and at least two committee roles support with no more than one opposing.
+- Monte Carlo thresholds pass; committee support and opposition remain visible as advisory evidence.
 
 Any failure becomes a visible, hash-chained decision passport. “No trade” is an intended autonomous result.
 

@@ -8,7 +8,7 @@
 - [x] Options-only autonomous research/decision architecture
 - [x] 20-symbol trading universe plus 40-instrument cross-asset context
 - [x] Atomic multi-leg payloads with correct debit/credit signing
-- [x] Deterministic structural, account, drawdown, sizing, liquidity, expiry, freshness, duplicate, simulation, and committee gates
+- [x] Deterministic structural, account, drawdown, sizing, liquidity, expiry, freshness, duplicate, and simulation gates, with unit-normalised AI committee evidence
 - [x] Persistent scheduler heartbeat and kill switch
 - [x] Broker order reconciliation and managed-exit implementation
 - [x] Hash-chained decisions and append-only lifecycle events

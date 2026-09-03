@@ -3,11 +3,12 @@ from __future__ import annotations
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import AsyncMock
 
 from config import Settings
 from engine import VolitionEngine
 from ledger import DecisionLedger, ExecutionLedger
-from models import DecisionStatus, StrategyKind
+from models import AgentOpinion, DecisionStatus, StrategyKind
 from runtime_state import RuntimeStateStore
 
 
@@ -40,6 +41,30 @@ class EngineSelectionTests(unittest.IsolatedAsyncioTestCase):
         liquidity = next(gate for gate in decision.gates if gate.name == "chain liquidity")
         self.assertFalse(liquidity.passed)
         self.assertFalse(decision.receipt.accepted)
+
+    async def test_model_opposition_is_advisory_when_deterministic_gates_pass(self) -> None:
+        engine = VolitionEngine(Settings(_env_file=None))
+        engine.committee.deliberate = AsyncMock(  # type: ignore[method-assign]
+            return_value=[
+                AgentOpinion(
+                    agent=name,
+                    verdict="oppose",
+                    confidence=0.85,
+                    summary="Advisory concern without a deterministic gate failure.",
+                    evidence=["model concern"],
+                    model="test-model",
+                )
+                for name in ("Regime Sentinel", "Volatility Architect", "Adversarial Skeptic")
+            ]
+        )
+        with tempfile.TemporaryDirectory(prefix="volition-advisory-") as directory:
+            self.isolate(engine, directory)
+            decision = await engine.run_cycle("SPY")
+
+        committee_gate = next(gate for gate in decision.gates if gate.name == "AI committee consensus")
+        self.assertFalse(committee_gate.passed)
+        self.assertEqual(committee_gate.severity, "warning")
+        self.assertEqual(decision.status, DecisionStatus.EXECUTED)
 
     async def test_scheduled_cycle_skips_closed_market_without_ledger_spam(self) -> None:
         engine = VolitionEngine(Settings(_env_file=None))
