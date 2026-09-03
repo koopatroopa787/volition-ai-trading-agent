@@ -28,10 +28,10 @@
 - [x] Configure and verify a private reasoning model; capture the UI showing **Private model**
 - [ ] Explicitly enable paper submission only when the team is ready, then capture at least one broker-verified submitted → filled → managed-exit lifecycle
 - [ ] Rotate every credential ever pasted into chat before final public submission
-- [ ] Create the public GitHub repository and verify no `.env`, runtime state, or decision ledger is tracked
+- [ ] Switch the staged GitHub repository to public after explicit approval; the private repository is uploaded, secret-checked, and passing CI
 - [x] Deploy backend and frontend over HTTPS with production CORS and persistent backend storage
 - [ ] Add the hosted URL, repository URL, Alpaca paper account ID, cover image, video, and finished slide deck to the hackathon submission form
-- [ ] Record the 2½-minute demo using `docs/DEMO_SCRIPT.md`
+- [x] Record the narrated walkthrough and commit the script plus 1280×720 MP4
 
 ## Evidence to capture
 

@@ -66,8 +66,8 @@ Python, FastAPI, Next.js, TypeScript, Alpaca CLI, Alpaca Trading and Market Data
 ## Submission fields
 
 - Hosted demo: https://instance-20260318-1838.tail042e87.ts.net/
-- Repository: **ADD PUBLIC GITHUB URL**
-- Demo video: **ADD VIDEO URL**
+- Repository: https://github.com/koopatroopa787/volition-ai-trading-agent — currently private; switch to public before submission
+- Demo video: `docs/Volition_Demo_Walkthrough.mp4` — recorded and committed; add the final public video URL to the form
 - Slide deck: `docs/Volition_Hackathon_Deck.pptx`
 - Cover image: `docs/Volition_Hackathon_Cover.png`
 - Alpaca paper account ID: **ADD ACCOUNT ID TO FORM — DO NOT COMMIT CREDENTIALS**
