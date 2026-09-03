@@ -1,7 +1,7 @@
 # Volition — narrated walkthrough script
 
-Target length: approximately 2½ minutes. The spoken version is generated with
-the local Microsoft Mark voice so the result does not depend on a paid TTS API.
+Target length: approximately 2½ to 3 minutes. The polished spoken version uses
+Microsoft Andrew Multilingual Neural with a warm, conversational delivery.
 
 ## 01 — Opening
 
@@ -12,13 +12,14 @@ permission to risk capital.
 
 ## 02 — Overview
 
-The Overview is the desk’s control room. This is a fresh one-hundred-thousand
+The Overview is the desk’s control room. This is a fresh, one-hundred-thousand
 dollar Alpaca paper account with Options Level Three. The scheduler checks in
-every fifteen minutes, the private Qwen committee is online, and public order
-authority is visibly locked. Performance comes from Alpaca portfolio history
-and is aligned with SPY on the same dates. Below that, twenty tradable symbols
-are ranked before each cycle, while only the strongest candidates pay the cost
-of full option-chain and committee analysis.
+every fifteen minutes, and the private Qwen committee is online. Public manual
+controls stay locked, while the internal paper scheduler can act only after
+explicit authorization. Performance comes from Alpaca portfolio history and is
+aligned with S P Y on the same dates. Below that, twenty tradable symbols are
+ranked before each cycle, while only the strongest candidates pay the cost of
+full option-chain and committee analysis.
 
 ## 03 — Market Pulse
 
@@ -40,7 +41,7 @@ a failing proposal into an approved trade.
 
 ## 05 — Intelligence
 
-The Intelligence view joins company news and sentiment with SEC filing events
+The Intelligence view joins company news and sentiment with S E C filing events
 and FRED macro signals. Source health and timestamps stay visible. These inputs
 help the committee explain market context, while contract selection and risk
 still remain deterministic.
