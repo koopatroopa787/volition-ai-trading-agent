@@ -24,7 +24,7 @@ Passing structures are designed for atomic multi-leg submission to a dedicated $
 
 The product makes the entire system inspectable. The Overview shows paper-account state, scheduler health, order authority, performance against SPY, proposals, and guardrails. Market Pulse tracks 40 indices, commodities, rates, sectors, and leaders. Strategy Lab runs reproducible 1,000–20,000-path simulations with price fans, expiry P&L, probability of profit, VaR, expected shortfall, and near-max-loss probability. Intelligence combines news, sentiment, SEC filings, and FRED macro evidence. The Decision Journal exposes model provenance, vetoes, hashes, and broker lifecycle receipts.
 
-Volition’s learning system is deliberately honest. It records previews and rejections as evidence, but strategy promotion remains locked until at least five broker-verified closed paper outcomes exist. The current public judge build is read-only and order submission is disabled; autonomous reviews continue server-side while anonymous visitors cannot place orders. That safety boundary is visible in the interface instead of hidden in a disclaimer.
+Volition’s learning system is deliberately honest. It records previews and rejections as evidence, but strategy promotion remains locked until at least five broker-verified closed paper outcomes exist. The current public judge build keeps manual controls read-only while the internal scheduler is explicitly authorized for paper-only execution. Anonymous visitors cannot place orders, and live-money trading remains unsupported. That safety boundary is visible in the interface instead of hidden in a disclaimer.
 
 ## What makes it different
 
@@ -57,7 +57,7 @@ Volition’s learning system is deliberately honest. It records previews and rej
 
 ## Current evidence — keep these numbers date-labelled
 
-At the final preparation check, the fresh paper account held $100,000 in cash with no open positions. The system had recorded 53 autonomous reviews and 43 risk vetoes. Alpaca portfolio history supplied four aligned observations: account return was 0.00% versus approximately −0.54% for SPY over the same dates. These figures are evidence of system operation and benchmark integrity, not a claim of trading alpha. The first broker-verified entry → fill → managed-exit lifecycle remains intentionally unexecuted until the team explicitly authorises paper order submission.
+At the pre-execution preparation check, the fresh paper account held $100,000 in cash with no open positions. The system had recorded 53 autonomous reviews and 43 risk vetoes. Alpaca portfolio history supplied aligned observations showing account return of 0.00% versus approximately −0.54% for SPY over the same dates. These figures are evidence of system operation and benchmark integrity, not a claim of trading alpha. Continuous paper-only execution was explicitly authorised on September 3, 2026; the first broker-verified entry → fill → managed-exit lifecycle remains pending until an eligible proposal passes every gate.
 
 ## Technology
 

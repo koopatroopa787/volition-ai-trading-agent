@@ -26,7 +26,8 @@
 ## Must be completed before final submission
 
 - [x] Configure and verify a private reasoning model; capture the UI showing **Private model**
-- [ ] Explicitly enable paper submission only when the team is ready, then capture at least one broker-verified submitted → filled → managed-exit lifecycle
+- [x] Explicitly enable continuous paper-only submission with the deterministic constitution and managed exits still active
+- [ ] Capture at least one broker-verified submitted → filled → managed-exit lifecycle
 - [ ] Rotate every credential ever pasted into chat before final public submission
 - [ ] Switch the staged GitHub repository to public after explicit approval; the private repository is uploaded, secret-checked, and passing CI
 - [x] Deploy backend and frontend over HTTPS with production CORS and persistent backend storage

@@ -4,7 +4,7 @@
 
 [![Live demo](https://img.shields.io/badge/live-demo-154734?style=for-the-badge)](https://instance-20260318-1838.tail042e87.ts.net/)
 [![Alpaca paper](https://img.shields.io/badge/Alpaca-paper%20options-f2b544?style=for-the-badge)](https://alpaca.markets/)
-[![Safety](https://img.shields.io/badge/order%20authority-locked-b8493c?style=for-the-badge)](#paper-safe-by-construction)
+[![Safety](https://img.shields.io/badge/execution-paper%20only-f2b544?style=for-the-badge)](#paper-safe-by-construction)
 [![CI](https://img.shields.io/badge/tests-42%20passing-154734?style=for-the-badge)](.github/workflows/ci.yml)
 
 ![Volition — the autonomous options desk that knows when not to trade](docs/Volition_Hackathon_Cover.png)
@@ -20,7 +20,9 @@
 | Private Qwen committee | Alpaca Level 3 paper account | Public HTTPS judge build |
 
 The live numbers above are operational evidence, not a claim of realised alpha.
-The account remains at $100,000 in cash while paper order authority is locked.
+The $100,000 cash balance is the recorded pre-execution baseline. Continuous
+paper execution is now explicitly authorized; deterministic gates, managed
+exits, and the kill switch remain in force.
 
 Volition turns market evidence into risk-defined options structures, routes every candidate through an independent AI committee and a deterministic risk constitution, then executes eligible orders in a dedicated Alpaca paper account. Every decision—including “no trade”—produces a tamper-evident decision passport containing the evidence, agent debate, gates, proposed legs, and Alpaca receipt.
 
@@ -106,7 +108,8 @@ The public judge build is available at
 [instance-20260318-1838.tail042e87.ts.net](https://instance-20260318-1838.tail042e87.ts.net/).
 It is intentionally read-only: scheduled reviews continue server-side, while
 manual cycle and kill-switch endpoints fail closed until an operator key is
-configured. Paper order submission remains disabled.
+configured. The internal scheduler is authorized for paper-only order
+submission; live-money trading remains unsupported.
 
 ## Live evidence
 
