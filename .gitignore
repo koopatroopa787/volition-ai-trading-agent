@@ -1,0 +1,29 @@
+# Local secrets and machine-specific configuration
+.env
+.env.*
+!.env.example
+!.env.*.example
+
+# Untrusted web-research cache
+.firecrawl/
+.deploy/
+
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+node_modules/
+.next/
+out/
+*.tsbuildinfo
+backend/data/*.jsonl
+backend/data/runtime_state.json
+backend/data/runtime_state.json.*
+!backend/data/.gitkeep
+
+# Generated presentation QA artifacts (keep the final deck and cover image)
+docs/deck-render/
+docs/*.inspect.ndjson
+docs/video-build/
+.video-tools/
