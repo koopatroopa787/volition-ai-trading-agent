@@ -1,0 +1,62 @@
+services:
+  ollama:
+    image: ollama/ollama:latest
+    restart: unless-stopped
+    environment:
+      OLLAMA_KEEP_ALIVE: 24h
+      OLLAMA_NUM_PARALLEL: 1
+    volumes:
+      - ollama-data:/root/.ollama
+    expose:
+      - "11434"
+
+  backend:
+    build: ../backend
+    env_file:
+      - ../.env
+    environment:
+      ALPACA_CLI_BIN: /usr/local/bin/alpaca
+      CORS_ORIGINS: https://instance-20260318-1838.tail042e87.ts.net
+    restart: unless-stopped
+    depends_on:
+      - ollama
+    volumes:
+      - volition-data:/app/backend/data
+    expose:
+      - "8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=5)"]
+      interval: 30s
+      timeout: 8s
+      retries: 3
+      start_period: 30s
+
+  frontend:
+    build:
+      context: ../frontend
+      args:
+        NEXT_PUBLIC_API_URL: ""
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    expose:
+      - "3000"
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    depends_on:
+      - frontend
+    ports:
+      - "127.0.0.1:8080:8080"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+
+volumes:
+  volition-data:
+  ollama-data:
+  caddy-data:
+  caddy-config:
