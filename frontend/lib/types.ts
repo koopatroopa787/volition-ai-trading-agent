@@ -130,7 +130,11 @@ export type Dashboard = {
     portfolio_value: number;
     options_trading_level: number;
     open_positions: number;
+    open_structures: number;
     open_risk: number;
+    open_risk_limit_pct: number;
+    open_risk_pct: number;
+    open_risk_breached: boolean;
     starting_balance: number;
     source: string;
     daily_pnl: number;
@@ -156,6 +160,7 @@ export type Dashboard = {
     opened_at: string;
     expiration: string;
     quantity: number;
+    structure_count: number;
     cost_basis: number;
     market_value: number;
     unrealized_pnl: number;

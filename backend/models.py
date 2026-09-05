@@ -98,7 +98,9 @@ class AccountSnapshot(BaseModel):
     portfolio_value: float
     options_trading_level: int = 3
     open_positions: int = 0
+    open_structures: int = 0
     open_risk: float = 0.0
+    open_risk_limit_pct: float = 8.0
     starting_balance: float = 100_000.0
     source: str = "demo-simulated"
 
@@ -118,6 +120,18 @@ class AccountSnapshot(BaseModel):
     @property
     def competition_pnl(self) -> float:
         return round(self.equity - self.starting_balance, 2)
+
+    @computed_field
+    @property
+    def open_risk_pct(self) -> float:
+        if self.equity == 0:
+            return 0.0
+        return round((self.open_risk / self.equity) * 100, 3)
+
+    @computed_field
+    @property
+    def open_risk_breached(self) -> bool:
+        return self.open_risk_pct > self.open_risk_limit_pct
 
 
 class TradeLeg(BaseModel):
@@ -230,6 +244,7 @@ class PositionView(BaseModel):
     opened_at: str
     expiration: str
     quantity: int
+    structure_count: int = Field(default=1, ge=1)
     cost_basis: float
     market_value: float
     unrealized_pnl: float

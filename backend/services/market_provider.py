@@ -112,7 +112,9 @@ class MarketProvider:
             portfolio_value=_number(body.get("portfolio_value"), equity),
             options_trading_level=int(_number(body.get("options_trading_level") or body.get("options_approved_level"), 0)),
             open_positions=len(position_views),
+            open_structures=sum(position.structure_count for position in position_views),
             open_risk=round(sum(position.max_loss for position in position_views), 2),
+            open_risk_limit_pct=self.settings.max_portfolio_open_risk_pct,
             starting_balance=self.settings.hackathon_starting_balance,
             source=source,
         )
@@ -706,11 +708,13 @@ class MarketProvider:
         views: list[PositionView] = []
         for (underlying, expiration), rows in groups.items():
             strategy = cls._infer_position_strategy(rows)
-            quantity = max(1, int(min((row["quantity"] for row in rows), default=1)))
+            leg_quantities = [max(1, int(round(row["quantity"]))) for row in rows]
+            quantity = max(1, math.gcd(*leg_quantities))
+            structure_count = cls._position_structure_count(strategy, rows, quantity)
             cost_basis = sum(row["cost_basis"] for row in rows)
             market_value = sum(row["market_value"] for row in rows)
             unrealized_pnl = sum(row["unrealized_pnl"] for row in rows)
-            max_loss = cls._position_max_loss(strategy, rows, cost_basis, quantity)
+            max_loss = cls._position_max_loss(strategy, rows, cost_basis, structure_count)
             pnl_ratio = unrealized_pnl / max(max_loss, 1.0)
             dte = max(0, (date.fromisoformat(expiration) - date.today()).days)
             thesis_health = round(max(0, min(100, 58 + pnl_ratio * 35 - max(0, 5 - dte) * 4)))
@@ -741,6 +745,7 @@ class MarketProvider:
                     opened_at="Synced from Alpaca",
                     expiration=expiration,
                     quantity=quantity,
+                    structure_count=structure_count,
                     cost_basis=round(cost_basis, 2),
                     market_value=round(market_value, 2),
                     unrealized_pnl=round(unrealized_pnl, 2),
@@ -767,35 +772,72 @@ class MarketProvider:
                 if calls[0]["strike"] == puts[0]["strike"]
                 else StrategyKind.LONG_STRANGLE
             )
-        if len(rows) == 2 and len(calls) == 2 and len(longs) == 1 and len(shorts) == 1:
-            return (
-                StrategyKind.BULL_CALL_SPREAD
-                if longs[0]["strike"] < shorts[0]["strike"]
-                else StrategyKind.UNCLASSIFIED
+        long_calls = [row for row in calls if row["side"] == "long"]
+        short_calls = [row for row in calls if row["side"] == "short"]
+        if calls and not puts and long_calls and short_calls:
+            balanced = math.isclose(
+                sum(row["quantity"] for row in long_calls),
+                sum(row["quantity"] for row in short_calls),
             )
-        if len(rows) == 2 and len(puts) == 2 and len(longs) == 1 and len(shorts) == 1:
-            return (
-                StrategyKind.BEAR_PUT_SPREAD
-                if longs[0]["strike"] > shorts[0]["strike"]
-                else StrategyKind.UNCLASSIFIED
+            if balanced and max(row["strike"] for row in long_calls) < min(
+                row["strike"] for row in short_calls
+            ):
+                return StrategyKind.BULL_CALL_SPREAD
+        long_puts = [row for row in puts if row["side"] == "long"]
+        short_puts = [row for row in puts if row["side"] == "short"]
+        if puts and not calls and long_puts and short_puts:
+            balanced = math.isclose(
+                sum(row["quantity"] for row in long_puts),
+                sum(row["quantity"] for row in short_puts),
             )
+            if balanced and min(row["strike"] for row in long_puts) > max(
+                row["strike"] for row in short_puts
+            ):
+                return StrategyKind.BEAR_PUT_SPREAD
         if len(rows) == 1 and rows[0]["side"] == "long":
             return StrategyKind.LONG_CALL if calls else StrategyKind.LONG_PUT
         return StrategyKind.UNCLASSIFIED
+
+    @staticmethod
+    def _position_structure_count(
+        strategy: StrategyKind,
+        rows: list[dict[str, Any]],
+        base_quantity: int,
+    ) -> int:
+        long_quantity = sum(row["quantity"] for row in rows if row["side"] == "long")
+        short_quantity = sum(row["quantity"] for row in rows if row["side"] == "short")
+        if strategy in {StrategyKind.BULL_CALL_SPREAD, StrategyKind.BEAR_PUT_SPREAD}:
+            return max(1, int(round(min(long_quantity, short_quantity))))
+        if strategy == StrategyKind.IRON_CONDOR:
+            return max(1, int(round(min(long_quantity, short_quantity) / 2)))
+        if strategy in {StrategyKind.LONG_STRADDLE, StrategyKind.LONG_STRANGLE}:
+            calls = sum(
+                row["quantity"]
+                for row in rows
+                if row["side"] == "long" and row["option_type"] == "call"
+            )
+            puts = sum(
+                row["quantity"]
+                for row in rows
+                if row["side"] == "long" and row["option_type"] == "put"
+            )
+            return max(1, int(round(min(calls, puts))))
+        if strategy in {StrategyKind.LONG_CALL, StrategyKind.LONG_PUT}:
+            return max(1, int(round(long_quantity)))
+        covered_quantity = min(long_quantity, short_quantity)
+        return max(base_quantity, int(round(covered_quantity)) if covered_quantity else base_quantity)
 
     @staticmethod
     def _position_max_loss(
         strategy: StrategyKind,
         rows: list[dict[str, Any]],
         cost_basis: float,
-        quantity: int,
+        structure_count: int,
     ) -> float:
-        if strategy in {
-            StrategyKind.LONG_CALL,
-            StrategyKind.LONG_PUT,
-            StrategyKind.LONG_STRADDLE,
-            StrategyKind.LONG_STRANGLE,
-        }:
+        # A net-debit option structure cannot lose more than its remaining
+        # premium. This remains true when Alpaca aggregates several verticals
+        # with different strikes into one symbol/expiry position view.
+        if cost_basis >= 0:
             return abs(cost_basis)
         calls = [row["strike"] for row in rows if row["option_type"] == "call"]
         puts = [row["strike"] for row in rows if row["option_type"] == "put"]
@@ -804,9 +846,7 @@ class MarketProvider:
             widths.append(max(calls) - min(calls))
         if len(puts) >= 2:
             widths.append(max(puts) - min(puts))
-        structural_cap = max(widths, default=0.0) * 100 * quantity
-        if cost_basis >= 0:
-            return min(structural_cap, cost_basis) if structural_cap else cost_basis
+        structural_cap = max(widths, default=0.0) * 100 * structure_count
         return max(0.0, structural_cap - abs(cost_basis))
 
     @staticmethod

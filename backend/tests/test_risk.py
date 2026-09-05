@@ -3,7 +3,7 @@ from __future__ import annotations
 import unittest
 
 from config import Settings
-from fixtures import demo_account, demo_markets
+from fixtures import demo_account, demo_markets, demo_positions
 from risk import RiskConstitution
 from strategy import StrategyRouter
 
@@ -50,6 +50,25 @@ class RiskConstitutionTests(unittest.TestCase):
         stale = self.market.model_copy(update={"captured_at": self.market.captured_at - timedelta(hours=1)})
         gates = self.risk.evaluate(self.plan, self.account, stale, False)
         gate = next(item for item in gates if item.name == "quote freshness")
+        self.assertFalse(gate.passed)
+
+    def test_existing_position_blocks_a_second_thesis_for_the_symbol(self) -> None:
+        position = demo_positions()[0]
+        gates = self.risk.evaluate(self.plan, self.account, self.market, False, [position])
+        gate = next(item for item in gates if item.name == "existing position lock")
+        self.assertFalse(gate.passed)
+        self.assertFalse(self.risk.approved(gates))
+
+    def test_structure_count_limits_actual_spreads_not_grouped_symbols(self) -> None:
+        account = self.account.model_copy(update={"open_structures": self.settings.max_open_structures})
+        gates = self.risk.evaluate(self.plan, account, self.market, False, [])
+        gate = next(item for item in gates if item.name == "open structure count")
+        self.assertFalse(gate.passed)
+
+    def test_directional_concentration_blocks_one_sided_risk(self) -> None:
+        bullish = demo_positions()[0].model_copy(update={"max_loss": 3_900.0})
+        gates = self.risk.evaluate(self.plan, self.account, self.market, False, [bullish])
+        gate = next(item for item in gates if item.name == "directional concentration")
         self.assertFalse(gate.passed)
 
 

@@ -66,8 +66,11 @@ class Settings(BaseSettings):
 
     max_risk_per_trade_pct: float = 1.25
     max_portfolio_open_risk_pct: float = 8.0
+    max_symbol_open_risk_pct: float = 2.5
+    max_directional_open_risk_pct: float = 4.0
     max_daily_loss_pct: float = 2.0
     max_positions: int = 4
+    max_open_structures: int = 8
     min_open_interest: int = 500
     max_bid_ask_spread_pct: float = 8.0
     max_quote_age_seconds: int = Field(default=300, ge=30, le=1_800)

@@ -70,7 +70,9 @@ class VolitionEngine:
             self.provider.portfolio_history(account),
         )
         account.open_positions = len(positions)
+        account.open_structures = sum(position.structure_count for position in positions)
         account.open_risk = round(sum(position.max_loss for position in positions), 2)
+        account.open_risk_limit_pct = self.settings.max_portfolio_open_risk_pct
         opportunities = [
             self.router.route(market, account, self.settings.max_risk_per_trade_pct)
             for market in markets
@@ -352,16 +354,16 @@ class VolitionEngine:
             if not reason:
                 continue
             lifecycle_key = f"exit:{position.symbol}:{position.expiration}"
-            existing = next(
+            active_exit = next(
                 (
                     event
                     for event in recent
                     if event.cycle_id == lifecycle_key
-                    and event.status.lower() not in {"canceled", "expired", "rejected"}
+                    and event.status.lower() not in {"filled", "canceled", "expired", "rejected", "replaced"}
                 ),
                 None,
             )
-            if existing:
+            if active_exit:
                 continue
             receipt = await self.executor.close_position(position, lifecycle_key, reason)
             event = ExecutionEvent(
@@ -434,6 +436,11 @@ class VolitionEngine:
     async def _run_cycle(self, symbol: str | None = None) -> DecisionPassport:
         cycle_id = f"cycle-{uuid.uuid4().hex[:14]}"
         account = await self.provider.account()
+        positions = await self.provider.positions(account.equity)
+        account.open_positions = len(positions)
+        account.open_structures = sum(position.structure_count for position in positions)
+        account.open_risk = round(sum(position.max_loss for position in positions), 2)
+        account.open_risk_limit_pct = self.settings.max_portfolio_open_risk_pct
         if symbol:
             requested = symbol.upper()
             if requested not in self.settings.watchlist:
@@ -451,13 +458,16 @@ class VolitionEngine:
         risk_eligible = [
             index
             for index in candidate_indexes
-            if self.risk.approved(self.risk.evaluate(plans[index], account, markets[index], self.kill_switch))
+            if self.risk.approved(
+                self.risk.evaluate(plans[index], account, markets[index], self.kill_switch, positions)
+            )
+            and self._pending_order_for(plans[index].symbol) is None
         ]
         selection_pool = risk_eligible or candidate_indexes or list(range(len(plans)))
         selected_index = max(selection_pool, key=lambda index: plans[index].confidence)
         market = markets[selected_index]
         plan = plans[selected_index]
-        gates = self.risk.evaluate(plan, account, market, self.kill_switch)
+        gates = self.risk.evaluate(plan, account, market, self.kill_switch, positions)
         simulation = None
         if plan.strategy != StrategyKind.NO_TRADE:
             try:
@@ -566,6 +576,10 @@ class VolitionEngine:
                 "screened_universe_size": len(self.settings.watchlist),
                 "deep_scan_symbols": ",".join(scan_symbols),
                 "cooldown_symbols": ",".join(cooldown_symbols),
+                "open_position_groups": account.open_positions,
+                "open_structures": account.open_structures,
+                "open_risk": account.open_risk,
+                "open_risk_pct": account.open_risk_pct,
                 "simulation_probability_profit": simulation.probability_profit if simulation else 0.0,
                 "simulation_expected_pnl": simulation.expected_pnl if simulation else 0.0,
                 "simulation_near_max_loss_probability": simulation.probability_near_max_loss if simulation else 0.0,

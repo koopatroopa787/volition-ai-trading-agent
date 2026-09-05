@@ -59,7 +59,10 @@ evidence first; only five names load full option chains and committee evidence
 per cycle. A one-hour post-review cooldown prevents a single candidate from
 monopolising consecutive cycles. It also includes grouped option-position
 monitoring with profit, loss, and expiration exit policies, persistent scheduler
-heartbeat/health, duplicate-entry protection, and an evidence-only Learning Journal. Previewed
+heartbeat/health, duplicate-entry protection, and an evidence-only Learning Journal.
+Position safety uses the true count of open structures and the net debit at risk,
+not merely the number of underlying symbols. Existing-position, symbol-risk, and
+directional-risk gates prevent one thesis from quietly dominating the book. Previewed
 and rejected decisions are never presented as realised performance. A strategy
 cannot be promoted until the desk has at least five verified closed paper
 outcomes, and scheduled reviews pause while the market is closed so the audit

@@ -8,7 +8,8 @@ from unittest.mock import AsyncMock
 from config import Settings
 from engine import VolitionEngine
 from ledger import DecisionLedger, ExecutionLedger
-from models import AgentOpinion, DecisionStatus, StrategyKind
+from fixtures import demo_account, demo_positions
+from models import AgentOpinion, DecisionStatus, ExecutionEvent, ExecutionReceipt, StrategyKind
 from runtime_state import RuntimeStateStore
 
 
@@ -22,6 +23,7 @@ class EngineSelectionTests(unittest.IsolatedAsyncioTestCase):
 
     async def test_scheduler_ranks_only_risk_eligible_candidates(self) -> None:
         engine = VolitionEngine(Settings(_env_file=None))
+        engine.provider.positions = AsyncMock(return_value=[])  # type: ignore[method-assign]
         with tempfile.TemporaryDirectory(prefix="volition-engine-") as directory:
             self.isolate(engine, directory)
             decision = await engine.run_cycle()
@@ -44,6 +46,7 @@ class EngineSelectionTests(unittest.IsolatedAsyncioTestCase):
 
     async def test_model_opposition_is_advisory_when_deterministic_gates_pass(self) -> None:
         engine = VolitionEngine(Settings(_env_file=None))
+        engine.provider.positions = AsyncMock(return_value=[])  # type: ignore[method-assign]
         engine.committee.deliberate = AsyncMock(  # type: ignore[method-assign]
             return_value=[
                 AgentOpinion(
@@ -100,6 +103,7 @@ class EngineSelectionTests(unittest.IsolatedAsyncioTestCase):
 
     async def test_recent_winner_is_rotated_out_when_fresh_alternatives_exist(self) -> None:
         engine = VolitionEngine(Settings(_env_file=None, deep_scan_limit=2, symbol_cooldown_minutes=60))
+        engine.provider.positions = AsyncMock(return_value=[])  # type: ignore[method-assign]
         with tempfile.TemporaryDirectory(prefix="volition-rotation-") as directory:
             self.isolate(engine, directory)
             first = await engine.run_cycle()
@@ -109,6 +113,80 @@ class EngineSelectionTests(unittest.IsolatedAsyncioTestCase):
         self.assertIn(first.symbol, cooling)
         self.assertNotIn(first.symbol, shortlist)
         self.assertNotEqual(first.symbol, second.symbol)
+
+    async def test_filled_exit_does_not_permanently_block_future_position_management(self) -> None:
+        engine = VolitionEngine(
+            Settings(
+                _env_file=None,
+                volition_mode="paper",
+                execution_mode="paper",
+                allow_order_submission=True,
+                alpaca_api_key="test-key",
+                alpaca_secret_key="test-secret",
+            )
+        )
+        position = demo_positions()[0].model_copy(update={"unrealized_pnl": -200.0})
+        engine.provider.account = AsyncMock(return_value=demo_account())  # type: ignore[method-assign]
+        engine.provider.positions = AsyncMock(return_value=[position])  # type: ignore[method-assign]
+        engine.executor.close_position = AsyncMock(  # type: ignore[method-assign]
+            return_value=ExecutionReceipt(
+                mode="paper",
+                accepted=True,
+                order_id="new-exit",
+                raw_status="pending_new",
+                message="accepted",
+            )
+        )
+        with tempfile.TemporaryDirectory(prefix="volition-exit-reentry-") as directory:
+            self.isolate(engine, directory)
+            engine.execution_ledger.append(
+                ExecutionEvent(
+                    event_id="old-filled-exit",
+                    cycle_id=f"exit:{position.symbol}:{position.expiration}",
+                    symbol=position.symbol,
+                    kind="exit_update",
+                    status="filled",
+                    order_id="old-exit",
+                    message="filled",
+                )
+            )
+            submitted = await engine.manage_positions()
+
+        self.assertEqual(len(submitted), 1)
+        engine.executor.close_position.assert_awaited_once()
+
+    async def test_active_exit_still_blocks_duplicate_close_order(self) -> None:
+        engine = VolitionEngine(
+            Settings(
+                _env_file=None,
+                volition_mode="paper",
+                execution_mode="paper",
+                allow_order_submission=True,
+                alpaca_api_key="test-key",
+                alpaca_secret_key="test-secret",
+            )
+        )
+        position = demo_positions()[0].model_copy(update={"unrealized_pnl": -200.0})
+        engine.provider.account = AsyncMock(return_value=demo_account())  # type: ignore[method-assign]
+        engine.provider.positions = AsyncMock(return_value=[position])  # type: ignore[method-assign]
+        engine.executor.close_position = AsyncMock()  # type: ignore[method-assign]
+        with tempfile.TemporaryDirectory(prefix="volition-exit-active-") as directory:
+            self.isolate(engine, directory)
+            engine.execution_ledger.append(
+                ExecutionEvent(
+                    event_id="active-exit",
+                    cycle_id=f"exit:{position.symbol}:{position.expiration}",
+                    symbol=position.symbol,
+                    kind="exit_submitted",
+                    status="new",
+                    order_id="active-order",
+                    message="working",
+                )
+            )
+            submitted = await engine.manage_positions()
+
+        self.assertEqual(submitted, [])
+        engine.executor.close_position.assert_not_awaited()
 
 
 if __name__ == "__main__":

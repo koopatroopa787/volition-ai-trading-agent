@@ -8,7 +8,7 @@ from __future__ import annotations
 from datetime import datetime, timezone
 
 from config import Settings
-from models import AccountSnapshot, GateResult, MarketSnapshot, StrategyKind, TradePlan
+from models import AccountSnapshot, GateResult, MarketSnapshot, PositionView, StrategyKind, TradePlan
 
 
 LEVEL_THREE_STRATEGIES = {
@@ -30,6 +30,7 @@ class RiskConstitution:
         account: AccountSnapshot,
         market: MarketSnapshot,
         kill_switch: bool,
+        positions: list[PositionView] | None = None,
     ) -> list[GateResult]:
         if plan.strategy == StrategyKind.NO_TRADE:
             return [
@@ -42,8 +43,25 @@ class RiskConstitution:
                 )
             ]
 
+        positions = positions or []
         risk_pct = (plan.max_loss / account.equity * 100) if account.equity else 100.0
         open_risk_after = ((account.open_risk + plan.max_loss) / account.equity * 100) if account.equity else 100.0
+        existing_positions = [position for position in positions if position.symbol == plan.symbol]
+        symbol_risk = sum(position.max_loss for position in existing_positions)
+        symbol_risk_after = ((symbol_risk + plan.max_loss) / account.equity * 100) if account.equity else 100.0
+        direction = self._direction(plan.strategy)
+        directional_risk = sum(
+            position.max_loss
+            for position in positions
+            if direction != "neutral" and self._direction(position.strategy) == direction
+        )
+        directional_risk_after = (
+            ((directional_risk + plan.max_loss) / account.equity * 100)
+            if account.equity and direction != "neutral"
+            else risk_pct
+        )
+        position_groups_after = account.open_positions + (0 if existing_positions else 1)
+        structures_after = account.open_structures + plan.quantity
         required_level = 3 if plan.strategy in LEVEL_THREE_STRATEGIES else 2
         liquid = all(
             leg.open_interest >= self.settings.min_open_interest
@@ -103,6 +121,35 @@ class RiskConstitution:
                 limit=f"≤ {self.settings.max_portfolio_open_risk_pct:.2f}%",
             ),
             GateResult(
+                name="existing position lock",
+                passed=not existing_positions,
+                observed=(
+                    "no open position for symbol"
+                    if not existing_positions
+                    else f"{sum(position.structure_count for position in existing_positions)} open structure(s)"
+                ),
+                limit="one active thesis per symbol until the position closes",
+            ),
+            GateResult(
+                name="symbol concentration",
+                passed=symbol_risk_after <= self.settings.max_symbol_open_risk_pct,
+                observed=f"{symbol_risk_after:.2f}% after trade",
+                limit=f"≤ {self.settings.max_symbol_open_risk_pct:.2f}% per symbol",
+            ),
+            GateResult(
+                name="directional concentration",
+                passed=(
+                    direction == "neutral"
+                    or directional_risk_after <= self.settings.max_directional_open_risk_pct
+                ),
+                observed=(
+                    "market-neutral structure"
+                    if direction == "neutral"
+                    else f"{directional_risk_after:.2f}% {direction} risk after trade"
+                ),
+                limit=f"≤ {self.settings.max_directional_open_risk_pct:.2f}% in one direction",
+            ),
+            GateResult(
                 name="daily loss circuit breaker",
                 passed=account.daily_pnl_pct > -self.settings.max_daily_loss_pct,
                 observed=f"{account.daily_pnl_pct:+.2f}%",
@@ -110,9 +157,15 @@ class RiskConstitution:
             ),
             GateResult(
                 name="position count",
-                passed=account.open_positions < self.settings.max_positions,
-                observed=str(account.open_positions),
-                limit=f"< {self.settings.max_positions}",
+                passed=position_groups_after <= self.settings.max_positions,
+                observed=f"{position_groups_after} after trade",
+                limit=f"≤ {self.settings.max_positions} symbol/expiry groups",
+            ),
+            GateResult(
+                name="open structure count",
+                passed=structures_after <= self.settings.max_open_structures,
+                observed=f"{structures_after} after trade",
+                limit=f"≤ {self.settings.max_open_structures} option structures",
             ),
             GateResult(
                 name="expiry window",
@@ -193,6 +246,14 @@ class RiskConstitution:
             )
             return safe, "both short wings have farther-out protection" if safe else "invalid condor wing geometry"
         return False, "strategy geometry is not approved"
+
+    @staticmethod
+    def _direction(strategy: StrategyKind) -> str:
+        if strategy in {StrategyKind.BULL_CALL_SPREAD, StrategyKind.LONG_CALL}:
+            return "bullish"
+        if strategy in {StrategyKind.BEAR_PUT_SPREAD, StrategyKind.LONG_PUT}:
+            return "bearish"
+        return "neutral"
 
     @staticmethod
     def approved(gates: list[GateResult]) -> bool:

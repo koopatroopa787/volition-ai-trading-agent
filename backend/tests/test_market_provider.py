@@ -35,6 +35,52 @@ class PositionParsingTests(unittest.TestCase):
         self.assertEqual(positions[0].max_loss, 810.0)
         self.assertEqual(len(positions[0].legs), 2)
 
+    def test_stacked_debit_spreads_preserve_true_structure_count_and_risk(self) -> None:
+        raw = [
+            {
+                "symbol": "TSLA260925C00350000",
+                "side": "long",
+                "qty": "4",
+                "cost_basis": "8000",
+                "market_value": "7600",
+                "unrealized_pl": "-400",
+            },
+            {
+                "symbol": "TSLA260925C00355000",
+                "side": "long",
+                "qty": "2",
+                "cost_basis": "3000",
+                "market_value": "2900",
+                "unrealized_pl": "-100",
+            },
+            {
+                "symbol": "TSLA260925C00380000",
+                "side": "short",
+                "qty": "5",
+                "cost_basis": "-4000",
+                "market_value": "-3700",
+                "unrealized_pl": "300",
+            },
+            {
+                "symbol": "TSLA260925C00385000",
+                "side": "short",
+                "qty": "1",
+                "cost_basis": "-945",
+                "market_value": "-860",
+                "unrealized_pl": "85",
+            },
+        ]
+
+        positions = MarketProvider._parse_position_views(raw, 100_000.0)
+
+        self.assertEqual(len(positions), 1)
+        position = positions[0]
+        self.assertEqual(position.strategy, StrategyKind.BULL_CALL_SPREAD)
+        self.assertEqual(position.quantity, 1)
+        self.assertEqual(position.structure_count, 6)
+        self.assertEqual(position.max_loss, 6055.0)
+        self.assertEqual([leg["ratio_qty"] for leg in position.raw_legs], [4, 2, 5, 1])
+
 
 class MarketPulseTests(unittest.IsolatedAsyncioTestCase):
     async def test_demo_pulse_covers_cross_asset_groups(self) -> None:
