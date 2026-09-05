@@ -141,6 +141,25 @@ class PortfolioHistoryTests(unittest.TestCase):
         )
         self.assertEqual(points, [])
 
+    def test_current_account_mark_is_added_without_inventing_history(self) -> None:
+        historical = [
+            MarketProvider._portfolio_points(
+                {
+                    "timestamp": [1788220800],
+                    "equity": [100_000],
+                },
+                {"bars": [{"t": "2026-09-01T04:00:00Z", "c": 650}]},
+                self.account(),
+                date(2026, 9, 1),
+            )[0]
+        ]
+
+        points = MarketProvider._include_current_equity(historical, self.account())
+
+        self.assertEqual(points[-1].equity, self.account().equity)
+        self.assertEqual(points[-1].benchmark, historical[-1].benchmark)
+        self.assertEqual(len(points), 2)
+
 
 if __name__ == "__main__":
     unittest.main()

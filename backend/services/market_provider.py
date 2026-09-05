@@ -168,7 +168,27 @@ class MarketProvider:
         except Exception:  # portfolio evidence should not take down the desk
             return []
 
-        return self._portfolio_points(portfolio, benchmark_payload, account, start)
+        points = self._portfolio_points(portfolio, benchmark_payload, account, start)
+        return self._include_current_equity(points, account)
+
+    @staticmethod
+    def _include_current_equity(
+        points: list[EquityPoint],
+        account: AccountSnapshot,
+    ) -> list[EquityPoint]:
+        """Keep the visible performance endpoint aligned with the latest account mark."""
+
+        if not points or math.isclose(points[-1].equity, account.equity, abs_tol=0.005):
+            return points
+        current_label = date.today().isoformat()
+        current = EquityPoint(
+            label=current_label,
+            equity=round(account.equity, 2),
+            benchmark=points[-1].benchmark,
+        )
+        if points[-1].label == current_label:
+            return [*points[:-1], current]
+        return [*points, current]
 
     @staticmethod
     def _portfolio_points(
