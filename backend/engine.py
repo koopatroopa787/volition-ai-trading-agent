@@ -348,20 +348,20 @@ class VolitionEngine:
         account = await self.provider.account()
         positions = await self.provider.positions(account.equity)
         recent = self.execution_ledger.recent(limit=2_000)
+        terminal_statuses = {"filled", "canceled", "expired", "rejected", "replaced"}
+        latest_exit_by_order: dict[str, ExecutionEvent] = {}
+        for event in recent:
+            if event.kind.startswith("exit") and event.order_id and event.order_id not in latest_exit_by_order:
+                latest_exit_by_order[event.order_id] = event
         submitted: list[ExecutionEvent] = []
         for position in positions:
             reason = self._exit_reason(position)
             if not reason:
                 continue
             lifecycle_key = f"exit:{position.symbol}:{position.expiration}"
-            active_exit = next(
-                (
-                    event
-                    for event in recent
-                    if event.cycle_id == lifecycle_key
-                    and event.status.lower() not in {"filled", "canceled", "expired", "rejected", "replaced"}
-                ),
-                None,
+            active_exit = any(
+                event.cycle_id == lifecycle_key and event.status.lower() not in terminal_statuses
+                for event in latest_exit_by_order.values()
             )
             if active_exit:
                 continue

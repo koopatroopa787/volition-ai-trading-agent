@@ -141,6 +141,17 @@ class EngineSelectionTests(unittest.IsolatedAsyncioTestCase):
             self.isolate(engine, directory)
             engine.execution_ledger.append(
                 ExecutionEvent(
+                    event_id="old-pending-exit",
+                    cycle_id=f"exit:{position.symbol}:{position.expiration}",
+                    symbol=position.symbol,
+                    kind="exit_submitted",
+                    status="pending_new",
+                    order_id="old-exit",
+                    message="accepted",
+                )
+            )
+            engine.execution_ledger.append(
+                ExecutionEvent(
                     event_id="old-filled-exit",
                     cycle_id=f"exit:{position.symbol}:{position.expiration}",
                     symbol=position.symbol,
