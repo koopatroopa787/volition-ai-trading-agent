@@ -41,6 +41,12 @@ class DecisionLedgerTests(unittest.TestCase):
             self.assertTrue(valid)
             self.assertEqual(count, 2)
 
+            with ledger.path.open("a", encoding="utf-8") as handle:
+                handle.write("not a decision passport\n")
+            valid, count = ledger.verify()
+            self.assertFalse(valid)
+            self.assertEqual(count, 3)
+
 
 if __name__ == "__main__":
     unittest.main()
