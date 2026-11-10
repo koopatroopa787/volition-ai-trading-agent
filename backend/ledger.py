@@ -42,13 +42,21 @@ class DecisionLedger:
         return list(reversed(rows[-limit:]))
 
     def verify(self) -> tuple[bool, int]:
-        records = list(reversed(self.recent(limit=100_000)))
+        if not self.path.exists():
+            return True, 0
         previous = "GENESIS"
-        for record in records:
-            if record.previous_hash != previous or record.record_hash != self._hash(record):
-                return False, len(records)
-            previous = record.record_hash
-        return True, len(records)
+        count = 0
+        with self.path.open(encoding="utf-8") as handle:
+            for line in handle:
+                count += 1
+                try:
+                    record = DecisionPassport.model_validate_json(line)
+                except Exception:
+                    return False, count
+                if record.previous_hash != previous or record.record_hash != self._hash(record):
+                    return False, count
+                previous = record.record_hash
+        return True, count
 
 
 class ExecutionLedger:
