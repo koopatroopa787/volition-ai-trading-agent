@@ -71,6 +71,30 @@ of headlines.
 
 A 15-minute cycle scores about 50 headlines, which adds about 5 seconds.
 
+## Impact on the bot's own news
+
+`live_headlines.py` re-scored every news payload in the audit archive, Oct–Nov 2026:
+* 4,512 symbol snapshots;
+* 44,592 headlines, of which 2,910 are unique.
+
+These headlines have no labels, so this measures change, not accuracy.
+
+* **The lexicon scored 68.6% of headlines exactly 0.** None of its keywords appeared. The
+  model gives almost every headline a clear direction.
+* **The model is confident.** Its score is P(positive) − P(negative), so most headlines land
+  near ±1.
+  * "Coinbase Stock Drops: What's Going On?" scored +0.16 on the lexicon and −1.00 on the model.
+  * "Michael Burry Raises Red Flag on Oracle's $664B Backlog" scored +0.12 on the lexicon and
+    −0.97 on the model.
+* **13% of snapshots (588 of 4,512) change sides of a router threshold.** The thresholds are
+  −0.45 for bullish spreads, +0.45 for bearish spreads and |0.50| for condors. They were set on
+  the lexicon's compressed scale. With the model, the news average alone can now veto a trade,
+  which the lexicon almost never did.
+
+The thresholds stay as they are for now. The long-history backtest (`backend/tools/history_backtest.py`)
+compares the model, the lexicon and no sentiment on the same 2024–26 trades. That comparison
+should decide them.
+
 ## Limits
 
 * **Accuracy is not edge.** Better sentiment changes which structures the router allows, but

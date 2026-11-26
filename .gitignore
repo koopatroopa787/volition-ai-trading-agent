@@ -32,3 +32,4 @@ backend/data/audit.sqlite3*
 research/news_sentiment/model/
 research/news_sentiment/checkpoints/
 research/news_sentiment/onnx/
+research/news_sentiment/*.log
