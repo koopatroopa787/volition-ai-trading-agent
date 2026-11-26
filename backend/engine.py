@@ -97,8 +97,9 @@ class VolitionEngine:
         opportunities.sort(key=lambda plan: (plan.strategy == StrategyKind.NO_TRADE, -plan.confidence))
         decisions = self.ledger.recent(limit=8)
         learning = self.learning_engine.summarize(
-            self.ledger.recent(limit=500),
-            self.execution_ledger.recent(limit=2_000),
+            # Full history: exits close entries placed weeks earlier.
+            self.ledger.recent(limit=1_000_000),
+            self.execution_ledger.recent(limit=1_000_000),
         )
         if self.settings.volition_mode == "demo":
             seeds = self._demo_passports(account, markets, opportunities)
@@ -780,8 +781,9 @@ class VolitionEngine:
 
     def learning(self):
         return self.learning_engine.summarize(
-            self.ledger.recent(limit=500),
-            self.execution_ledger.recent(limit=2_000),
+            # Full history: exits close entries placed weeks earlier.
+            self.ledger.recent(limit=1_000_000),
+            self.execution_ledger.recent(limit=1_000_000),
         )
 
     async def strategy_lab(

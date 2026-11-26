@@ -19,6 +19,60 @@ from models import (
 )
 
 
+def closed_trades(
+    decisions: list[DecisionPassport],
+    execution_events: list[ExecutionEvent],
+) -> list[dict]:
+    """Pair entry fills with the exit fills that closed them.
+
+    Exits are keyed by ``exit:SYMBOL:EXPIRATION`` and carry no decision id, and
+    one broker position can hold several entries, so trades are matched by that
+    key. ``manage_positions`` always closes the whole position, so an exit fill
+    closes every entry filled before it under the same key. Each broker order
+    counts once (its last filled event), and cash is ``-100 * price * qty``:
+    multi-leg exits may report the whole position as one unit at a summed price.
+    """
+
+    by_id = {item.decision_id: item for item in decisions}
+    fills: dict[str, ExecutionEvent] = {}
+    for event in sorted(execution_events, key=lambda item: item.recorded_at):
+        if event.status.lower() == "filled" and event.order_id and event.kind in {
+            "order_submitted", "order_update", "exit_submitted", "exit_update",
+        }:
+            fills[event.order_id] = event
+
+    groups: dict[str, list[ExecutionEvent]] = defaultdict(list)
+    for event in fills.values():
+        if event.kind.startswith("exit") and event.cycle_id and event.cycle_id.startswith("exit:"):
+            groups[event.cycle_id[len("exit:"):]].append(event)
+        elif event.kind.startswith("order"):
+            decision = by_id.get(event.decision_id or "")
+            if decision and decision.plan.legs:
+                groups[f"{decision.symbol}:{decision.plan.legs[0].expiration}"].append(event)
+
+    trades: list[dict] = []
+    for key, events in groups.items():
+        open_entries: list[ExecutionEvent] = []
+        for event in sorted(events, key=lambda item: item.recorded_at):
+            if event.kind.startswith("order"):
+                open_entries.append(event)
+                continue
+            if not open_entries:
+                continue
+            cash = -100 * sum((item.filled_avg_price or 0.0) * item.filled_qty for item in [*open_entries, event])
+            first = by_id[open_entries[0].decision_id or ""]
+            trades.append({
+                "key": key,
+                "strategy": first.plan.strategy,
+                "decision_ids": [item.decision_id for item in open_entries],
+                "opened_at": open_entries[0].recorded_at,
+                "closed_at": event.recorded_at,
+                "pnl": round(cash, 2),
+            })
+            open_entries = []
+    return sorted(trades, key=lambda item: item["closed_at"])
+
+
 class LearningEngine:
     MINIMUM_OUTCOMES = 5
 
@@ -47,15 +101,13 @@ class LearningEngine:
         risk_vetoes = sum(item.status == DecisionStatus.REJECTED for item in decisions)
         capital_preserved = sum(item.status == DecisionStatus.NO_TRADE for item in decisions)
 
-        closed_outcomes = len(
-            {
-                item.order_id
-                for item in execution_events
-                if item.kind in {"exit_submitted", "exit_update"}
-                and item.status.lower() == "filled" and item.order_id
-            }
-        )
-        pending_outcomes = max(0, paper_executions - closed_outcomes)
+        trades = closed_trades(decisions, execution_events)
+        closed_outcomes = len(trades)
+        closed_entries = sum(len(trade["decision_ids"]) for trade in trades)
+        pending_outcomes = max(0, len(filled_entry_orders) - closed_entries)
+        realized: dict[StrategyKind, list[float]] = defaultdict(list)
+        for trade in trades:
+            realized[trade["strategy"]].append(trade["pnl"])
         stage = "collecting_evidence" if closed_outcomes < self.MINIMUM_OUTCOMES else "calibrating"
 
         grouped: dict[StrategyKind, list[DecisionPassport]] = defaultdict(list)
@@ -80,13 +132,25 @@ class LearningEngine:
                     vetoed=sum(row.status == DecisionStatus.REJECTED for row in rows),
                     average_confidence=round(sum(row.plan.confidence for row in rows) / len(rows), 4),
                     average_gate_pass_rate=round(sum(gate_rates) / len(gate_rates), 4) if gate_rates else 0.0,
+                    realized_trades=len(realized[strategy]),
+                    realized_pnl=round(sum(realized[strategy]), 2),
+                    win_rate=(
+                        round(sum(pnl > 0 for pnl in realized[strategy]) / len(realized[strategy]), 4)
+                        if realized[strategy] else None
+                    ),
                 )
             )
         candidates.sort(key=lambda item: (-item.reviewed, -item.average_gate_pass_rate, item.strategy.value))
 
-        lessons = [
-            "No strategy can be promoted until at least five verified closed paper outcomes exist.",
-        ]
+        lessons = []
+        if closed_outcomes < self.MINIMUM_OUTCOMES:
+            lessons.append("No strategy can be promoted until at least five verified closed paper outcomes exist.")
+        if trades:
+            total = sum(trade["pnl"] for trade in trades)
+            wins = sum(trade["pnl"] > 0 for trade in trades)
+            lessons.append(
+                f"{closed_outcomes} closed paper trade(s) realised ${total:,.0f} with {wins} win(s)."
+            )
         if risk_vetoes:
             lessons.append(
                 f"The deterministic constitution prevented {risk_vetoes} proposal(s) from becoming orders."
