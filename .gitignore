@@ -29,3 +29,6 @@ docs/video-build/
 .video-tools/
 backend/data/audit.sqlite3*
 *.pre-*-fix-*
+research/news_sentiment/model/
+research/news_sentiment/checkpoints/
+research/news_sentiment/onnx/

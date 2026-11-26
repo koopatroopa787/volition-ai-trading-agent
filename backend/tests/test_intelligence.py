@@ -17,6 +17,29 @@ class IntelligenceScoringTests(unittest.TestCase):
         self.assertLess(score_sentiment("Revenue misses as lawsuit risk grows"), 0)
         self.assertLessEqual(abs(score_sentiment("surge " * 100)), 1)
 
+    def test_deployed_model_score_is_positive_minus_negative_probability(self) -> None:
+        from types import SimpleNamespace
+        from unittest import mock
+
+        import numpy as np
+
+        import services.intelligence as intelligence
+
+        class Session:
+            def get_inputs(self):
+                return [SimpleNamespace(name="input_ids")]
+
+            def run(self, _outputs, feeds):
+                assert feeds["input_ids"].shape == (1, 3)
+                return [np.log(np.asarray([[0.1, 0.2, 0.7]]))]
+
+        tokenizer = SimpleNamespace(encode=lambda _text: SimpleNamespace(ids=[5, 6, 7]))
+        with mock.patch.object(intelligence, "_sentiment_model", return_value=(Session(), tokenizer)):
+            self.assertAlmostEqual(intelligence.score_sentiment("Guidance raised"), 0.6, places=3)
+        broken = SimpleNamespace(get_inputs=lambda: (_ for _ in ()).throw(RuntimeError("bad model")))
+        with mock.patch.object(intelligence, "_sentiment_model", return_value=(broken, tokenizer)):
+            self.assertEqual(intelligence.score_sentiment("Revenue misses"), intelligence.lexicon_sentiment("Revenue misses"))
+
     def test_catalyst_classifier_prefers_specific_evidence(self) -> None:
         self.assertEqual(classify_catalyst("Quarterly earnings guidance was raised"), "earnings")
         self.assertEqual(classify_catalyst("DOJ opens a regulatory probe"), "regulatory")

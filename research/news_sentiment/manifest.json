@@ -1,0 +1,18 @@
+{
+  "labels": [
+    "negative",
+    "neutral",
+    "positive"
+  ],
+  "base_model": "Qwen/Qwen2.5-0.5B-Instruct",
+  "quantization": "4-bit weight-only (MatMulNBits, block 32) incl. embeddings; int8 compute",
+  "size_bytes": 312222192,
+  "sha256": "a78bc984b7fcea5eef83b551746b0d7bfa4cb0ce9256d55505a7e35919d982ef",
+  "check": {
+    "tweets": 500,
+    "accuracy_quantized": 0.902,
+    "accuracy_fp32": 0.904,
+    "quantized_agrees_with_fp32": 0.986,
+    "ms_per_text_1_thread_x86": 128.3
+  }
+}

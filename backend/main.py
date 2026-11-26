@@ -15,6 +15,7 @@ from pydantic import BaseModel, Field
 
 from config import settings
 from engine import VolitionEngine
+from services.intelligence import SENTIMENT_MODEL_DIR
 
 
 engine = VolitionEngine(settings)
@@ -129,6 +130,7 @@ def health() -> dict[str, object]:
         "execution_events": len(engine.execution_ledger.recent(limit=100_000)),
         "audit_events": audit_events,
         "audit_available": audit_available,
+        "sentiment_scorer": "fine-tuned-onnx" if (SENTIMENT_MODEL_DIR / "model.onnx").exists() else "lexicon",
         **audit_storage,
         "unresolved_submissions": sum(
             event.order_id is None and bool(event.client_order_id)

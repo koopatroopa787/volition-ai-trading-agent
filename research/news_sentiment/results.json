@@ -1,0 +1,125 @@
+{
+  "base_model": "Qwen/Qwen2.5-0.5B-Instruct",
+  "sizes": {
+    "train": 13419,
+    "dev": 485,
+    "fpb_test": 485,
+    "tweet_test": 2388
+  },
+  "tests": {
+    "fpb_test": [
+      {
+        "scorer": "lexicon",
+        "accuracy": 0.5897,
+        "macro_f1": 0.2519,
+        "ms_per_text": 0.0,
+        "per_class": {
+          "negative": 0.0,
+          "neutral": 0.7412,
+          "positive": 0.0145
+        }
+      },
+      {
+        "scorer": "finbert",
+        "accuracy": 0.8804,
+        "macro_f1": 0.8733,
+        "ms_per_text": 13.19,
+        "per_class": {
+          "negative": 0.8722,
+          "neutral": 0.8995,
+          "positive": 0.8483
+        }
+      },
+      {
+        "scorer": "qwen-zero",
+        "accuracy": 0.6247,
+        "macro_f1": 0.5731,
+        "ms_per_text": 11.23,
+        "per_class": {
+          "negative": 0.4494,
+          "neutral": 0.6691,
+          "positive": 0.6006
+        }
+      },
+      {
+        "scorer": "qwen-lora",
+        "accuracy": 0.8907,
+        "macro_f1": 0.888,
+        "ms_per_text": 3.01,
+        "per_class": {
+          "negative": 0.9268,
+          "neutral": 0.9128,
+          "positive": 0.8244
+        }
+      },
+      {
+        "scorer": "qwen-lora-4bit-cpu",
+        "accuracy": 0.8804,
+        "macro_f1": 0.8765,
+        "ms_per_text": 158.29,
+        "per_class": {
+          "negative": 0.912,
+          "neutral": 0.9038,
+          "positive": 0.8137
+        }
+      }
+    ],
+    "tweet_test": [
+      {
+        "scorer": "lexicon",
+        "accuracy": 0.6993,
+        "macro_f1": 0.4649,
+        "ms_per_text": 0.0,
+        "per_class": {
+          "negative": 0.2603,
+          "neutral": 0.8111,
+          "positive": 0.3233
+        }
+      },
+      {
+        "scorer": "finbert",
+        "accuracy": 0.7253,
+        "macro_f1": 0.6682,
+        "ms_per_text": 1.24,
+        "per_class": {
+          "negative": 0.5986,
+          "neutral": 0.8016,
+          "positive": 0.6043
+        }
+      },
+      {
+        "scorer": "qwen-zero",
+        "accuracy": 0.6185,
+        "macro_f1": 0.5779,
+        "ms_per_text": 2.64,
+        "per_class": {
+          "negative": 0.5125,
+          "neutral": 0.6787,
+          "positive": 0.5426
+        }
+      },
+      {
+        "scorer": "qwen-lora",
+        "accuracy": 0.8987,
+        "macro_f1": 0.8694,
+        "ms_per_text": 1.32,
+        "per_class": {
+          "negative": 0.8381,
+          "neutral": 0.93,
+          "positive": 0.8402
+        }
+      },
+      {
+        "scorer": "qwen-lora-4bit-cpu",
+        "accuracy": 0.897,
+        "macro_f1": 0.8683,
+        "ms_per_text": 124.31,
+        "per_class": {
+          "negative": 0.8255,
+          "neutral": 0.9274,
+          "positive": 0.852
+        }
+      }
+    ]
+  }
+}

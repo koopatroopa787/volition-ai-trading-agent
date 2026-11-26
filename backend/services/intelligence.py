@@ -9,9 +9,13 @@ from __future__ import annotations
 
 import asyncio
 import hashlib
+import logging
 import math
+import os
 import time
 from datetime import date, datetime, timedelta, timezone
+from functools import lru_cache
+from pathlib import Path
 from typing import Any, Awaitable, Callable, TypeVar
 
 import httpx
@@ -83,7 +87,59 @@ CATALYST_TERMS: tuple[tuple[str, tuple[str, ...]], ...] = (
 )
 
 
+SENTIMENT_MODEL_DIR = Path(os.environ.get(
+    "VOLITION_SENTIMENT_MODEL", Path(__file__).resolve().parents[1] / "data" / "models" / "news-sentiment"))
+
+
+@lru_cache(maxsize=1)
+def _sentiment_model() -> tuple[Any, Any] | None:
+    """Fine-tuned 3-way classifier (research/news_sentiment), loaded once if deployed."""
+
+    if not (SENTIMENT_MODEL_DIR / "model.onnx").exists():
+        return None
+    try:
+        import onnxruntime
+        from tokenizers import Tokenizer
+    except ImportError:
+        return None
+    options = onnxruntime.SessionOptions()
+    options.intra_op_num_threads = 1          # leave the second core to the trading loop
+    session = onnxruntime.InferenceSession(str(SENTIMENT_MODEL_DIR / "model.onnx"), options,
+                                           providers=["CPUExecutionProvider"])
+    tokenizer = Tokenizer.from_file(str(SENTIMENT_MODEL_DIR / "tokenizer.json"))
+    tokenizer.enable_truncation(128)
+    return session, tokenizer
+
+
+def _model_sentiment(text: str) -> float | None:
+    model = _sentiment_model()
+    if model is None or not text.strip():
+        return None
+    session, tokenizer = model
+    try:
+        ids = tokenizer.encode(text).ids
+        feeds = {"input_ids": [ids], "attention_mask": [[1] * len(ids)], "position_ids": [list(range(len(ids)))]}
+        import numpy as np
+        logits = session.run(None, {item.name: np.asarray(feeds[item.name], dtype=np.int64)
+                                    for item in session.get_inputs()})[0][0]
+        probabilities = np.exp(logits - logits.max())
+        probabilities /= probabilities.sum()
+        return round(float(probabilities[2] - probabilities[0]), 3)   # labels: negative, neutral, positive
+    except Exception as exc:  # noqa: BLE001
+        logging.getLogger("volition.sentiment").warning("Sentiment model failed, using lexicon: %s", exc)
+        return None
+
+
 def score_sentiment(text: str) -> float:
+    """Fine-tuned model when deployed (P(positive) - P(negative)); keyword lexicon otherwise."""
+
+    modelled = _model_sentiment(text)
+    if modelled is not None:
+        return modelled
+    return lexicon_sentiment(text)
+
+
+def lexicon_sentiment(text: str) -> float:
     """Small deterministic fallback; provider scores take precedence when present."""
 
     tokens = [token.strip(".,:;!?()[]{}\"'").lower() for token in text.split()]
