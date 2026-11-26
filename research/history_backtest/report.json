@@ -1,0 +1,5268 @@
+{
+  "generated_at": "2026-11-26T06:51:04+00:00",
+  "symbols": [
+    "AAPL",
+    "AMD",
+    "DIA",
+    "IWM",
+    "NVDA",
+    "QQQ",
+    "SPY"
+  ],
+  "folds": [
+    "2025-03-01",
+    "2025-09-01",
+    "2026-03-01"
+  ],
+  "configs": {
+    "take 25% / stop 20% / 14 DTE / bearish off": {
+      "all": {
+        "n": 120,
+        "pnl": -8855.0,
+        "win_rate": 0.433,
+        "mean": -73.79,
+        "max_drawdown": 9713.0
+      },
+      "summary": {
+        "variant": "take 25% / stop 20% / 14 DTE / bearish off",
+        "outcomes": {
+          "no trade: other": 1434,
+          "no trade: bearish off": 967,
+          "blocked: stress test": 920,
+          "blocked: position lock": 488,
+          "blocked: chain liquidity": 410,
+          "no trade: over budget": 346,
+          "opened": 121,
+          "blocked: open structure count": 36,
+          "blocked: position count": 11,
+          "no trade: no liquid structure": 2
+        },
+        "opened": 121,
+        "closed": 120,
+        "unresolved": 1,
+        "total_pnl": -8855.0,
+        "win_rate": 0.433,
+        "mean_pnl": -73.79,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 47,
+            "pnl": -812.0
+          },
+          "bull_call_spread": {
+            "n": 58,
+            "pnl": -5414.0
+          },
+          "long_strangle": {
+            "n": 7,
+            "pnl": -1237.0
+          },
+          "long_straddle": {
+            "n": 8,
+            "pnl": -1392.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 29,
+          "loss": 63,
+          "expiry": 27
+        }
+      }
+    },
+    "take 25% / stop 20% / 14 DTE / bearish on": {
+      "all": {
+        "n": 325,
+        "pnl": -28940.0,
+        "win_rate": 0.372,
+        "mean": -89.05,
+        "max_drawdown": 33496.0
+      },
+      "summary": {
+        "variant": "take 25% / stop 20% / 14 DTE / bearish on",
+        "outcomes": {
+          "no trade: other": 1434,
+          "blocked: stress test": 996,
+          "blocked: chain liquidity": 665,
+          "blocked: position lock": 617,
+          "no trade: over budget": 367,
+          "opened": 327,
+          "blocked: position count": 31,
+          "blocked: open structure count": 13,
+          "no trade: no liquid structure": 2
+        },
+        "opened": 327,
+        "closed": 325,
+        "unresolved": 2,
+        "total_pnl": -28940.0,
+        "win_rate": 0.372,
+        "mean_pnl": -89.05,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 46,
+            "pnl": -2687.0
+          },
+          "bear_put_spread": {
+            "n": 210,
+            "pnl": -20496.0
+          },
+          "bull_call_spread": {
+            "n": 58,
+            "pnl": -4321.0
+          },
+          "long_strangle": {
+            "n": 5,
+            "pnl": -571.0
+          },
+          "long_straddle": {
+            "n": 6,
+            "pnl": -865.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 100,
+          "loss": 199,
+          "expiry": 25
+        }
+      }
+    },
+    "take 25% / stop 35% / 14 DTE / bearish off": {
+      "all": {
+        "n": 114,
+        "pnl": -10651.0,
+        "win_rate": 0.491,
+        "mean": -93.43,
+        "max_drawdown": 11509.0
+      },
+      "summary": {
+        "variant": "take 25% / stop 35% / 14 DTE / bearish off",
+        "outcomes": {
+          "no trade: other": 1434,
+          "no trade: bearish off": 967,
+          "blocked: stress test": 875,
+          "blocked: position lock": 538,
+          "blocked: chain liquidity": 403,
+          "no trade: over budget": 346,
+          "opened": 115,
+          "blocked: open structure count": 44,
+          "blocked: position count": 12,
+          "no trade: no liquid structure": 2
+        },
+        "opened": 115,
+        "closed": 114,
+        "unresolved": 1,
+        "total_pnl": -10651.0,
+        "win_rate": 0.491,
+        "mean_pnl": -93.43,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 46,
+            "pnl": -1090.0
+          },
+          "bull_call_spread": {
+            "n": 56,
+            "pnl": -8142.0
+          },
+          "long_strangle": {
+            "n": 7,
+            "pnl": -1230.0
+          },
+          "long_straddle": {
+            "n": 5,
+            "pnl": -189.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 32,
+          "loss": 44,
+          "expiry": 37
+        }
+      }
+    },
+    "take 25% / stop 35% / 14 DTE / bearish on": {
+      "all": {
+        "n": 299,
+        "pnl": -33367.0,
+        "win_rate": 0.411,
+        "mean": -111.6,
+        "max_drawdown": 38105.0
+      },
+      "summary": {
+        "variant": "take 25% / stop 35% / 14 DTE / bearish on",
+        "outcomes": {
+          "no trade: other": 1434,
+          "blocked: stress test": 937,
+          "blocked: position lock": 751,
+          "blocked: chain liquidity": 638,
+          "no trade: over budget": 367,
+          "opened": 300,
+          "blocked: position count": 53,
+          "blocked: open structure count": 31,
+          "no trade: no liquid structure": 2
+        },
+        "opened": 300,
+        "closed": 299,
+        "unresolved": 1,
+        "total_pnl": -33367.0,
+        "win_rate": 0.411,
+        "mean_pnl": -111.6,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 45,
+            "pnl": -3138.0
+          },
+          "bear_put_spread": {
+            "n": 188,
+            "pnl": -22109.0
+          },
+          "bull_call_spread": {
+            "n": 56,
+            "pnl": -6731.0
+          },
+          "long_strangle": {
+            "n": 5,
+            "pnl": -1046.0
+          },
+          "long_straddle": {
+            "n": 5,
+            "pnl": -343.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 101,
+          "loss": 161,
+          "expiry": 36
+        }
+      }
+    },
+    "take 25% / stop 50% / 14 DTE / bearish off": {
+      "all": {
+        "n": 109,
+        "pnl": -9396.0,
+        "win_rate": 0.532,
+        "mean": -86.2,
+        "max_drawdown": 10345.0
+      },
+      "summary": {
+        "variant": "take 25% / stop 50% / 14 DTE / bearish off",
+        "outcomes": {
+          "no trade: other": 1434,
+          "no trade: bearish off": 967,
+          "blocked: stress test": 845,
+          "blocked: position lock": 564,
+          "blocked: chain liquidity": 396,
+          "no trade: over budget": 346,
+          "opened": 110,
+          "blocked: open structure count": 54,
+          "blocked: position count": 18,
+          "no trade: no liquid structure": 2
+        },
+        "opened": 110,
+        "closed": 109,
+        "unresolved": 1,
+        "total_pnl": -9396.0,
+        "win_rate": 0.532,
+        "mean_pnl": -86.2,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 46,
+            "pnl": -106.0
+          },
+          "bull_call_spread": {
+            "n": 51,
+            "pnl": -7238.0
+          },
+          "long_strangle": {
+            "n": 8,
+            "pnl": -1481.0
+          },
+          "long_straddle": {
+            "n": 4,
+            "pnl": -571.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 34,
+          "loss": 31,
+          "expiry": 43
+        }
+      }
+    },
+    "take 25% / stop 50% / 14 DTE / bearish on": {
+      "all": {
+        "n": 267,
+        "pnl": -32253.0,
+        "win_rate": 0.472,
+        "mean": -120.8,
+        "max_drawdown": 36097.0
+      },
+      "summary": {
+        "variant": "take 25% / stop 50% / 14 DTE / bearish on",
+        "outcomes": {
+          "no trade: other": 1434,
+          "blocked: stress test": 906,
+          "blocked: position lock": 842,
+          "blocked: chain liquidity": 607,
+          "no trade: over budget": 367,
+          "opened": 269,
+          "blocked: position count": 68,
+          "blocked: open structure count": 60,
+          "no trade: no liquid structure": 2
+        },
+        "opened": 269,
+        "closed": 267,
+        "unresolved": 2,
+        "total_pnl": -32253.0,
+        "win_rate": 0.472,
+        "mean_pnl": -120.8,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 45,
+            "pnl": -2197.0
+          },
+          "bear_put_spread": {
+            "n": 163,
+            "pnl": -21888.0
+          },
+          "bull_call_spread": {
+            "n": 49,
+            "pnl": -5929.0
+          },
+          "long_strangle": {
+            "n": 6,
+            "pnl": -1514.0
+          },
+          "long_straddle": {
+            "n": 4,
+            "pnl": -725.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 103,
+          "loss": 120,
+          "expiry": 43
+        }
+      }
+    },
+    "take 25% / stop none / 14 DTE / bearish off": {
+      "all": {
+        "n": 101,
+        "pnl": -5931.0,
+        "win_rate": 0.594,
+        "mean": -58.72,
+        "max_drawdown": 6880.0
+      },
+      "summary": {
+        "variant": "take 25% / stop none / 14 DTE / bearish off",
+        "outcomes": {
+          "no trade: other": 1434,
+          "no trade: bearish off": 967,
+          "blocked: stress test": 801,
+          "blocked: position lock": 611,
+          "blocked: chain liquidity": 380,
+          "no trade: over budget": 346,
+          "opened": 102,
+          "blocked: open structure count": 79,
+          "blocked: position count": 16,
+          "no trade: no liquid structure": 2
+        },
+        "opened": 102,
+        "closed": 101,
+        "unresolved": 1,
+        "total_pnl": -5931.0,
+        "win_rate": 0.594,
+        "mean_pnl": -58.72,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 43,
+            "pnl": 1565.0
+          },
+          "bull_call_spread": {
+            "n": 47,
+            "pnl": -6668.0
+          },
+          "long_strangle": {
+            "n": 7,
+            "pnl": -744.0
+          },
+          "long_straddle": {
+            "n": 4,
+            "pnl": -84.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 36,
+          "loss": 0,
+          "expiry": 64
+        }
+      }
+    },
+    "take 25% / stop none / 14 DTE / bearish on": {
+      "all": {
+        "n": 183,
+        "pnl": -15445.0,
+        "win_rate": 0.536,
+        "mean": -84.4,
+        "max_drawdown": 22048.0
+      },
+      "summary": {
+        "variant": "take 25% / stop none / 14 DTE / bearish on",
+        "outcomes": {
+          "no trade: other": 1434,
+          "blocked: position lock": 1008,
+          "blocked: stress test": 758,
+          "blocked: chain liquidity": 510,
+          "no trade: over budget": 367,
+          "blocked: open structure count": 276,
+          "opened": 185,
+          "blocked: position count": 118,
+          "no trade: no liquid structure": 2
+        },
+        "opened": 185,
+        "closed": 183,
+        "unresolved": 2,
+        "total_pnl": -15445.0,
+        "win_rate": 0.536,
+        "mean_pnl": -84.4,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 39,
+            "pnl": 269.0
+          },
+          "bear_put_spread": {
+            "n": 97,
+            "pnl": -12770.0
+          },
+          "bull_call_spread": {
+            "n": 39,
+            "pnl": -2702.0
+          },
+          "long_strangle": {
+            "n": 6,
+            "pnl": -623.0
+          },
+          "long_straddle": {
+            "n": 2,
+            "pnl": 381.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 77,
+          "loss": 0,
+          "expiry": 105
+        }
+      }
+    },
+    "take 50% / stop 20% / 14 DTE / bearish off": {
+      "all": {
+        "n": 112,
+        "pnl": -9930.0,
+        "win_rate": 0.375,
+        "mean": -88.66,
+        "max_drawdown": 10102.0
+      },
+      "summary": {
+        "variant": "take 50% / stop 20% / 14 DTE / bearish off",
+        "outcomes": {
+          "no trade: other": 1434,
+          "no trade: bearish off": 967,
+          "blocked: stress test": 893,
+          "blocked: position lock": 525,
+          "blocked: chain liquidity": 400,
+          "no trade: over budget": 346,
+          "opened": 113,
+          "blocked: open structure count": 47,
+          "blocked: position count": 11,
+          "no trade: no liquid structure": 2
+        },
+        "opened": 113,
+        "closed": 112,
+        "unresolved": 1,
+        "total_pnl": -9930.0,
+        "win_rate": 0.375,
+        "mean_pnl": -88.66,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 47,
+            "pnl": -1344.0
+          },
+          "bull_call_spread": {
+            "n": 52,
+            "pnl": -5944.0
+          },
+          "long_strangle": {
+            "n": 5,
+            "pnl": -1295.0
+          },
+          "long_straddle": {
+            "n": 8,
+            "pnl": -1347.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 13,
+          "loss": 64,
+          "expiry": 34
+        }
+      }
+    },
+    "take 50% / stop 20% / 14 DTE / bearish on": {
+      "all": {
+        "n": 301,
+        "pnl": -31322.0,
+        "win_rate": 0.312,
+        "mean": -104.06,
+        "max_drawdown": 36008.0
+      },
+      "summary": {
+        "variant": "take 50% / stop 20% / 14 DTE / bearish on",
+        "outcomes": {
+          "no trade: other": 1434,
+          "blocked: stress test": 953,
+          "blocked: position lock": 742,
+          "blocked: chain liquidity": 630,
+          "no trade: over budget": 367,
+          "opened": 303,
+          "blocked: position count": 49,
+          "blocked: open structure count": 26,
+          "no trade: no liquid structure": 2
+        },
+        "opened": 303,
+        "closed": 301,
+        "unresolved": 2,
+        "total_pnl": -31322.0,
+        "win_rate": 0.312,
+        "mean_pnl": -104.06,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 49,
+            "pnl": -3840.0
+          },
+          "bear_put_spread": {
+            "n": 191,
+            "pnl": -21578.0
+          },
+          "bull_call_spread": {
+            "n": 50,
+            "pnl": -3906.0
+          },
+          "long_strangle": {
+            "n": 4,
+            "pnl": -905.0
+          },
+          "long_straddle": {
+            "n": 7,
+            "pnl": -1093.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 65,
+          "loss": 201,
+          "expiry": 34
+        }
+      }
+    },
+    "take 50% / stop 35% / 14 DTE / bearish off": {
+      "all": {
+        "n": 104,
+        "pnl": -10935.0,
+        "win_rate": 0.433,
+        "mean": -105.14,
+        "max_drawdown": 11107.0
+      },
+      "summary": {
+        "variant": "take 50% / stop 35% / 14 DTE / bearish off",
+        "outcomes": {
+          "no trade: other": 1434,
+          "no trade: bearish off": 967,
+          "blocked: stress test": 852,
+          "blocked: position lock": 573,
+          "blocked: chain liquidity": 392,
+          "no trade: over budget": 346,
+          "opened": 105,
+          "blocked: open structure count": 54,
+          "blocked: position count": 14,
+          "no trade: no liquid structure": 2
+        },
+        "opened": 105,
+        "closed": 104,
+        "unresolved": 1,
+        "total_pnl": -10935.0,
+        "win_rate": 0.433,
+        "mean_pnl": -105.14,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 46,
+            "pnl": -1634.0
+          },
+          "bull_call_spread": {
+            "n": 48,
+            "pnl": -7536.0
+          },
+          "long_strangle": {
+            "n": 6,
+            "pnl": -1286.0
+          },
+          "long_straddle": {
+            "n": 4,
+            "pnl": -479.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 15,
+          "loss": 44,
+          "expiry": 44
+        }
+      }
+    },
+    "take 50% / stop 35% / 14 DTE / bearish on": {
+      "all": {
+        "n": 270,
+        "pnl": -40369.0,
+        "win_rate": 0.333,
+        "mean": -149.51,
+        "max_drawdown": 43826.0
+      },
+      "summary": {
+        "variant": "take 50% / stop 35% / 14 DTE / bearish on",
+        "outcomes": {
+          "no trade: other": 1434,
+          "blocked: stress test": 906,
+          "blocked: position lock": 844,
+          "blocked: chain liquidity": 596,
+          "no trade: over budget": 367,
+          "opened": 272,
+          "blocked: position count": 83,
+          "blocked: open structure count": 50,
+          "no trade: no liquid structure": 2
+        },
+        "opened": 272,
+        "closed": 270,
+        "unresolved": 2,
+        "total_pnl": -40369.0,
+        "win_rate": 0.333,
+        "mean_pnl": -149.51,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 47,
+            "pnl": -4078.0
+          },
+          "bear_put_spread": {
+            "n": 169,
+            "pnl": -29836.0
+          },
+          "bull_call_spread": {
+            "n": 46,
+            "pnl": -5252.0
+          },
+          "long_strangle": {
+            "n": 4,
+            "pnl": -570.0
+          },
+          "long_straddle": {
+            "n": 4,
+            "pnl": -633.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 61,
+          "loss": 162,
+          "expiry": 46
+        }
+      }
+    },
+    "take 50% / stop 50% / 14 DTE / bearish off": {
+      "all": {
+        "n": 78,
+        "pnl": -7145.0,
+        "win_rate": 0.474,
+        "mean": -91.6,
+        "max_drawdown": 7317.0
+      },
+      "summary": {
+        "variant": "take 50% / stop 50% / 14 DTE / bearish off",
+        "outcomes": {
+          "no trade: other": 1434,
+          "no trade: bearish off": 967,
+          "blocked: position lock": 764,
+          "blocked: stress test": 634,
+          "blocked: chain liquidity": 356,
+          "no trade: over budget": 346,
+          "blocked: open structure count": 89,
+          "opened": 79,
+          "blocked: position count": 69,
+          "no trade: no liquid structure": 2
+        },
+        "opened": 79,
+        "closed": 78,
+        "unresolved": 1,
+        "total_pnl": -7145.0,
+        "win_rate": 0.474,
+        "mean_pnl": -91.6,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 31,
+            "pnl": 114.0
+          },
+          "bull_call_spread": {
+            "n": 37,
+            "pnl": -5171.0
+          },
+          "long_strangle": {
+            "n": 6,
+            "pnl": -1562.0
+          },
+          "long_straddle": {
+            "n": 4,
+            "pnl": -526.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 14,
+          "loss": 25,
+          "expiry": 37
+        }
+      }
+    },
+    "take 50% / stop 50% / 14 DTE / bearish on": {
+      "all": {
+        "n": 204,
+        "pnl": -26633.0,
+        "win_rate": 0.377,
+        "mean": -130.55,
+        "max_drawdown": 29744.0
+      },
+      "summary": {
+        "variant": "take 50% / stop 50% / 14 DTE / bearish on",
+        "outcomes": {
+          "no trade: other": 1434,
+          "blocked: position lock": 1125,
+          "blocked: stress test": 703,
+          "blocked: chain liquidity": 534,
+          "no trade: over budget": 367,
+          "opened": 206,
+          "blocked: position count": 180,
+          "blocked: open structure count": 74,
+          "no trade: no liquid structure": 2
+        },
+        "opened": 206,
+        "closed": 204,
+        "unresolved": 2,
+        "total_pnl": -26633.0,
+        "win_rate": 0.377,
+        "mean_pnl": -130.55,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 28,
+            "pnl": -1423.0
+          },
+          "bear_put_spread": {
+            "n": 130,
+            "pnl": -18984.0
+          },
+          "bull_call_spread": {
+            "n": 38,
+            "pnl": -4483.0
+          },
+          "long_strangle": {
+            "n": 4,
+            "pnl": -1063.0
+          },
+          "long_straddle": {
+            "n": 4,
+            "pnl": -680.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 53,
+          "loss": 108,
+          "expiry": 41
+        }
+      }
+    },
+    "take 50% / stop none / 14 DTE / bearish off": {
+      "all": {
+        "n": 73,
+        "pnl": -5417.0,
+        "win_rate": 0.521,
+        "mean": -74.21,
+        "max_drawdown": 6338.0
+      },
+      "summary": {
+        "variant": "take 50% / stop none / 14 DTE / bearish off",
+        "outcomes": {
+          "no trade: other": 1434,
+          "no trade: bearish off": 967,
+          "blocked: position lock": 808,
+          "blocked: stress test": 591,
+          "no trade: over budget": 346,
+          "blocked: chain liquidity": 340,
+          "blocked: open structure count": 97,
+          "blocked: position count": 82,
+          "opened": 74,
+          "no trade: no liquid structure": 2
+        },
+        "opened": 74,
+        "closed": 73,
+        "unresolved": 1,
+        "total_pnl": -5417.0,
+        "win_rate": 0.521,
+        "mean_pnl": -74.21,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 30,
+            "pnl": 546.0
+          },
+          "bull_call_spread": {
+            "n": 34,
+            "pnl": -4813.0
+          },
+          "long_strangle": {
+            "n": 6,
+            "pnl": -1422.0
+          },
+          "long_straddle": {
+            "n": 3,
+            "pnl": 272.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 13,
+          "loss": 0,
+          "expiry": 58
+        }
+      }
+    },
+    "take 50% / stop none / 14 DTE / bearish on": {
+      "all": {
+        "n": 119,
+        "pnl": -10702.0,
+        "win_rate": 0.471,
+        "mean": -89.93,
+        "max_drawdown": 16425.0
+      },
+      "summary": {
+        "variant": "take 50% / stop none / 14 DTE / bearish on",
+        "outcomes": {
+          "no trade: other": 1434,
+          "blocked: position lock": 1232,
+          "blocked: stress test": 543,
+          "blocked: chain liquidity": 430,
+          "no trade: over budget": 367,
+          "blocked: open structure count": 291,
+          "blocked: position count": 282,
+          "opened": 120,
+          "no trade: no liquid structure": 2
+        },
+        "opened": 120,
+        "closed": 119,
+        "unresolved": 1,
+        "total_pnl": -10702.0,
+        "win_rate": 0.471,
+        "mean_pnl": -89.93,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 24,
+            "pnl": -434.0
+          },
+          "bear_put_spread": {
+            "n": 64,
+            "pnl": -9597.0
+          },
+          "bull_call_spread": {
+            "n": 26,
+            "pnl": -981.0
+          },
+          "long_strangle": {
+            "n": 2,
+            "pnl": 38.0
+          },
+          "long_straddle": {
+            "n": 3,
+            "pnl": 272.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 36,
+          "loss": 0,
+          "expiry": 80
+        }
+      }
+    },
+    "take 75% / stop 20% / 14 DTE / bearish off": {
+      "all": {
+        "n": 109,
+        "pnl": -10190.0,
+        "win_rate": 0.358,
+        "mean": -93.49,
+        "max_drawdown": 10367.0
+      },
+      "summary": {
+        "variant": "take 75% / stop 20% / 14 DTE / bearish off",
+        "outcomes": {
+          "no trade: other": 1434,
+          "no trade: bearish off": 967,
+          "blocked: stress test": 871,
+          "blocked: position lock": 537,
+          "blocked: chain liquidity": 401,
+          "no trade: over budget": 346,
+          "opened": 110,
+          "blocked: open structure count": 52,
+          "blocked: position count": 20,
+          "no trade: no liquid structure": 2
+        },
+        "opened": 110,
+        "closed": 109,
+        "unresolved": 1,
+        "total_pnl": -10190.0,
+        "win_rate": 0.358,
+        "mean_pnl": -93.49,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 47,
+            "pnl": -1437.0
+          },
+          "bull_call_spread": {
+            "n": 49,
+            "pnl": -6111.0
+          },
+          "long_strangle": {
+            "n": 5,
+            "pnl": -1295.0
+          },
+          "long_straddle": {
+            "n": 8,
+            "pnl": -1347.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 10,
+          "loss": 64,
+          "expiry": 34
+        }
+      }
+    },
+    "take 75% / stop 20% / 14 DTE / bearish on": {
+      "all": {
+        "n": 281,
+        "pnl": -31417.0,
+        "win_rate": 0.281,
+        "mean": -111.8,
+        "max_drawdown": 35333.0
+      },
+      "summary": {
+        "variant": "take 75% / stop 20% / 14 DTE / bearish on",
+        "outcomes": {
+          "no trade: other": 1434,
+          "blocked: stress test": 938,
+          "blocked: position lock": 782,
+          "blocked: chain liquidity": 621,
+          "no trade: over budget": 367,
+          "opened": 284,
+          "blocked: position count": 69,
+          "blocked: open structure count": 43,
+          "no trade: no liquid structure": 2
+        },
+        "opened": 284,
+        "closed": 281,
+        "unresolved": 3,
+        "total_pnl": -31417.0,
+        "win_rate": 0.281,
+        "mean_pnl": -111.8,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 50,
+            "pnl": -3621.0
+          },
+          "bear_put_spread": {
+            "n": 173,
+            "pnl": -20812.0
+          },
+          "bull_call_spread": {
+            "n": 47,
+            "pnl": -5044.0
+          },
+          "long_strangle": {
+            "n": 4,
+            "pnl": -847.0
+          },
+          "long_straddle": {
+            "n": 7,
+            "pnl": -1093.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 44,
+          "loss": 195,
+          "expiry": 41
+        }
+      }
+    },
+    "take 75% / stop 35% / 14 DTE / bearish off": {
+      "all": {
+        "n": 100,
+        "pnl": -10479.0,
+        "win_rate": 0.42,
+        "mean": -104.79,
+        "max_drawdown": 10656.0
+      },
+      "summary": {
+        "variant": "take 75% / stop 35% / 14 DTE / bearish off",
+        "outcomes": {
+          "no trade: other": 1434,
+          "no trade: bearish off": 967,
+          "blocked: stress test": 832,
+          "blocked: position lock": 583,
+          "blocked: chain liquidity": 394,
+          "no trade: over budget": 346,
+          "opened": 101,
+          "blocked: open structure count": 58,
+          "blocked: position count": 23,
+          "no trade: no liquid structure": 2
+        },
+        "opened": 101,
+        "closed": 100,
+        "unresolved": 1,
+        "total_pnl": -10479.0,
+        "win_rate": 0.42,
+        "mean_pnl": -104.79,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 46,
+            "pnl": -1634.0
+          },
+          "bull_call_spread": {
+            "n": 44,
+            "pnl": -7080.0
+          },
+          "long_strangle": {
+            "n": 6,
+            "pnl": -1286.0
+          },
+          "long_straddle": {
+            "n": 4,
+            "pnl": -479.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 12,
+          "loss": 42,
+          "expiry": 45
+        }
+      }
+    },
+    "take 75% / stop 35% / 14 DTE / bearish on": {
+      "all": {
+        "n": 254,
+        "pnl": -36668.0,
+        "win_rate": 0.311,
+        "mean": -144.36,
+        "max_drawdown": 41881.0
+      },
+      "summary": {
+        "variant": "take 75% / stop 35% / 14 DTE / bearish on",
+        "outcomes": {
+          "no trade: other": 1434,
+          "blocked: stress test": 892,
+          "blocked: position lock": 872,
+          "blocked: chain liquidity": 592,
+          "no trade: over budget": 367,
+          "opened": 257,
+          "blocked: position count": 91,
+          "blocked: open structure count": 63,
+          "no trade: no liquid structure": 2
+        },
+        "opened": 257,
+        "closed": 254,
+        "unresolved": 3,
+        "total_pnl": -36668.0,
+        "win_rate": 0.311,
+        "mean_pnl": -144.36,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 48,
+            "pnl": -3754.0
+          },
+          "bear_put_spread": {
+            "n": 156,
+            "pnl": -26728.0
+          },
+          "bull_call_spread": {
+            "n": 42,
+            "pnl": -4983.0
+          },
+          "long_strangle": {
+            "n": 4,
+            "pnl": -570.0
+          },
+          "long_straddle": {
+            "n": 4,
+            "pnl": -633.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 43,
+          "loss": 156,
+          "expiry": 54
+        }
+      }
+    },
+    "take 75% / stop 50% / 14 DTE / bearish off": {
+      "all": {
+        "n": 77,
+        "pnl": -7557.0,
+        "win_rate": 0.455,
+        "mean": -98.14,
+        "max_drawdown": 7825.0
+      },
+      "summary": {
+        "variant": "take 75% / stop 50% / 14 DTE / bearish off",
+        "outcomes": {
+          "no trade: other": 1434,
+          "no trade: bearish off": 967,
+          "blocked: position lock": 764,
+          "blocked: stress test": 635,
+          "blocked: chain liquidity": 353,
+          "no trade: over budget": 346,
+          "blocked: open structure count": 93,
+          "opened": 78,
+          "blocked: position count": 68,
+          "no trade: no liquid structure": 2
+        },
+        "opened": 78,
+        "closed": 77,
+        "unresolved": 1,
+        "total_pnl": -7557.0,
+        "win_rate": 0.455,
+        "mean_pnl": -98.14,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 31,
+            "pnl": 114.0
+          },
+          "bull_call_spread": {
+            "n": 36,
+            "pnl": -5583.0
+          },
+          "long_strangle": {
+            "n": 6,
+            "pnl": -1562.0
+          },
+          "long_straddle": {
+            "n": 4,
+            "pnl": -526.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 12,
+          "loss": 25,
+          "expiry": 38
+        }
+      }
+    },
+    "take 75% / stop 50% / 14 DTE / bearish on": {
+      "all": {
+        "n": 189,
+        "pnl": -24208.0,
+        "win_rate": 0.365,
+        "mean": -128.08,
+        "max_drawdown": 27116.0
+      },
+      "summary": {
+        "variant": "take 75% / stop 50% / 14 DTE / bearish on",
+        "outcomes": {
+          "no trade: other": 1434,
+          "blocked: position lock": 1141,
+          "blocked: stress test": 700,
+          "blocked: chain liquidity": 533,
+          "no trade: over budget": 367,
+          "opened": 191,
+          "blocked: position count": 182,
+          "blocked: open structure count": 89,
+          "no trade: no liquid structure": 2
+        },
+        "opened": 191,
+        "closed": 189,
+        "unresolved": 2,
+        "total_pnl": -24208.0,
+        "win_rate": 0.365,
+        "mean_pnl": -128.08,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 30,
+            "pnl": -2005.0
+          },
+          "bear_put_spread": {
+            "n": 115,
+            "pnl": -16822.0
+          },
+          "bull_call_spread": {
+            "n": 36,
+            "pnl": -3638.0
+          },
+          "long_strangle": {
+            "n": 4,
+            "pnl": -1063.0
+          },
+          "long_straddle": {
+            "n": 4,
+            "pnl": -680.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 40,
+          "loss": 100,
+          "expiry": 47
+        }
+      }
+    },
+    "take 75% / stop none / 14 DTE / bearish off": {
+      "all": {
+        "n": 72,
+        "pnl": -5949.0,
+        "win_rate": 0.5,
+        "mean": -82.62,
+        "max_drawdown": 6335.0
+      },
+      "summary": {
+        "variant": "take 75% / stop none / 14 DTE / bearish off",
+        "outcomes": {
+          "no trade: other": 1434,
+          "no trade: bearish off": 967,
+          "blocked: position lock": 809,
+          "blocked: stress test": 589,
+          "no trade: over budget": 346,
+          "blocked: chain liquidity": 335,
+          "blocked: open structure count": 105,
+          "blocked: position count": 81,
+          "opened": 73,
+          "no trade: no liquid structure": 2
+        },
+        "opened": 73,
+        "closed": 72,
+        "unresolved": 1,
+        "total_pnl": -5949.0,
+        "win_rate": 0.5,
+        "mean_pnl": -82.62,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 30,
+            "pnl": 546.0
+          },
+          "bull_call_spread": {
+            "n": 33,
+            "pnl": -5345.0
+          },
+          "long_strangle": {
+            "n": 6,
+            "pnl": -1422.0
+          },
+          "long_straddle": {
+            "n": 3,
+            "pnl": 272.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 11,
+          "loss": 0,
+          "expiry": 59
+        }
+      }
+    },
+    "take 75% / stop none / 14 DTE / bearish on": {
+      "all": {
+        "n": 113,
+        "pnl": -13157.0,
+        "win_rate": 0.425,
+        "mean": -116.43,
+        "max_drawdown": 19046.0
+      },
+      "summary": {
+        "variant": "take 75% / stop none / 14 DTE / bearish on",
+        "outcomes": {
+          "no trade: other": 1434,
+          "blocked: position lock": 1243,
+          "blocked: stress test": 526,
+          "blocked: chain liquidity": 416,
+          "no trade: over budget": 367,
+          "blocked: open structure count": 310,
+          "blocked: position count": 292,
+          "opened": 114,
+          "no trade: no liquid structure": 2
+        },
+        "opened": 114,
+        "closed": 113,
+        "unresolved": 1,
+        "total_pnl": -13157.0,
+        "win_rate": 0.425,
+        "mean_pnl": -116.43,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 24,
+            "pnl": -434.0
+          },
+          "bear_put_spread": {
+            "n": 58,
+            "pnl": -10392.0
+          },
+          "bull_call_spread": {
+            "n": 26,
+            "pnl": -2641.0
+          },
+          "long_strangle": {
+            "n": 2,
+            "pnl": 38.0
+          },
+          "long_straddle": {
+            "n": 3,
+            "pnl": 272.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 25,
+          "loss": 0,
+          "expiry": 85
+        }
+      }
+    },
+    "take none / stop 20% / 14 DTE / bearish off": {
+      "all": {
+        "n": 102,
+        "pnl": -9129.0,
+        "win_rate": 0.363,
+        "mean": -89.5,
+        "max_drawdown": 9301.0
+      },
+      "summary": {
+        "variant": "take none / stop 20% / 14 DTE / bearish off",
+        "outcomes": {
+          "no trade: other": 1434,
+          "no trade: bearish off": 967,
+          "blocked: stress test": 857,
+          "blocked: position lock": 551,
+          "blocked: chain liquidity": 391,
+          "no trade: over budget": 346,
+          "opened": 103,
+          "blocked: open structure count": 65,
+          "blocked: position count": 23,
+          "no trade: no liquid structure": 2
+        },
+        "opened": 103,
+        "closed": 102,
+        "unresolved": 1,
+        "total_pnl": -9129.0,
+        "win_rate": 0.363,
+        "mean_pnl": -89.5,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 47,
+            "pnl": -1344.0
+          },
+          "bull_call_spread": {
+            "n": 42,
+            "pnl": -5143.0
+          },
+          "long_strangle": {
+            "n": 5,
+            "pnl": -1295.0
+          },
+          "long_straddle": {
+            "n": 8,
+            "pnl": -1347.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 0,
+          "loss": 59,
+          "expiry": 42
+        }
+      }
+    },
+    "take none / stop 20% / 14 DTE / bearish on": {
+      "all": {
+        "n": 250,
+        "pnl": -31847.0,
+        "win_rate": 0.248,
+        "mean": -127.39,
+        "max_drawdown": 37167.0
+      },
+      "summary": {
+        "variant": "take none / stop 20% / 14 DTE / bearish on",
+        "outcomes": {
+          "no trade: other": 1434,
+          "blocked: stress test": 922,
+          "blocked: position lock": 844,
+          "blocked: chain liquidity": 592,
+          "no trade: over budget": 367,
+          "opened": 253,
+          "blocked: position count": 87,
+          "blocked: open structure count": 73,
+          "no trade: no liquid structure": 2
+        },
+        "opened": 253,
+        "closed": 250,
+        "unresolved": 3,
+        "total_pnl": -31847.0,
+        "win_rate": 0.248,
+        "mean_pnl": -127.39,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 49,
+            "pnl": -3852.0
+          },
+          "bear_put_spread": {
+            "n": 151,
+            "pnl": -22255.0
+          },
+          "bull_call_spread": {
+            "n": 39,
+            "pnl": -3742.0
+          },
+          "long_strangle": {
+            "n": 4,
+            "pnl": -905.0
+          },
+          "long_straddle": {
+            "n": 7,
+            "pnl": -1093.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 0,
+          "loss": 180,
+          "expiry": 69
+        }
+      }
+    },
+    "take none / stop 35% / 14 DTE / bearish off": {
+      "all": {
+        "n": 96,
+        "pnl": -9279.0,
+        "win_rate": 0.417,
+        "mean": -96.66,
+        "max_drawdown": 9451.0
+      },
+      "summary": {
+        "variant": "take none / stop 35% / 14 DTE / bearish off",
+        "outcomes": {
+          "no trade: other": 1434,
+          "no trade: bearish off": 967,
+          "blocked: stress test": 813,
+          "blocked: position lock": 594,
+          "blocked: chain liquidity": 382,
+          "no trade: over budget": 346,
+          "opened": 97,
+          "blocked: open structure count": 78,
+          "blocked: position count": 26,
+          "no trade: no liquid structure": 2
+        },
+        "opened": 97,
+        "closed": 96,
+        "unresolved": 1,
+        "total_pnl": -9279.0,
+        "win_rate": 0.417,
+        "mean_pnl": -96.66,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 46,
+            "pnl": -1637.0
+          },
+          "bull_call_spread": {
+            "n": 40,
+            "pnl": -5568.0
+          },
+          "long_strangle": {
+            "n": 6,
+            "pnl": -1595.0
+          },
+          "long_straddle": {
+            "n": 4,
+            "pnl": -479.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 0,
+          "loss": 41,
+          "expiry": 54
+        }
+      }
+    },
+    "take none / stop 35% / 14 DTE / bearish on": {
+      "all": {
+        "n": 226,
+        "pnl": -35404.0,
+        "win_rate": 0.279,
+        "mean": -156.65,
+        "max_drawdown": 39803.0
+      },
+      "summary": {
+        "variant": "take none / stop 35% / 14 DTE / bearish on",
+        "outcomes": {
+          "no trade: other": 1434,
+          "blocked: position lock": 924,
+          "blocked: stress test": 871,
+          "blocked: chain liquidity": 561,
+          "no trade: over budget": 367,
+          "opened": 229,
+          "blocked: open structure count": 109,
+          "blocked: position count": 105,
+          "no trade: no liquid structure": 2
+        },
+        "opened": 229,
+        "closed": 226,
+        "unresolved": 3,
+        "total_pnl": -35404.0,
+        "win_rate": 0.279,
+        "mean_pnl": -156.65,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 47,
+            "pnl": -4081.0
+          },
+          "bear_put_spread": {
+            "n": 134,
+            "pnl": -26752.0
+          },
+          "bull_call_spread": {
+            "n": 37,
+            "pnl": -3030.0
+          },
+          "long_strangle": {
+            "n": 4,
+            "pnl": -908.0
+          },
+          "long_straddle": {
+            "n": 4,
+            "pnl": -633.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 0,
+          "loss": 144,
+          "expiry": 81
+        }
+      }
+    },
+    "take none / stop 50% / 14 DTE / bearish off": {
+      "all": {
+        "n": 71,
+        "pnl": -6318.0,
+        "win_rate": 0.451,
+        "mean": -88.99,
+        "max_drawdown": 6490.0
+      },
+      "summary": {
+        "variant": "take none / stop 50% / 14 DTE / bearish off",
+        "outcomes": {
+          "no trade: other": 1434,
+          "no trade: bearish off": 967,
+          "blocked: position lock": 776,
+          "blocked: stress test": 611,
+          "no trade: over budget": 346,
+          "blocked: chain liquidity": 342,
+          "blocked: open structure count": 120,
+          "opened": 72,
+          "blocked: position count": 71,
+          "no trade: no liquid structure": 2
+        },
+        "opened": 72,
+        "closed": 71,
+        "unresolved": 1,
+        "total_pnl": -6318.0,
+        "win_rate": 0.451,
+        "mean_pnl": -88.99,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 31,
+            "pnl": 114.0
+          },
+          "bull_call_spread": {
+            "n": 30,
+            "pnl": -4035.0
+          },
+          "long_strangle": {
+            "n": 6,
+            "pnl": -1871.0
+          },
+          "long_straddle": {
+            "n": 4,
+            "pnl": -526.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 0,
+          "loss": 21,
+          "expiry": 48
+        }
+      }
+    },
+    "take none / stop 50% / 14 DTE / bearish on": {
+      "all": {
+        "n": 162,
+        "pnl": -25096.0,
+        "win_rate": 0.321,
+        "mean": -154.91,
+        "max_drawdown": 28037.0
+      },
+      "summary": {
+        "variant": "take none / stop 50% / 14 DTE / bearish on",
+        "outcomes": {
+          "no trade: other": 1434,
+          "blocked: position lock": 1170,
+          "blocked: stress test": 695,
+          "blocked: chain liquidity": 515,
+          "no trade: over budget": 367,
+          "blocked: position count": 200,
+          "opened": 164,
+          "blocked: open structure count": 109,
+          "no trade: no liquid structure": 2
+        },
+        "opened": 164,
+        "closed": 162,
+        "unresolved": 2,
+        "total_pnl": -25096.0,
+        "win_rate": 0.321,
+        "mean_pnl": -154.91,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 29,
+            "pnl": -2329.0
+          },
+          "bear_put_spread": {
+            "n": 96,
+            "pnl": -16872.0
+          },
+          "bull_call_spread": {
+            "n": 29,
+            "pnl": -4115.0
+          },
+          "long_strangle": {
+            "n": 5,
+            "pnl": -1565.0
+          },
+          "long_straddle": {
+            "n": 3,
+            "pnl": -215.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 0,
+          "loss": 89,
+          "expiry": 71
+        }
+      }
+    },
+    "take none / stop none / 14 DTE / bearish off": {
+      "all": {
+        "n": 67,
+        "pnl": -5651.0,
+        "win_rate": 0.493,
+        "mean": -84.34,
+        "max_drawdown": 6533.0
+      },
+      "summary": {
+        "variant": "take none / stop none / 14 DTE / bearish off",
+        "outcomes": {
+          "no trade: other": 1434,
+          "no trade: bearish off": 967,
+          "blocked: position lock": 806,
+          "blocked: stress test": 564,
+          "no trade: over budget": 346,
+          "blocked: chain liquidity": 338,
+          "blocked: open structure count": 128,
+          "blocked: position count": 89,
+          "opened": 68,
+          "no trade: no liquid structure": 2
+        },
+        "opened": 68,
+        "closed": 67,
+        "unresolved": 1,
+        "total_pnl": -5651.0,
+        "win_rate": 0.493,
+        "mean_pnl": -84.34,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 30,
+            "pnl": 546.0
+          },
+          "bull_call_spread": {
+            "n": 28,
+            "pnl": -4738.0
+          },
+          "long_strangle": {
+            "n": 6,
+            "pnl": -1731.0
+          },
+          "long_straddle": {
+            "n": 3,
+            "pnl": 272.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 0,
+          "loss": 0,
+          "expiry": 65
+        }
+      }
+    },
+    "take none / stop none / 14 DTE / bearish on": {
+      "all": {
+        "n": 104,
+        "pnl": -17030.0,
+        "win_rate": 0.394,
+        "mean": -163.75,
+        "max_drawdown": 19872.0
+      },
+      "summary": {
+        "variant": "take none / stop none / 14 DTE / bearish on",
+        "outcomes": {
+          "no trade: other": 1434,
+          "blocked: position lock": 1244,
+          "blocked: stress test": 567,
+          "blocked: chain liquidity": 411,
+          "no trade: over budget": 367,
+          "blocked: open structure count": 333,
+          "blocked: position count": 244,
+          "opened": 106,
+          "no trade: no liquid structure": 2
+        },
+        "opened": 106,
+        "closed": 104,
+        "unresolved": 2,
+        "total_pnl": -17030.0,
+        "win_rate": 0.394,
+        "mean_pnl": -163.75,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 26,
+            "pnl": -456.0
+          },
+          "bear_put_spread": {
+            "n": 49,
+            "pnl": -13386.0
+          },
+          "bull_call_spread": {
+            "n": 23,
+            "pnl": -3077.0
+          },
+          "long_strangle": {
+            "n": 4,
+            "pnl": -537.0
+          },
+          "long_straddle": {
+            "n": 2,
+            "pnl": 426.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 0,
+          "loss": 0,
+          "expiry": 102
+        }
+      }
+    },
+    "take 25% / stop 20% / 21 DTE / bearish off": {
+      "all": {
+        "n": 135,
+        "pnl": -9965.0,
+        "win_rate": 0.393,
+        "mean": -73.81,
+        "max_drawdown": 10106.0
+      },
+      "summary": {
+        "variant": "take 25% / stop 20% / 21 DTE / bearish off",
+        "outcomes": {
+          "no trade: other": 1471,
+          "no trade: bearish off": 968,
+          "blocked: stress test": 946,
+          "no trade: over budget": 494,
+          "blocked: position lock": 409,
+          "blocked: chain liquidity": 297,
+          "opened": 136,
+          "no trade: no liquid structure": 7,
+          "blocked: open structure count": 2,
+          "blocked: position count": 1
+        },
+        "opened": 136,
+        "closed": 135,
+        "unresolved": 1,
+        "total_pnl": -9965.0,
+        "win_rate": 0.393,
+        "mean_pnl": -73.81,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 37,
+            "pnl": -2120.0
+          },
+          "bull_call_spread": {
+            "n": 85,
+            "pnl": -5703.0
+          },
+          "long_strangle": {
+            "n": 13,
+            "pnl": -2142.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 42,
+          "loss": 80,
+          "expiry": 12
+        }
+      }
+    },
+    "take 25% / stop 20% / 21 DTE / bearish on": {
+      "all": {
+        "n": 332,
+        "pnl": -29625.0,
+        "win_rate": 0.349,
+        "mean": -89.23,
+        "max_drawdown": 32111.0
+      },
+      "summary": {
+        "variant": "take 25% / stop 20% / 21 DTE / bearish on",
+        "outcomes": {
+          "no trade: other": 1471,
+          "blocked: stress test": 961,
+          "blocked: position lock": 664,
+          "no trade: over budget": 523,
+          "blocked: chain liquidity": 484,
+          "opened": 334,
+          "blocked: position count": 19,
+          "blocked: open structure count": 9,
+          "no trade: no liquid structure": 7
+        },
+        "opened": 334,
+        "closed": 332,
+        "unresolved": 2,
+        "total_pnl": -29625.0,
+        "win_rate": 0.349,
+        "mean_pnl": -89.23,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 35,
+            "pnl": -2426.0
+          },
+          "bear_put_spread": {
+            "n": 204,
+            "pnl": -19929.0
+          },
+          "bull_call_spread": {
+            "n": 82,
+            "pnl": -6003.0
+          },
+          "long_strangle": {
+            "n": 11,
+            "pnl": -1267.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 106,
+          "loss": 214,
+          "expiry": 11
+        }
+      }
+    },
+    "take 25% / stop 35% / 21 DTE / bearish off": {
+      "all": {
+        "n": 122,
+        "pnl": -7731.0,
+        "win_rate": 0.525,
+        "mean": -63.37,
+        "max_drawdown": 7964.0
+      },
+      "summary": {
+        "variant": "take 25% / stop 35% / 21 DTE / bearish off",
+        "outcomes": {
+          "no trade: other": 1471,
+          "no trade: bearish off": 968,
+          "blocked: stress test": 898,
+          "no trade: over budget": 494,
+          "blocked: position lock": 479,
+          "blocked: chain liquidity": 290,
+          "opened": 123,
+          "no trade: no liquid structure": 7,
+          "blocked: position count": 4,
+          "blocked: open structure count": 2
+        },
+        "opened": 123,
+        "closed": 122,
+        "unresolved": 1,
+        "total_pnl": -7731.0,
+        "win_rate": 0.525,
+        "mean_pnl": -63.37,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 35,
+            "pnl": -2213.0
+          },
+          "bull_call_spread": {
+            "n": 77,
+            "pnl": -4363.0
+          },
+          "long_strangle": {
+            "n": 10,
+            "pnl": -1155.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 50,
+          "loss": 56,
+          "expiry": 15
+        }
+      }
+    },
+    "take 25% / stop 35% / 21 DTE / bearish on": {
+      "all": {
+        "n": 289,
+        "pnl": -34114.0,
+        "win_rate": 0.422,
+        "mean": -118.04,
+        "max_drawdown": 36946.0
+      },
+      "summary": {
+        "variant": "take 25% / stop 35% / 21 DTE / bearish on",
+        "outcomes": {
+          "no trade: other": 1471,
+          "blocked: stress test": 904,
+          "blocked: position lock": 812,
+          "no trade: over budget": 523,
+          "blocked: chain liquidity": 463,
+          "opened": 292,
+          "blocked: position count": 54,
+          "blocked: open structure count": 21,
+          "no trade: no liquid structure": 7
+        },
+        "opened": 292,
+        "closed": 289,
+        "unresolved": 3,
+        "total_pnl": -34114.0,
+        "win_rate": 0.422,
+        "mean_pnl": -118.04,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 32,
+            "pnl": -3021.0
+          },
+          "bear_put_spread": {
+            "n": 175,
+            "pnl": -25464.0
+          },
+          "bull_call_spread": {
+            "n": 74,
+            "pnl": -4663.0
+          },
+          "long_strangle": {
+            "n": 8,
+            "pnl": -966.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 108,
+          "loss": 165,
+          "expiry": 15
+        }
+      }
+    },
+    "take 25% / stop 50% / 21 DTE / bearish off": {
+      "all": {
+        "n": 113,
+        "pnl": -3901.0,
+        "win_rate": 0.602,
+        "mean": -34.52,
+        "max_drawdown": 6268.0
+      },
+      "summary": {
+        "variant": "take 25% / stop 50% / 21 DTE / bearish off",
+        "outcomes": {
+          "no trade: other": 1471,
+          "no trade: bearish off": 968,
+          "blocked: stress test": 857,
+          "blocked: position lock": 527,
+          "no trade: over budget": 494,
+          "blocked: chain liquidity": 287,
+          "opened": 114,
+          "blocked: position count": 8,
+          "no trade: no liquid structure": 7,
+          "blocked: open structure count": 3
+        },
+        "opened": 114,
+        "closed": 113,
+        "unresolved": 1,
+        "total_pnl": -3901.0,
+        "win_rate": 0.602,
+        "mean_pnl": -34.52,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 36,
+            "pnl": -1885.0
+          },
+          "bull_call_spread": {
+            "n": 68,
+            "pnl": -1428.0
+          },
+          "long_strangle": {
+            "n": 9,
+            "pnl": -588.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 53,
+          "loss": 38,
+          "expiry": 21
+        }
+      }
+    },
+    "take 25% / stop 50% / 21 DTE / bearish on": {
+      "all": {
+        "n": 265,
+        "pnl": -23131.0,
+        "win_rate": 0.502,
+        "mean": -87.29,
+        "max_drawdown": 30125.0
+      },
+      "summary": {
+        "variant": "take 25% / stop 50% / 21 DTE / bearish on",
+        "outcomes": {
+          "no trade: other": 1471,
+          "blocked: position lock": 900,
+          "blocked: stress test": 846,
+          "no trade: over budget": 523,
+          "blocked: chain liquidity": 443,
+          "opened": 268,
+          "blocked: position count": 81,
+          "blocked: open structure count": 42,
+          "no trade: no liquid structure": 7
+        },
+        "opened": 268,
+        "closed": 265,
+        "unresolved": 3,
+        "total_pnl": -23131.0,
+        "win_rate": 0.502,
+        "mean_pnl": -87.29,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 31,
+            "pnl": -2838.0
+          },
+          "bear_put_spread": {
+            "n": 161,
+            "pnl": -19173.0
+          },
+          "bull_call_spread": {
+            "n": 64,
+            "pnl": -539.0
+          },
+          "long_strangle": {
+            "n": 9,
+            "pnl": -581.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 121,
+          "loss": 122,
+          "expiry": 21
+        }
+      }
+    },
+    "take 25% / stop none / 21 DTE / bearish off": {
+      "all": {
+        "n": 100,
+        "pnl": -2346.0,
+        "win_rate": 0.66,
+        "mean": -23.46,
+        "max_drawdown": 7456.0
+      },
+      "summary": {
+        "variant": "take 25% / stop none / 21 DTE / bearish off",
+        "outcomes": {
+          "no trade: other": 1471,
+          "no trade: bearish off": 968,
+          "blocked: stress test": 818,
+          "blocked: position lock": 588,
+          "no trade: over budget": 494,
+          "blocked: chain liquidity": 270,
+          "opened": 101,
+          "blocked: position count": 20,
+          "no trade: no liquid structure": 7,
+          "blocked: open structure count": 3
+        },
+        "opened": 101,
+        "closed": 100,
+        "unresolved": 1,
+        "total_pnl": -2346.0,
+        "win_rate": 0.66,
+        "mean_pnl": -23.46,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 36,
+            "pnl": -1134.0
+          },
+          "bull_call_spread": {
+            "n": 56,
+            "pnl": 1151.0
+          },
+          "long_strangle": {
+            "n": 8,
+            "pnl": -2363.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 51,
+          "loss": 0,
+          "expiry": 48
+        }
+      }
+    },
+    "take 25% / stop none / 21 DTE / bearish on": {
+      "all": {
+        "n": 186,
+        "pnl": -15993.0,
+        "win_rate": 0.591,
+        "mean": -85.98,
+        "max_drawdown": 21541.0
+      },
+      "summary": {
+        "variant": "take 25% / stop none / 21 DTE / bearish on",
+        "outcomes": {
+          "no trade: other": 1471,
+          "blocked: position lock": 1136,
+          "blocked: stress test": 708,
+          "no trade: over budget": 523,
+          "blocked: chain liquidity": 339,
+          "blocked: position count": 195,
+          "opened": 189,
+          "blocked: open structure count": 73,
+          "no trade: no liquid structure": 7
+        },
+        "opened": 189,
+        "closed": 186,
+        "unresolved": 3,
+        "total_pnl": -15993.0,
+        "win_rate": 0.591,
+        "mean_pnl": -85.98,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 29,
+            "pnl": -2579.0
+          },
+          "bear_put_spread": {
+            "n": 104,
+            "pnl": -14641.0
+          },
+          "bull_call_spread": {
+            "n": 47,
+            "pnl": 2508.0
+          },
+          "long_strangle": {
+            "n": 6,
+            "pnl": -1281.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 98,
+          "loss": 0,
+          "expiry": 87
+        }
+      }
+    },
+    "take 50% / stop 20% / 21 DTE / bearish off": {
+      "all": {
+        "n": 126,
+        "pnl": -6200.0,
+        "win_rate": 0.365,
+        "mean": -49.21,
+        "max_drawdown": 6797.0
+      },
+      "summary": {
+        "variant": "take 50% / stop 20% / 21 DTE / bearish off",
+        "outcomes": {
+          "no trade: other": 1471,
+          "no trade: bearish off": 968,
+          "blocked: stress test": 892,
+          "no trade: over budget": 494,
+          "blocked: position lock": 477,
+          "blocked: chain liquidity": 289,
+          "opened": 127,
+          "blocked: open structure count": 12,
+          "no trade: no liquid structure": 7,
+          "blocked: position count": 1
+        },
+        "opened": 127,
+        "closed": 126,
+        "unresolved": 1,
+        "total_pnl": -6200.0,
+        "win_rate": 0.365,
+        "mean_pnl": -49.21,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 38,
+            "pnl": -1794.0
+          },
+          "bull_call_spread": {
+            "n": 77,
+            "pnl": -2298.0
+          },
+          "long_strangle": {
+            "n": 11,
+            "pnl": -2108.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 27,
+          "loss": 78,
+          "expiry": 20
+        }
+      }
+    },
+    "take 50% / stop 20% / 21 DTE / bearish on": {
+      "all": {
+        "n": 302,
+        "pnl": -27032.0,
+        "win_rate": 0.288,
+        "mean": -89.51,
+        "max_drawdown": 33229.0
+      },
+      "summary": {
+        "variant": "take 50% / stop 20% / 21 DTE / bearish on",
+        "outcomes": {
+          "no trade: other": 1471,
+          "blocked: stress test": 900,
+          "blocked: position lock": 793,
+          "no trade: over budget": 523,
+          "blocked: chain liquidity": 465,
+          "opened": 304,
+          "blocked: open structure count": 41,
+          "blocked: position count": 30,
+          "no trade: no liquid structure": 7
+        },
+        "opened": 304,
+        "closed": 302,
+        "unresolved": 2,
+        "total_pnl": -27032.0,
+        "win_rate": 0.288,
+        "mean_pnl": -89.51,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 35,
+            "pnl": -1410.0
+          },
+          "bear_put_spread": {
+            "n": 184,
+            "pnl": -21521.0
+          },
+          "bull_call_spread": {
+            "n": 74,
+            "pnl": -2399.0
+          },
+          "long_strangle": {
+            "n": 9,
+            "pnl": -1702.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 69,
+          "loss": 213,
+          "expiry": 19
+        }
+      }
+    },
+    "take 50% / stop 35% / 21 DTE / bearish off": {
+      "all": {
+        "n": 111,
+        "pnl": -5938.0,
+        "win_rate": 0.459,
+        "mean": -53.5,
+        "max_drawdown": 7137.0
+      },
+      "summary": {
+        "variant": "take 50% / stop 35% / 21 DTE / bearish off",
+        "outcomes": {
+          "no trade: other": 1471,
+          "no trade: bearish off": 968,
+          "blocked: stress test": 828,
+          "blocked: position lock": 554,
+          "no trade: over budget": 494,
+          "blocked: chain liquidity": 277,
+          "opened": 112,
+          "blocked: open structure count": 17,
+          "blocked: position count": 11,
+          "no trade: no liquid structure": 7
+        },
+        "opened": 112,
+        "closed": 111,
+        "unresolved": 1,
+        "total_pnl": -5938.0,
+        "win_rate": 0.459,
+        "mean_pnl": -53.5,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 35,
+            "pnl": -2081.0
+          },
+          "bull_call_spread": {
+            "n": 68,
+            "pnl": -2796.0
+          },
+          "long_strangle": {
+            "n": 8,
+            "pnl": -1061.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 29,
+          "loss": 54,
+          "expiry": 27
+        }
+      }
+    },
+    "take 50% / stop 35% / 21 DTE / bearish on": {
+      "all": {
+        "n": 257,
+        "pnl": -32080.0,
+        "win_rate": 0.339,
+        "mean": -124.82,
+        "max_drawdown": 35382.0
+      },
+      "summary": {
+        "variant": "take 50% / stop 35% / 21 DTE / bearish on",
+        "outcomes": {
+          "no trade: other": 1471,
+          "blocked: position lock": 945,
+          "blocked: stress test": 814,
+          "no trade: over budget": 523,
+          "blocked: chain liquidity": 439,
+          "opened": 260,
+          "blocked: position count": 89,
+          "blocked: open structure count": 53,
+          "no trade: no liquid structure": 7
+        },
+        "opened": 260,
+        "closed": 257,
+        "unresolved": 3,
+        "total_pnl": -32080.0,
+        "win_rate": 0.339,
+        "mean_pnl": -124.82,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 32,
+            "pnl": -2243.0
+          },
+          "bear_put_spread": {
+            "n": 152,
+            "pnl": -25810.0
+          },
+          "bull_call_spread": {
+            "n": 66,
+            "pnl": -3203.0
+          },
+          "long_strangle": {
+            "n": 7,
+            "pnl": -824.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 67,
+          "loss": 165,
+          "expiry": 24
+        }
+      }
+    },
+    "take 50% / stop 50% / 21 DTE / bearish off": {
+      "all": {
+        "n": 103,
+        "pnl": -3470.0,
+        "win_rate": 0.524,
+        "mean": -33.69,
+        "max_drawdown": 5924.0
+      },
+      "summary": {
+        "variant": "take 50% / stop 50% / 21 DTE / bearish off",
+        "outcomes": {
+          "no trade: other": 1471,
+          "no trade: bearish off": 968,
+          "blocked: stress test": 778,
+          "blocked: position lock": 602,
+          "no trade: over budget": 494,
+          "blocked: chain liquidity": 273,
+          "opened": 104,
+          "blocked: open structure count": 22,
+          "blocked: position count": 20,
+          "no trade: no liquid structure": 7
+        },
+        "opened": 104,
+        "closed": 103,
+        "unresolved": 1,
+        "total_pnl": -3470.0,
+        "win_rate": 0.524,
+        "mean_pnl": -33.69,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 36,
+            "pnl": -1697.0
+          },
+          "bull_call_spread": {
+            "n": 60,
+            "pnl": -2258.0
+          },
+          "long_strangle": {
+            "n": 7,
+            "pnl": 485.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 29,
+          "loss": 37,
+          "expiry": 36
+        }
+      }
+    },
+    "take 50% / stop 50% / 21 DTE / bearish on": {
+      "all": {
+        "n": 224,
+        "pnl": -22291.0,
+        "win_rate": 0.411,
+        "mean": -99.51,
+        "max_drawdown": 27403.0
+      },
+      "summary": {
+        "variant": "take 50% / stop 50% / 21 DTE / bearish on",
+        "outcomes": {
+          "no trade: other": 1471,
+          "blocked: position lock": 1008,
+          "blocked: stress test": 793,
+          "no trade: over budget": 523,
+          "blocked: chain liquidity": 417,
+          "opened": 227,
+          "blocked: position count": 101,
+          "blocked: open structure count": 83,
+          "no trade: no liquid structure": 7
+        },
+        "opened": 227,
+        "closed": 224,
+        "unresolved": 3,
+        "total_pnl": -22291.0,
+        "win_rate": 0.411,
+        "mean_pnl": -99.51,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 30,
+            "pnl": -2348.0
+          },
+          "bear_put_spread": {
+            "n": 131,
+            "pnl": -18350.0
+          },
+          "bull_call_spread": {
+            "n": 56,
+            "pnl": -1207.0
+          },
+          "long_strangle": {
+            "n": 7,
+            "pnl": -386.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 70,
+          "loss": 120,
+          "expiry": 33
+        }
+      }
+    },
+    "take 50% / stop none / 21 DTE / bearish off": {
+      "all": {
+        "n": 88,
+        "pnl": -1800.0,
+        "win_rate": 0.58,
+        "mean": -20.45,
+        "max_drawdown": 6904.0
+      },
+      "summary": {
+        "variant": "take 50% / stop none / 21 DTE / bearish off",
+        "outcomes": {
+          "no trade: other": 1471,
+          "no trade: bearish off": 968,
+          "blocked: stress test": 740,
+          "blocked: position lock": 659,
+          "no trade: over budget": 494,
+          "blocked: chain liquidity": 261,
+          "opened": 89,
+          "blocked: position count": 31,
+          "blocked: open structure count": 23,
+          "no trade: no liquid structure": 7
+        },
+        "opened": 89,
+        "closed": 88,
+        "unresolved": 1,
+        "total_pnl": -1800.0,
+        "win_rate": 0.58,
+        "mean_pnl": -20.45,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 36,
+            "pnl": -1002.0
+          },
+          "bull_call_spread": {
+            "n": 45,
+            "pnl": 1696.0
+          },
+          "long_strangle": {
+            "n": 7,
+            "pnl": -2494.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 26,
+          "loss": 0,
+          "expiry": 61
+        }
+      }
+    },
+    "take 50% / stop none / 21 DTE / bearish on": {
+      "all": {
+        "n": 155,
+        "pnl": -6568.0,
+        "win_rate": 0.529,
+        "mean": -42.37,
+        "max_drawdown": 11981.0
+      },
+      "summary": {
+        "variant": "take 50% / stop none / 21 DTE / bearish on",
+        "outcomes": {
+          "no trade: other": 1471,
+          "blocked: position lock": 1210,
+          "blocked: stress test": 621,
+          "no trade: over budget": 523,
+          "blocked: chain liquidity": 328,
+          "blocked: position count": 244,
+          "opened": 158,
+          "blocked: open structure count": 102,
+          "no trade: no liquid structure": 7
+        },
+        "opened": 158,
+        "closed": 155,
+        "unresolved": 3,
+        "total_pnl": -6568.0,
+        "win_rate": 0.529,
+        "mean_pnl": -42.37,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 30,
+            "pnl": -1673.0
+          },
+          "bear_put_spread": {
+            "n": 82,
+            "pnl": -6992.0
+          },
+          "bull_call_spread": {
+            "n": 41,
+            "pnl": 3383.0
+          },
+          "long_strangle": {
+            "n": 2,
+            "pnl": -1286.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 58,
+          "loss": 0,
+          "expiry": 96
+        }
+      }
+    },
+    "take 75% / stop 20% / 21 DTE / bearish off": {
+      "all": {
+        "n": 112,
+        "pnl": -2682.0,
+        "win_rate": 0.348,
+        "mean": -23.95,
+        "max_drawdown": 6653.0
+      },
+      "summary": {
+        "variant": "take 75% / stop 20% / 21 DTE / bearish off",
+        "outcomes": {
+          "no trade: other": 1471,
+          "no trade: bearish off": 968,
+          "blocked: stress test": 845,
+          "blocked: position lock": 547,
+          "no trade: over budget": 494,
+          "blocked: chain liquidity": 281,
+          "opened": 113,
+          "blocked: open structure count": 13,
+          "no trade: no liquid structure": 7,
+          "blocked: position count": 1
+        },
+        "opened": 113,
+        "closed": 112,
+        "unresolved": 1,
+        "total_pnl": -2682.0,
+        "win_rate": 0.348,
+        "mean_pnl": -23.95,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 38,
+            "pnl": -1715.0
+          },
+          "bull_call_spread": {
+            "n": 63,
+            "pnl": 708.0
+          },
+          "long_strangle": {
+            "n": 11,
+            "pnl": -1675.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 19,
+          "loss": 70,
+          "expiry": 22
+        }
+      }
+    },
+    "take 75% / stop 20% / 21 DTE / bearish on": {
+      "all": {
+        "n": 282,
+        "pnl": -22359.0,
+        "win_rate": 0.248,
+        "mean": -79.29,
+        "max_drawdown": 25478.0
+      },
+      "summary": {
+        "variant": "take 75% / stop 20% / 21 DTE / bearish on",
+        "outcomes": {
+          "no trade: other": 1471,
+          "blocked: position lock": 883,
+          "blocked: stress test": 847,
+          "no trade: over budget": 523,
+          "blocked: chain liquidity": 453,
+          "opened": 284,
+          "blocked: open structure count": 41,
+          "blocked: position count": 38,
+          "no trade: no liquid structure": 7
+        },
+        "opened": 284,
+        "closed": 282,
+        "unresolved": 2,
+        "total_pnl": -22359.0,
+        "win_rate": 0.248,
+        "mean_pnl": -79.29,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 35,
+            "pnl": -1619.0
+          },
+          "bear_put_spread": {
+            "n": 176,
+            "pnl": -18862.0
+          },
+          "bull_call_spread": {
+            "n": 61,
+            "pnl": -410.0
+          },
+          "long_strangle": {
+            "n": 10,
+            "pnl": -1468.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 50,
+          "loss": 209,
+          "expiry": 22
+        }
+      }
+    },
+    "take 75% / stop 35% / 21 DTE / bearish off": {
+      "all": {
+        "n": 100,
+        "pnl": -5780.0,
+        "win_rate": 0.42,
+        "mean": -57.8,
+        "max_drawdown": 7157.0
+      },
+      "summary": {
+        "variant": "take 75% / stop 35% / 21 DTE / bearish off",
+        "outcomes": {
+          "no trade: other": 1471,
+          "no trade: bearish off": 968,
+          "blocked: stress test": 776,
+          "blocked: position lock": 614,
+          "no trade: over budget": 494,
+          "blocked: chain liquidity": 271,
+          "opened": 101,
+          "blocked: position count": 20,
+          "blocked: open structure count": 18,
+          "no trade: no liquid structure": 7
+        },
+        "opened": 101,
+        "closed": 100,
+        "unresolved": 1,
+        "total_pnl": -5780.0,
+        "win_rate": 0.42,
+        "mean_pnl": -57.8,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 35,
+            "pnl": -2019.0
+          },
+          "bull_call_spread": {
+            "n": 56,
+            "pnl": -3127.0
+          },
+          "long_strangle": {
+            "n": 9,
+            "pnl": -634.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 18,
+          "loss": 51,
+          "expiry": 30
+        }
+      }
+    },
+    "take 75% / stop 35% / 21 DTE / bearish on": {
+      "all": {
+        "n": 235,
+        "pnl": -29760.0,
+        "win_rate": 0.294,
+        "mean": -126.64,
+        "max_drawdown": 33949.0
+      },
+      "summary": {
+        "variant": "take 75% / stop 35% / 21 DTE / bearish on",
+        "outcomes": {
+          "no trade: other": 1471,
+          "blocked: position lock": 1010,
+          "blocked: stress test": 779,
+          "no trade: over budget": 523,
+          "blocked: chain liquidity": 426,
+          "opened": 238,
+          "blocked: position count": 102,
+          "blocked: open structure count": 56,
+          "no trade: no liquid structure": 7
+        },
+        "opened": 238,
+        "closed": 235,
+        "unresolved": 3,
+        "total_pnl": -29760.0,
+        "win_rate": 0.294,
+        "mean_pnl": -126.64,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 33,
+            "pnl": -2997.0
+          },
+          "bear_put_spread": {
+            "n": 140,
+            "pnl": -22187.0
+          },
+          "bull_call_spread": {
+            "n": 54,
+            "pnl": -4248.0
+          },
+          "long_strangle": {
+            "n": 8,
+            "pnl": -328.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 47,
+          "loss": 159,
+          "expiry": 28
+        }
+      }
+    },
+    "take 75% / stop 50% / 21 DTE / bearish off": {
+      "all": {
+        "n": 94,
+        "pnl": -4617.0,
+        "win_rate": 0.468,
+        "mean": -49.12,
+        "max_drawdown": 6692.0
+      },
+      "summary": {
+        "variant": "take 75% / stop 50% / 21 DTE / bearish off",
+        "outcomes": {
+          "no trade: other": 1471,
+          "no trade: bearish off": 968,
+          "blocked: stress test": 732,
+          "blocked: position lock": 657,
+          "no trade: over budget": 494,
+          "blocked: chain liquidity": 269,
+          "opened": 95,
+          "blocked: position count": 27,
+          "blocked: open structure count": 22,
+          "no trade: no liquid structure": 7
+        },
+        "opened": 95,
+        "closed": 94,
+        "unresolved": 1,
+        "total_pnl": -4617.0,
+        "win_rate": 0.468,
+        "mean_pnl": -49.12,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 36,
+            "pnl": -1595.0
+          },
+          "bull_call_spread": {
+            "n": 51,
+            "pnl": -4223.0
+          },
+          "long_strangle": {
+            "n": 7,
+            "pnl": 1201.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 17,
+          "loss": 35,
+          "expiry": 41
+        }
+      }
+    },
+    "take 75% / stop 50% / 21 DTE / bearish on": {
+      "all": {
+        "n": 205,
+        "pnl": -24495.0,
+        "win_rate": 0.351,
+        "mean": -119.49,
+        "max_drawdown": 31516.0
+      },
+      "summary": {
+        "variant": "take 75% / stop 50% / 21 DTE / bearish on",
+        "outcomes": {
+          "no trade: other": 1471,
+          "blocked: position lock": 1064,
+          "blocked: stress test": 754,
+          "no trade: over budget": 523,
+          "blocked: chain liquidity": 414,
+          "opened": 208,
+          "blocked: position count": 133,
+          "blocked: open structure count": 67,
+          "no trade: no liquid structure": 7
+        },
+        "opened": 208,
+        "closed": 205,
+        "unresolved": 3,
+        "total_pnl": -24495.0,
+        "win_rate": 0.351,
+        "mean_pnl": -119.49,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 33,
+            "pnl": -3102.0
+          },
+          "bear_put_spread": {
+            "n": 117,
+            "pnl": -17463.0
+          },
+          "bull_call_spread": {
+            "n": 48,
+            "pnl": -4260.0
+          },
+          "long_strangle": {
+            "n": 7,
+            "pnl": 330.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 47,
+          "loss": 115,
+          "expiry": 42
+        }
+      }
+    },
+    "take 75% / stop none / 21 DTE / bearish off": {
+      "all": {
+        "n": 83,
+        "pnl": -3110.0,
+        "win_rate": 0.53,
+        "mean": -37.47,
+        "max_drawdown": 6924.0
+      },
+      "summary": {
+        "variant": "take 75% / stop none / 21 DTE / bearish off",
+        "outcomes": {
+          "no trade: other": 1471,
+          "no trade: bearish off": 968,
+          "blocked: stress test": 700,
+          "blocked: position lock": 700,
+          "no trade: over budget": 494,
+          "blocked: chain liquidity": 260,
+          "opened": 84,
+          "blocked: position count": 36,
+          "blocked: open structure count": 23,
+          "no trade: no liquid structure": 7
+        },
+        "opened": 84,
+        "closed": 83,
+        "unresolved": 1,
+        "total_pnl": -3110.0,
+        "win_rate": 0.53,
+        "mean_pnl": -37.47,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 36,
+            "pnl": -1002.0
+          },
+          "bull_call_spread": {
+            "n": 40,
+            "pnl": -133.0
+          },
+          "long_strangle": {
+            "n": 7,
+            "pnl": -1975.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 15,
+          "loss": 0,
+          "expiry": 67
+        }
+      }
+    },
+    "take 75% / stop none / 21 DTE / bearish on": {
+      "all": {
+        "n": 142,
+        "pnl": -11536.0,
+        "win_rate": 0.458,
+        "mean": -81.24,
+        "max_drawdown": 16106.0
+      },
+      "summary": {
+        "variant": "take 75% / stop none / 21 DTE / bearish on",
+        "outcomes": {
+          "no trade: other": 1471,
+          "blocked: position lock": 1260,
+          "blocked: stress test": 594,
+          "no trade: over budget": 523,
+          "blocked: chain liquidity": 333,
+          "blocked: position count": 241,
+          "opened": 145,
+          "blocked: open structure count": 97,
+          "no trade: no liquid structure": 7
+        },
+        "opened": 145,
+        "closed": 142,
+        "unresolved": 3,
+        "total_pnl": -11536.0,
+        "win_rate": 0.458,
+        "mean_pnl": -81.24,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 31,
+            "pnl": -2022.0
+          },
+          "bear_put_spread": {
+            "n": 71,
+            "pnl": -7084.0
+          },
+          "bull_call_spread": {
+            "n": 37,
+            "pnl": -431.0
+          },
+          "long_strangle": {
+            "n": 3,
+            "pnl": -1999.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 38,
+          "loss": 0,
+          "expiry": 103
+        }
+      }
+    },
+    "take none / stop 20% / 21 DTE / bearish off": {
+      "all": {
+        "n": 102,
+        "pnl": 1968.0,
+        "win_rate": 0.343,
+        "mean": 19.29,
+        "max_drawdown": 6924.0
+      },
+      "summary": {
+        "variant": "take none / stop 20% / 21 DTE / bearish off",
+        "outcomes": {
+          "no trade: other": 1471,
+          "no trade: bearish off": 968,
+          "blocked: stress test": 843,
+          "blocked: position lock": 559,
+          "no trade: over budget": 494,
+          "blocked: chain liquidity": 278,
+          "opened": 103,
+          "blocked: position count": 10,
+          "no trade: no liquid structure": 7,
+          "blocked: open structure count": 7
+        },
+        "opened": 103,
+        "closed": 102,
+        "unresolved": 1,
+        "total_pnl": 1968.0,
+        "win_rate": 0.343,
+        "mean_pnl": 19.29,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 37,
+            "pnl": -1362.0
+          },
+          "bull_call_spread": {
+            "n": 54,
+            "pnl": 5005.0
+          },
+          "long_strangle": {
+            "n": 11,
+            "pnl": -1675.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 0,
+          "loss": 64,
+          "expiry": 37
+        }
+      }
+    },
+    "take none / stop 20% / 21 DTE / bearish on": {
+      "all": {
+        "n": 232,
+        "pnl": -21809.0,
+        "win_rate": 0.216,
+        "mean": -94.0,
+        "max_drawdown": 25089.0
+      },
+      "summary": {
+        "variant": "take none / stop 20% / 21 DTE / bearish on",
+        "outcomes": {
+          "no trade: other": 1471,
+          "blocked: position lock": 955,
+          "blocked: stress test": 857,
+          "no trade: over budget": 523,
+          "blocked: chain liquidity": 434,
+          "opened": 235,
+          "blocked: position count": 91,
+          "blocked: open structure count": 45,
+          "no trade: no liquid structure": 7
+        },
+        "opened": 235,
+        "closed": 232,
+        "unresolved": 3,
+        "total_pnl": -21809.0,
+        "win_rate": 0.216,
+        "mean_pnl": -94.0,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 34,
+            "pnl": -1426.0
+          },
+          "bear_put_spread": {
+            "n": 137,
+            "pnl": -22788.0
+          },
+          "bull_call_spread": {
+            "n": 51,
+            "pnl": 3873.0
+          },
+          "long_strangle": {
+            "n": 10,
+            "pnl": -1468.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 0,
+          "loss": 179,
+          "expiry": 52
+        }
+      }
+    },
+    "take none / stop 35% / 21 DTE / bearish off": {
+      "all": {
+        "n": 92,
+        "pnl": -2663.0,
+        "win_rate": 0.424,
+        "mean": -28.95,
+        "max_drawdown": 7517.0
+      },
+      "summary": {
+        "variant": "take none / stop 35% / 21 DTE / bearish off",
+        "outcomes": {
+          "no trade: other": 1471,
+          "no trade: bearish off": 968,
+          "blocked: stress test": 787,
+          "blocked: position lock": 619,
+          "no trade: over budget": 494,
+          "blocked: chain liquidity": 270,
+          "opened": 93,
+          "blocked: position count": 20,
+          "blocked: open structure count": 11,
+          "no trade: no liquid structure": 7
+        },
+        "opened": 93,
+        "closed": 92,
+        "unresolved": 1,
+        "total_pnl": -2663.0,
+        "win_rate": 0.424,
+        "mean_pnl": -28.95,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 34,
+            "pnl": -2068.0
+          },
+          "bull_call_spread": {
+            "n": 49,
+            "pnl": 690.0
+          },
+          "long_strangle": {
+            "n": 9,
+            "pnl": -1285.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 0,
+          "loss": 48,
+          "expiry": 43
+        }
+      }
+    },
+    "take none / stop 35% / 21 DTE / bearish on": {
+      "all": {
+        "n": 195,
+        "pnl": -30295.0,
+        "win_rate": 0.267,
+        "mean": -155.36,
+        "max_drawdown": 32222.0
+      },
+      "summary": {
+        "variant": "take none / stop 35% / 21 DTE / bearish on",
+        "outcomes": {
+          "no trade: other": 1471,
+          "blocked: position lock": 1053,
+          "blocked: stress test": 797,
+          "no trade: over budget": 523,
+          "blocked: chain liquidity": 409,
+          "opened": 198,
+          "blocked: position count": 157,
+          "blocked: open structure count": 48,
+          "no trade: no liquid structure": 7
+        },
+        "opened": 198,
+        "closed": 195,
+        "unresolved": 3,
+        "total_pnl": -30295.0,
+        "win_rate": 0.267,
+        "mean_pnl": -155.36,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 31,
+            "pnl": -3336.0
+          },
+          "bear_put_spread": {
+            "n": 109,
+            "pnl": -25447.0
+          },
+          "bull_call_spread": {
+            "n": 47,
+            "pnl": -533.0
+          },
+          "long_strangle": {
+            "n": 8,
+            "pnl": -979.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 0,
+          "loss": 136,
+          "expiry": 58
+        }
+      }
+    },
+    "take none / stop 50% / 21 DTE / bearish off": {
+      "all": {
+        "n": 88,
+        "pnl": 23.0,
+        "win_rate": 0.489,
+        "mean": 0.26,
+        "max_drawdown": 6558.0
+      },
+      "summary": {
+        "variant": "take none / stop 50% / 21 DTE / bearish off",
+        "outcomes": {
+          "no trade: other": 1471,
+          "no trade: bearish off": 968,
+          "blocked: stress test": 739,
+          "blocked: position lock": 667,
+          "no trade: over budget": 494,
+          "blocked: chain liquidity": 264,
+          "opened": 89,
+          "blocked: position count": 29,
+          "blocked: open structure count": 14,
+          "no trade: no liquid structure": 7
+        },
+        "opened": 89,
+        "closed": 88,
+        "unresolved": 1,
+        "total_pnl": 23.0,
+        "win_rate": 0.489,
+        "mean_pnl": 0.26,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 36,
+            "pnl": -1635.0
+          },
+          "bull_call_spread": {
+            "n": 46,
+            "pnl": 1175.0
+          },
+          "long_strangle": {
+            "n": 6,
+            "pnl": 483.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 0,
+          "loss": 34,
+          "expiry": 53
+        }
+      }
+    },
+    "take none / stop 50% / 21 DTE / bearish on": {
+      "all": {
+        "n": 177,
+        "pnl": -20830.0,
+        "win_rate": 0.322,
+        "mean": -117.68,
+        "max_drawdown": 24796.0
+      },
+      "summary": {
+        "variant": "take none / stop 50% / 21 DTE / bearish on",
+        "outcomes": {
+          "no trade: other": 1471,
+          "blocked: position lock": 1118,
+          "blocked: stress test": 746,
+          "no trade: over budget": 523,
+          "blocked: chain liquidity": 392,
+          "opened": 180,
+          "blocked: position count": 165,
+          "blocked: open structure count": 72,
+          "no trade: no liquid structure": 7
+        },
+        "opened": 180,
+        "closed": 177,
+        "unresolved": 3,
+        "total_pnl": -20830.0,
+        "win_rate": 0.322,
+        "mean_pnl": -117.68,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 32,
+            "pnl": -3195.0
+          },
+          "bear_put_spread": {
+            "n": 96,
+            "pnl": -20130.0
+          },
+          "bull_call_spread": {
+            "n": 43,
+            "pnl": 2883.0
+          },
+          "long_strangle": {
+            "n": 6,
+            "pnl": -388.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 0,
+          "loss": 104,
+          "expiry": 72
+        }
+      }
+    },
+    "take none / stop none / 21 DTE / bearish off": {
+      "all": {
+        "n": 73,
+        "pnl": 1886.0,
+        "win_rate": 0.562,
+        "mean": 25.84,
+        "max_drawdown": 6076.0
+      },
+      "summary": {
+        "variant": "take none / stop none / 21 DTE / bearish off",
+        "outcomes": {
+          "no trade: other": 1471,
+          "no trade: bearish off": 968,
+          "blocked: position lock": 717,
+          "blocked: stress test": 677,
+          "no trade: over budget": 494,
+          "blocked: chain liquidity": 257,
+          "opened": 74,
+          "blocked: position count": 50,
+          "blocked: open structure count": 31,
+          "no trade: no liquid structure": 7
+        },
+        "opened": 74,
+        "closed": 73,
+        "unresolved": 1,
+        "total_pnl": 1886.0,
+        "win_rate": 0.562,
+        "mean_pnl": 25.84,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 33,
+            "pnl": -105.0
+          },
+          "bull_call_spread": {
+            "n": 33,
+            "pnl": 4229.0
+          },
+          "long_strangle": {
+            "n": 7,
+            "pnl": -2238.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 0,
+          "loss": 0,
+          "expiry": 72
+        }
+      }
+    },
+    "take none / stop none / 21 DTE / bearish on": {
+      "all": {
+        "n": 115,
+        "pnl": -8696.0,
+        "win_rate": 0.443,
+        "mean": -75.62,
+        "max_drawdown": 12953.0
+      },
+      "summary": {
+        "variant": "take none / stop none / 21 DTE / bearish on",
+        "outcomes": {
+          "no trade: other": 1471,
+          "blocked: position lock": 1333,
+          "blocked: stress test": 527,
+          "no trade: over budget": 523,
+          "blocked: position count": 348,
+          "blocked: chain liquidity": 324,
+          "opened": 118,
+          "blocked: open structure count": 52,
+          "no trade: no liquid structure": 7
+        },
+        "opened": 118,
+        "closed": 115,
+        "unresolved": 3,
+        "total_pnl": -8696.0,
+        "win_rate": 0.443,
+        "mean_pnl": -75.62,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 25,
+            "pnl": -710.0
+          },
+          "bear_put_spread": {
+            "n": 54,
+            "pnl": -9247.0
+          },
+          "bull_call_spread": {
+            "n": 30,
+            "pnl": 1220.0
+          },
+          "long_strangle": {
+            "n": 6,
+            "pnl": 41.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 0,
+          "loss": 0,
+          "expiry": 114
+        }
+      }
+    },
+    "take 25% / stop 20% / 28 DTE / bearish off": {
+      "all": {
+        "n": 128,
+        "pnl": -11809.0,
+        "win_rate": 0.336,
+        "mean": -92.26,
+        "max_drawdown": 12149.0
+      },
+      "summary": {
+        "variant": "take 25% / stop 20% / 28 DTE / bearish off",
+        "outcomes": {
+          "no trade: other": 1481,
+          "no trade: bearish off": 968,
+          "blocked: stress test": 859,
+          "no trade: over budget": 629,
+          "blocked: position lock": 453,
+          "blocked: chain liquidity": 209,
+          "opened": 129,
+          "no trade: no liquid structure": 7,
+          "blocked: position count": 4
+        },
+        "opened": 129,
+        "closed": 128,
+        "unresolved": 1,
+        "total_pnl": -11809.0,
+        "win_rate": 0.336,
+        "mean_pnl": -92.26,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 35,
+            "pnl": -903.0
+          },
+          "bull_call_spread": {
+            "n": 80,
+            "pnl": -8448.0
+          },
+          "long_strangle": {
+            "n": 13,
+            "pnl": -2458.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 33,
+          "loss": 85,
+          "expiry": 9
+        }
+      }
+    },
+    "take 25% / stop 20% / 28 DTE / bearish on": {
+      "all": {
+        "n": 310,
+        "pnl": -36107.0,
+        "win_rate": 0.31,
+        "mean": -116.47,
+        "max_drawdown": 38999.0
+      },
+      "summary": {
+        "variant": "take 25% / stop 20% / 28 DTE / bearish on",
+        "outcomes": {
+          "no trade: other": 1481,
+          "blocked: stress test": 865,
+          "blocked: position lock": 738,
+          "no trade: over budget": 679,
+          "blocked: chain liquidity": 404,
+          "opened": 312,
+          "blocked: position count": 21,
+          "blocked: open structure count": 9,
+          "no trade: no liquid structure": 8
+        },
+        "opened": 312,
+        "closed": 310,
+        "unresolved": 2,
+        "total_pnl": -36107.0,
+        "win_rate": 0.31,
+        "mean_pnl": -116.47,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 35,
+            "pnl": -901.0
+          },
+          "bear_put_spread": {
+            "n": 192,
+            "pnl": -25117.0
+          },
+          "bull_call_spread": {
+            "n": 74,
+            "pnl": -9321.0
+          },
+          "long_strangle": {
+            "n": 9,
+            "pnl": -768.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 86,
+          "loss": 214,
+          "expiry": 9
+        }
+      }
+    },
+    "take 25% / stop 35% / 28 DTE / bearish off": {
+      "all": {
+        "n": 93,
+        "pnl": -11743.0,
+        "win_rate": 0.419,
+        "mean": -126.27,
+        "max_drawdown": 11991.0
+      },
+      "summary": {
+        "variant": "take 25% / stop 35% / 28 DTE / bearish off",
+        "outcomes": {
+          "no trade: other": 1481,
+          "no trade: bearish off": 968,
+          "blocked: position lock": 680,
+          "blocked: stress test": 661,
+          "no trade: over budget": 629,
+          "blocked: chain liquidity": 202,
+          "opened": 94,
+          "blocked: position count": 21,
+          "no trade: no liquid structure": 7
+        },
+        "opened": 94,
+        "closed": 93,
+        "unresolved": 1,
+        "total_pnl": -11743.0,
+        "win_rate": 0.419,
+        "mean_pnl": -126.27,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 23,
+            "pnl": -3179.0
+          },
+          "bull_call_spread": {
+            "n": 60,
+            "pnl": -6814.0
+          },
+          "long_strangle": {
+            "n": 10,
+            "pnl": -1750.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 34,
+          "loss": 53,
+          "expiry": 4
+        }
+      }
+    },
+    "take 25% / stop 35% / 28 DTE / bearish on": {
+      "all": {
+        "n": 229,
+        "pnl": -34642.0,
+        "win_rate": 0.362,
+        "mean": -151.28,
+        "max_drawdown": 37093.0
+      },
+      "summary": {
+        "variant": "take 25% / stop 35% / 28 DTE / bearish on",
+        "outcomes": {
+          "no trade: other": 1481,
+          "blocked: position lock": 1060,
+          "no trade: over budget": 679,
+          "blocked: stress test": 652,
+          "blocked: chain liquidity": 382,
+          "opened": 230,
+          "blocked: position count": 89,
+          "blocked: open structure count": 22,
+          "no trade: no liquid structure": 8
+        },
+        "opened": 230,
+        "closed": 229,
+        "unresolved": 1,
+        "total_pnl": -34642.0,
+        "win_rate": 0.362,
+        "mean_pnl": -151.28,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 22,
+            "pnl": -2109.0
+          },
+          "bear_put_spread": {
+            "n": 140,
+            "pnl": -21941.0
+          },
+          "bull_call_spread": {
+            "n": 58,
+            "pnl": -9110.0
+          },
+          "long_strangle": {
+            "n": 9,
+            "pnl": -1482.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 78,
+          "loss": 145,
+          "expiry": 4
+        }
+      }
+    },
+    "take 25% / stop 50% / 28 DTE / bearish off": {
+      "all": {
+        "n": 83,
+        "pnl": -8571.0,
+        "win_rate": 0.506,
+        "mean": -103.27,
+        "max_drawdown": 9242.0
+      },
+      "summary": {
+        "variant": "take 25% / stop 50% / 28 DTE / bearish off",
+        "outcomes": {
+          "no trade: other": 1481,
+          "no trade: bearish off": 968,
+          "blocked: position lock": 713,
+          "blocked: stress test": 634,
+          "no trade: over budget": 629,
+          "blocked: chain liquidity": 202,
+          "opened": 84,
+          "blocked: position count": 23,
+          "no trade: no liquid structure": 7,
+          "blocked: open structure count": 3
+        },
+        "opened": 84,
+        "closed": 83,
+        "unresolved": 1,
+        "total_pnl": -8571.0,
+        "win_rate": 0.506,
+        "mean_pnl": -103.27,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 23,
+            "pnl": -2631.0
+          },
+          "bull_call_spread": {
+            "n": 51,
+            "pnl": -4136.0
+          },
+          "long_strangle": {
+            "n": 9,
+            "pnl": -1804.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 36,
+          "loss": 38,
+          "expiry": 7
+        }
+      }
+    },
+    "take 25% / stop 50% / 28 DTE / bearish on": {
+      "all": {
+        "n": 188,
+        "pnl": -22729.0,
+        "win_rate": 0.457,
+        "mean": -120.9,
+        "max_drawdown": 24954.0
+      },
+      "summary": {
+        "variant": "take 25% / stop 50% / 28 DTE / bearish on",
+        "outcomes": {
+          "no trade: other": 1481,
+          "blocked: position lock": 1143,
+          "no trade: over budget": 679,
+          "blocked: stress test": 596,
+          "blocked: chain liquidity": 375,
+          "opened": 189,
+          "blocked: position count": 142,
+          "blocked: open structure count": 36,
+          "no trade: no liquid structure": 8
+        },
+        "opened": 189,
+        "closed": 188,
+        "unresolved": 1,
+        "total_pnl": -22729.0,
+        "win_rate": 0.457,
+        "mean_pnl": -120.9,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 22,
+            "pnl": -3067.0
+          },
+          "bear_put_spread": {
+            "n": 112,
+            "pnl": -16400.0
+          },
+          "bull_call_spread": {
+            "n": 48,
+            "pnl": -2513.0
+          },
+          "long_strangle": {
+            "n": 6,
+            "pnl": -749.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 80,
+          "loss": 97,
+          "expiry": 9
+        }
+      }
+    },
+    "take 25% / stop none / 28 DTE / bearish off": {
+      "all": {
+        "n": 70,
+        "pnl": -4423.0,
+        "win_rate": 0.614,
+        "mean": -63.19,
+        "max_drawdown": 6514.0
+      },
+      "summary": {
+        "variant": "take 25% / stop none / 28 DTE / bearish off",
+        "outcomes": {
+          "no trade: other": 1481,
+          "no trade: bearish off": 968,
+          "blocked: position lock": 767,
+          "no trade: over budget": 629,
+          "blocked: stress test": 567,
+          "blocked: chain liquidity": 194,
+          "opened": 71,
+          "blocked: position count": 53,
+          "blocked: open structure count": 8,
+          "no trade: no liquid structure": 7
+        },
+        "opened": 71,
+        "closed": 70,
+        "unresolved": 1,
+        "total_pnl": -4423.0,
+        "win_rate": 0.614,
+        "mean_pnl": -63.19,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 23,
+            "pnl": -3816.0
+          },
+          "bull_call_spread": {
+            "n": 43,
+            "pnl": -202.0
+          },
+          "long_strangle": {
+            "n": 4,
+            "pnl": -405.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 36,
+          "loss": 0,
+          "expiry": 32
+        }
+      }
+    },
+    "take 25% / stop none / 28 DTE / bearish on": {
+      "all": {
+        "n": 117,
+        "pnl": -12600.0,
+        "win_rate": 0.547,
+        "mean": -107.69,
+        "max_drawdown": 16132.0
+      },
+      "summary": {
+        "variant": "take 25% / stop none / 28 DTE / bearish on",
+        "outcomes": {
+          "no trade: other": 1481,
+          "blocked: position lock": 1416,
+          "no trade: over budget": 679,
+          "blocked: stress test": 386,
+          "blocked: chain liquidity": 300,
+          "blocked: position count": 294,
+          "opened": 119,
+          "blocked: open structure count": 20,
+          "no trade: no liquid structure": 8
+        },
+        "opened": 119,
+        "closed": 117,
+        "unresolved": 2,
+        "total_pnl": -12600.0,
+        "win_rate": 0.547,
+        "mean_pnl": -107.69,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 18,
+            "pnl": -1383.0
+          },
+          "bear_put_spread": {
+            "n": 66,
+            "pnl": -10137.0
+          },
+          "bull_call_spread": {
+            "n": 29,
+            "pnl": 537.0
+          },
+          "long_strangle": {
+            "n": 4,
+            "pnl": -1617.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 59,
+          "loss": 0,
+          "expiry": 56
+        }
+      }
+    },
+    "take 50% / stop 20% / 28 DTE / bearish off": {
+      "all": {
+        "n": 116,
+        "pnl": -8757.0,
+        "win_rate": 0.319,
+        "mean": -75.49,
+        "max_drawdown": 9149.0
+      },
+      "summary": {
+        "variant": "take 50% / stop 20% / 28 DTE / bearish off",
+        "outcomes": {
+          "no trade: other": 1481,
+          "no trade: bearish off": 968,
+          "blocked: stress test": 839,
+          "no trade: over budget": 629,
+          "blocked: position lock": 487,
+          "blocked: chain liquidity": 207,
+          "opened": 117,
+          "no trade: no liquid structure": 7,
+          "blocked: position count": 5
+        },
+        "opened": 117,
+        "closed": 116,
+        "unresolved": 1,
+        "total_pnl": -8757.0,
+        "win_rate": 0.319,
+        "mean_pnl": -75.49,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 35,
+            "pnl": -949.0
+          },
+          "bull_call_spread": {
+            "n": 70,
+            "pnl": -5811.0
+          },
+          "long_strangle": {
+            "n": 11,
+            "pnl": -1997.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 19,
+          "loss": 79,
+          "expiry": 17
+        }
+      }
+    },
+    "take 50% / stop 20% / 28 DTE / bearish on": {
+      "all": {
+        "n": 289,
+        "pnl": -34697.0,
+        "win_rate": 0.239,
+        "mean": -120.06,
+        "max_drawdown": 37377.0
+      },
+      "summary": {
+        "variant": "take 50% / stop 20% / 28 DTE / bearish on",
+        "outcomes": {
+          "no trade: other": 1481,
+          "blocked: stress test": 840,
+          "blocked: position lock": 822,
+          "no trade: over budget": 679,
+          "blocked: chain liquidity": 395,
+          "opened": 291,
+          "blocked: position count": 38,
+          "blocked: open structure count": 10,
+          "no trade: no liquid structure": 8
+        },
+        "opened": 291,
+        "closed": 289,
+        "unresolved": 2,
+        "total_pnl": -34697.0,
+        "win_rate": 0.239,
+        "mean_pnl": -120.06,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 34,
+            "pnl": -1089.0
+          },
+          "bear_put_spread": {
+            "n": 179,
+            "pnl": -25722.0
+          },
+          "bull_call_spread": {
+            "n": 68,
+            "pnl": -5543.0
+          },
+          "long_strangle": {
+            "n": 8,
+            "pnl": -2343.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 52,
+          "loss": 220,
+          "expiry": 16
+        }
+      }
+    },
+    "take 50% / stop 35% / 28 DTE / bearish off": {
+      "all": {
+        "n": 88,
+        "pnl": -8820.0,
+        "win_rate": 0.386,
+        "mean": -100.23,
+        "max_drawdown": 9195.0
+      },
+      "summary": {
+        "variant": "take 50% / stop 35% / 28 DTE / bearish off",
+        "outcomes": {
+          "no trade: other": 1481,
+          "no trade: bearish off": 968,
+          "blocked: position lock": 718,
+          "blocked: stress test": 629,
+          "no trade: over budget": 629,
+          "blocked: chain liquidity": 199,
+          "opened": 89,
+          "blocked: position count": 24,
+          "no trade: no liquid structure": 7
+        },
+        "opened": 89,
+        "closed": 88,
+        "unresolved": 1,
+        "total_pnl": -8820.0,
+        "win_rate": 0.386,
+        "mean_pnl": -100.23,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 24,
+            "pnl": -2735.0
+          },
+          "bull_call_spread": {
+            "n": 56,
+            "pnl": -6002.0
+          },
+          "long_strangle": {
+            "n": 8,
+            "pnl": -83.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 21,
+          "loss": 53,
+          "expiry": 12
+        }
+      }
+    },
+    "take 50% / stop 35% / 28 DTE / bearish on": {
+      "all": {
+        "n": 210,
+        "pnl": -28210.0,
+        "win_rate": 0.31,
+        "mean": -134.33,
+        "max_drawdown": 31371.0
+      },
+      "summary": {
+        "variant": "take 50% / stop 35% / 28 DTE / bearish on",
+        "outcomes": {
+          "no trade: other": 1481,
+          "blocked: position lock": 1137,
+          "no trade: over budget": 679,
+          "blocked: stress test": 626,
+          "blocked: chain liquidity": 367,
+          "opened": 212,
+          "blocked: position count": 125,
+          "blocked: open structure count": 10,
+          "no trade: no liquid structure": 8
+        },
+        "opened": 212,
+        "closed": 210,
+        "unresolved": 2,
+        "total_pnl": -28210.0,
+        "win_rate": 0.31,
+        "mean_pnl": -134.33,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 23,
+            "pnl": -1665.0
+          },
+          "bear_put_spread": {
+            "n": 125,
+            "pnl": -19069.0
+          },
+          "bull_call_spread": {
+            "n": 55,
+            "pnl": -6784.0
+          },
+          "long_strangle": {
+            "n": 7,
+            "pnl": -692.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 52,
+          "loss": 144,
+          "expiry": 12
+        }
+      }
+    },
+    "take 50% / stop 50% / 28 DTE / bearish off": {
+      "all": {
+        "n": 78,
+        "pnl": -6117.0,
+        "win_rate": 0.462,
+        "mean": -78.42,
+        "max_drawdown": 6830.0
+      },
+      "summary": {
+        "variant": "take 50% / stop 50% / 28 DTE / bearish off",
+        "outcomes": {
+          "no trade: other": 1481,
+          "no trade: bearish off": 968,
+          "blocked: position lock": 737,
+          "no trade: over budget": 629,
+          "blocked: stress test": 616,
+          "blocked: chain liquidity": 199,
+          "opened": 79,
+          "blocked: position count": 25,
+          "no trade: no liquid structure": 7,
+          "blocked: open structure count": 4
+        },
+        "opened": 79,
+        "closed": 78,
+        "unresolved": 1,
+        "total_pnl": -6117.0,
+        "win_rate": 0.462,
+        "mean_pnl": -78.42,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 24,
+            "pnl": -2187.0
+          },
+          "bull_call_spread": {
+            "n": 46,
+            "pnl": -1453.0
+          },
+          "long_strangle": {
+            "n": 8,
+            "pnl": -2477.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 22,
+          "loss": 39,
+          "expiry": 15
+        }
+      }
+    },
+    "take 50% / stop 50% / 28 DTE / bearish on": {
+      "all": {
+        "n": 167,
+        "pnl": -19904.0,
+        "win_rate": 0.395,
+        "mean": -119.19,
+        "max_drawdown": 22439.0
+      },
+      "summary": {
+        "variant": "take 50% / stop 50% / 28 DTE / bearish on",
+        "outcomes": {
+          "no trade: other": 1481,
+          "blocked: position lock": 1213,
+          "no trade: over budget": 679,
+          "blocked: stress test": 572,
+          "blocked: chain liquidity": 355,
+          "blocked: position count": 181,
+          "opened": 169,
+          "blocked: open structure count": 22,
+          "no trade: no liquid structure": 8
+        },
+        "opened": 169,
+        "closed": 167,
+        "unresolved": 2,
+        "total_pnl": -19904.0,
+        "win_rate": 0.395,
+        "mean_pnl": -119.19,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 23,
+            "pnl": -2778.0
+          },
+          "bear_put_spread": {
+            "n": 95,
+            "pnl": -13577.0
+          },
+          "bull_call_spread": {
+            "n": 43,
+            "pnl": -1021.0
+          },
+          "long_strangle": {
+            "n": 6,
+            "pnl": -2528.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 51,
+          "loss": 97,
+          "expiry": 17
+        }
+      }
+    },
+    "take 50% / stop none / 28 DTE / bearish off": {
+      "all": {
+        "n": 64,
+        "pnl": -4331.0,
+        "win_rate": 0.547,
+        "mean": -67.67,
+        "max_drawdown": 7884.0
+      },
+      "summary": {
+        "variant": "take 50% / stop none / 28 DTE / bearish off",
+        "outcomes": {
+          "no trade: other": 1481,
+          "no trade: bearish off": 968,
+          "blocked: position lock": 789,
+          "no trade: over budget": 629,
+          "blocked: stress test": 541,
+          "blocked: chain liquidity": 192,
+          "blocked: position count": 67,
+          "opened": 65,
+          "no trade: no liquid structure": 7,
+          "blocked: open structure count": 7
+        },
+        "opened": 65,
+        "closed": 64,
+        "unresolved": 1,
+        "total_pnl": -4331.0,
+        "win_rate": 0.547,
+        "mean_pnl": -67.67,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 24,
+            "pnl": -3372.0
+          },
+          "bull_call_spread": {
+            "n": 37,
+            "pnl": -283.0
+          },
+          "long_strangle": {
+            "n": 3,
+            "pnl": -676.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 20,
+          "loss": 0,
+          "expiry": 42
+        }
+      }
+    },
+    "take 50% / stop none / 28 DTE / bearish on": {
+      "all": {
+        "n": 123,
+        "pnl": -9702.0,
+        "win_rate": 0.528,
+        "mean": -78.88,
+        "max_drawdown": 13408.0
+      },
+      "summary": {
+        "variant": "take 50% / stop none / 28 DTE / bearish on",
+        "outcomes": {
+          "no trade: other": 1481,
+          "blocked: position lock": 1350,
+          "no trade: over budget": 679,
+          "blocked: stress test": 457,
+          "blocked: position count": 303,
+          "blocked: chain liquidity": 281,
+          "opened": 126,
+          "blocked: open structure count": 20,
+          "no trade: no liquid structure": 8
+        },
+        "opened": 126,
+        "closed": 123,
+        "unresolved": 3,
+        "total_pnl": -9702.0,
+        "win_rate": 0.528,
+        "mean_pnl": -78.88,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 25,
+            "pnl": -811.0
+          },
+          "bear_put_spread": {
+            "n": 66,
+            "pnl": -9096.0
+          },
+          "bull_call_spread": {
+            "n": 30,
+            "pnl": 1472.0
+          },
+          "long_strangle": {
+            "n": 2,
+            "pnl": -1267.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 47,
+          "loss": 0,
+          "expiry": 75
+        }
+      }
+    },
+    "take 75% / stop 20% / 28 DTE / bearish off": {
+      "all": {
+        "n": 113,
+        "pnl": -7116.0,
+        "win_rate": 0.301,
+        "mean": -62.97,
+        "max_drawdown": 7508.0
+      },
+      "summary": {
+        "variant": "take 75% / stop 20% / 28 DTE / bearish off",
+        "outcomes": {
+          "no trade: other": 1481,
+          "no trade: bearish off": 968,
+          "blocked: stress test": 816,
+          "no trade: over budget": 629,
+          "blocked: position lock": 514,
+          "blocked: chain liquidity": 206,
+          "opened": 114,
+          "no trade: no liquid structure": 7,
+          "blocked: position count": 5
+        },
+        "opened": 114,
+        "closed": 113,
+        "unresolved": 1,
+        "total_pnl": -7116.0,
+        "win_rate": 0.301,
+        "mean_pnl": -62.97,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 35,
+            "pnl": -949.0
+          },
+          "bull_call_spread": {
+            "n": 67,
+            "pnl": -4170.0
+          },
+          "long_strangle": {
+            "n": 11,
+            "pnl": -1997.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 16,
+          "loss": 79,
+          "expiry": 17
+        }
+      }
+    },
+    "take 75% / stop 20% / 28 DTE / bearish on": {
+      "all": {
+        "n": 266,
+        "pnl": -38921.0,
+        "win_rate": 0.199,
+        "mean": -146.32,
+        "max_drawdown": 39684.0
+      },
+      "summary": {
+        "variant": "take 75% / stop 20% / 28 DTE / bearish on",
+        "outcomes": {
+          "no trade: other": 1481,
+          "blocked: position lock": 891,
+          "blocked: stress test": 810,
+          "no trade: over budget": 679,
+          "blocked: chain liquidity": 389,
+          "opened": 269,
+          "blocked: position count": 63,
+          "blocked: open structure count": 9,
+          "no trade: no liquid structure": 8
+        },
+        "opened": 269,
+        "closed": 266,
+        "unresolved": 3,
+        "total_pnl": -38921.0,
+        "win_rate": 0.199,
+        "mean_pnl": -146.32,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 34,
+            "pnl": -1089.0
+          },
+          "bear_put_spread": {
+            "n": 159,
+            "pnl": -30532.0
+          },
+          "bull_call_spread": {
+            "n": 64,
+            "pnl": -4773.0
+          },
+          "long_strangle": {
+            "n": 9,
+            "pnl": -2527.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 34,
+          "loss": 213,
+          "expiry": 18
+        }
+      }
+    },
+    "take 75% / stop 35% / 28 DTE / bearish off": {
+      "all": {
+        "n": 83,
+        "pnl": -6874.0,
+        "win_rate": 0.373,
+        "mean": -82.82,
+        "max_drawdown": 7982.0
+      },
+      "summary": {
+        "variant": "take 75% / stop 35% / 28 DTE / bearish off",
+        "outcomes": {
+          "no trade: other": 1481,
+          "no trade: bearish off": 968,
+          "blocked: position lock": 737,
+          "no trade: over budget": 629,
+          "blocked: stress test": 610,
+          "blocked: chain liquidity": 199,
+          "opened": 84,
+          "blocked: position count": 31,
+          "no trade: no liquid structure": 7
+        },
+        "opened": 84,
+        "closed": 83,
+        "unresolved": 1,
+        "total_pnl": -6874.0,
+        "win_rate": 0.373,
+        "mean_pnl": -82.82,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 24,
+            "pnl": -2735.0
+          },
+          "bull_call_spread": {
+            "n": 51,
+            "pnl": -4250.0
+          },
+          "long_strangle": {
+            "n": 8,
+            "pnl": 111.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 16,
+          "loss": 51,
+          "expiry": 14
+        }
+      }
+    },
+    "take 75% / stop 35% / 28 DTE / bearish on": {
+      "all": {
+        "n": 192,
+        "pnl": -32309.0,
+        "win_rate": 0.26,
+        "mean": -168.28,
+        "max_drawdown": 34811.0
+      },
+      "summary": {
+        "variant": "take 75% / stop 35% / 28 DTE / bearish on",
+        "outcomes": {
+          "no trade: other": 1481,
+          "blocked: position lock": 1178,
+          "no trade: over budget": 679,
+          "blocked: stress test": 590,
+          "blocked: chain liquidity": 351,
+          "opened": 194,
+          "blocked: position count": 174,
+          "no trade: no liquid structure": 8,
+          "blocked: open structure count": 8
+        },
+        "opened": 194,
+        "closed": 192,
+        "unresolved": 2,
+        "total_pnl": -32309.0,
+        "win_rate": 0.26,
+        "mean_pnl": -168.28,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 24,
+            "pnl": -2607.0
+          },
+          "bear_put_spread": {
+            "n": 111,
+            "pnl": -23633.0
+          },
+          "bull_call_spread": {
+            "n": 50,
+            "pnl": -5429.0
+          },
+          "long_strangle": {
+            "n": 7,
+            "pnl": -640.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 35,
+          "loss": 139,
+          "expiry": 16
+        }
+      }
+    },
+    "take 75% / stop 50% / 28 DTE / bearish off": {
+      "all": {
+        "n": 71,
+        "pnl": -3808.0,
+        "win_rate": 0.465,
+        "mean": -53.63,
+        "max_drawdown": 5778.0
+      },
+      "summary": {
+        "variant": "take 75% / stop 50% / 28 DTE / bearish off",
+        "outcomes": {
+          "no trade: other": 1481,
+          "no trade: bearish off": 968,
+          "blocked: position lock": 753,
+          "no trade: over budget": 629,
+          "blocked: stress test": 598,
+          "blocked: chain liquidity": 198,
+          "opened": 72,
+          "blocked: position count": 32,
+          "no trade: no liquid structure": 7,
+          "blocked: open structure count": 6
+        },
+        "opened": 72,
+        "closed": 71,
+        "unresolved": 1,
+        "total_pnl": -3808.0,
+        "win_rate": 0.465,
+        "mean_pnl": -53.63,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 24,
+            "pnl": -2187.0
+          },
+          "bull_call_spread": {
+            "n": 39,
+            "pnl": 580.0
+          },
+          "long_strangle": {
+            "n": 8,
+            "pnl": -2201.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 16,
+          "loss": 34,
+          "expiry": 19
+        }
+      }
+    },
+    "take 75% / stop 50% / 28 DTE / bearish on": {
+      "all": {
+        "n": 154,
+        "pnl": -21220.0,
+        "win_rate": 0.338,
+        "mean": -137.79,
+        "max_drawdown": 23514.0
+      },
+      "summary": {
+        "variant": "take 75% / stop 50% / 28 DTE / bearish on",
+        "outcomes": {
+          "no trade: other": 1481,
+          "blocked: position lock": 1251,
+          "no trade: over budget": 679,
+          "blocked: stress test": 552,
+          "blocked: chain liquidity": 343,
+          "blocked: position count": 208,
+          "opened": 156,
+          "blocked: open structure count": 16,
+          "no trade: no liquid structure": 8
+        },
+        "opened": 156,
+        "closed": 154,
+        "unresolved": 2,
+        "total_pnl": -21220.0,
+        "win_rate": 0.338,
+        "mean_pnl": -137.79,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 23,
+            "pnl": -2778.0
+          },
+          "bear_put_spread": {
+            "n": 89,
+            "pnl": -16419.0
+          },
+          "bull_call_spread": {
+            "n": 36,
+            "pnl": 371.0
+          },
+          "long_strangle": {
+            "n": 6,
+            "pnl": -2394.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 35,
+          "loss": 95,
+          "expiry": 22
+        }
+      }
+    },
+    "take 75% / stop none / 28 DTE / bearish off": {
+      "all": {
+        "n": 60,
+        "pnl": -1664.0,
+        "win_rate": 0.55,
+        "mean": -27.73,
+        "max_drawdown": 7496.0
+      },
+      "summary": {
+        "variant": "take 75% / stop none / 28 DTE / bearish off",
+        "outcomes": {
+          "no trade: other": 1481,
+          "no trade: bearish off": 968,
+          "blocked: position lock": 812,
+          "no trade: over budget": 629,
+          "blocked: stress test": 526,
+          "blocked: chain liquidity": 197,
+          "blocked: position count": 65,
+          "opened": 61,
+          "no trade: no liquid structure": 7
+        },
+        "opened": 61,
+        "closed": 60,
+        "unresolved": 1,
+        "total_pnl": -1664.0,
+        "win_rate": 0.55,
+        "mean_pnl": -27.73,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 23,
+            "pnl": -2514.0
+          },
+          "bull_call_spread": {
+            "n": 33,
+            "pnl": 884.0
+          },
+          "long_strangle": {
+            "n": 4,
+            "pnl": -34.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 14,
+          "loss": 0,
+          "expiry": 44
+        }
+      }
+    },
+    "take 75% / stop none / 28 DTE / bearish on": {
+      "all": {
+        "n": 117,
+        "pnl": -8395.0,
+        "win_rate": 0.479,
+        "mean": -71.75,
+        "max_drawdown": 10965.0
+      },
+      "summary": {
+        "variant": "take 75% / stop none / 28 DTE / bearish on",
+        "outcomes": {
+          "no trade: other": 1481,
+          "blocked: position lock": 1374,
+          "no trade: over budget": 679,
+          "blocked: stress test": 442,
+          "blocked: position count": 322,
+          "blocked: chain liquidity": 275,
+          "opened": 120,
+          "blocked: open structure count": 13,
+          "no trade: no liquid structure": 8
+        },
+        "opened": 120,
+        "closed": 117,
+        "unresolved": 3,
+        "total_pnl": -8395.0,
+        "win_rate": 0.479,
+        "mean_pnl": -71.75,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 24,
+            "pnl": -733.0
+          },
+          "bear_put_spread": {
+            "n": 61,
+            "pnl": -6971.0
+          },
+          "bull_call_spread": {
+            "n": 29,
+            "pnl": 1412.0
+          },
+          "long_strangle": {
+            "n": 3,
+            "pnl": -2103.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 37,
+          "loss": 0,
+          "expiry": 79
+        }
+      }
+    },
+    "take none / stop 20% / 28 DTE / bearish off": {
+      "all": {
+        "n": 98,
+        "pnl": -6547.0,
+        "win_rate": 0.276,
+        "mean": -66.81,
+        "max_drawdown": 8049.0
+      },
+      "summary": {
+        "variant": "take none / stop 20% / 28 DTE / bearish off",
+        "outcomes": {
+          "no trade: other": 1481,
+          "no trade: bearish off": 968,
+          "blocked: stress test": 766,
+          "no trade: over budget": 629,
+          "blocked: position lock": 579,
+          "blocked: chain liquidity": 190,
+          "opened": 99,
+          "blocked: position count": 21,
+          "no trade: no liquid structure": 7,
+          "blocked: open structure count": 1
+        },
+        "opened": 99,
+        "closed": 98,
+        "unresolved": 1,
+        "total_pnl": -6547.0,
+        "win_rate": 0.276,
+        "mean_pnl": -66.81,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 35,
+            "pnl": -954.0
+          },
+          "bull_call_spread": {
+            "n": 51,
+            "pnl": -2310.0
+          },
+          "long_strangle": {
+            "n": 12,
+            "pnl": -3283.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 0,
+          "loss": 71,
+          "expiry": 26
+        }
+      }
+    },
+    "take none / stop 20% / 28 DTE / bearish on": {
+      "all": {
+        "n": 215,
+        "pnl": -34203.0,
+        "win_rate": 0.163,
+        "mean": -159.08,
+        "max_drawdown": 35095.0
+      },
+      "summary": {
+        "variant": "take none / stop 20% / 28 DTE / bearish on",
+        "outcomes": {
+          "no trade: other": 1481,
+          "blocked: position lock": 1011,
+          "blocked: stress test": 751,
+          "no trade: over budget": 679,
+          "blocked: chain liquidity": 353,
+          "opened": 218,
+          "blocked: position count": 126,
+          "blocked: open structure count": 18,
+          "no trade: no liquid structure": 8
+        },
+        "opened": 218,
+        "closed": 215,
+        "unresolved": 3,
+        "total_pnl": -34203.0,
+        "win_rate": 0.163,
+        "mean_pnl": -159.08,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 34,
+            "pnl": -1094.0
+          },
+          "bear_put_spread": {
+            "n": 122,
+            "pnl": -28348.0
+          },
+          "bull_call_spread": {
+            "n": 49,
+            "pnl": -2128.0
+          },
+          "long_strangle": {
+            "n": 10,
+            "pnl": -2633.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 0,
+          "loss": 179,
+          "expiry": 35
+        }
+      }
+    },
+    "take none / stop 35% / 28 DTE / bearish off": {
+      "all": {
+        "n": 68,
+        "pnl": -3944.0,
+        "win_rate": 0.353,
+        "mean": -58.0,
+        "max_drawdown": 6456.0
+      },
+      "summary": {
+        "variant": "take none / stop 35% / 28 DTE / bearish off",
+        "outcomes": {
+          "no trade: other": 1481,
+          "no trade: bearish off": 968,
+          "blocked: position lock": 787,
+          "no trade: over budget": 629,
+          "blocked: stress test": 565,
+          "blocked: chain liquidity": 182,
+          "opened": 69,
+          "blocked: position count": 54,
+          "no trade: no liquid structure": 7,
+          "blocked: open structure count": 3
+        },
+        "opened": 69,
+        "closed": 68,
+        "unresolved": 1,
+        "total_pnl": -3944.0,
+        "win_rate": 0.353,
+        "mean_pnl": -58.0,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 23,
+            "pnl": -2980.0
+          },
+          "bull_call_spread": {
+            "n": 37,
+            "pnl": 105.0
+          },
+          "long_strangle": {
+            "n": 8,
+            "pnl": -1069.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 0,
+          "loss": 41,
+          "expiry": 25
+        }
+      }
+    },
+    "take none / stop 35% / 28 DTE / bearish on": {
+      "all": {
+        "n": 147,
+        "pnl": -22803.0,
+        "win_rate": 0.245,
+        "mean": -155.12,
+        "max_drawdown": 24336.0
+      },
+      "summary": {
+        "variant": "take none / stop 35% / 28 DTE / bearish on",
+        "outcomes": {
+          "no trade: other": 1481,
+          "blocked: position lock": 1259,
+          "no trade: over budget": 679,
+          "blocked: stress test": 535,
+          "blocked: chain liquidity": 327,
+          "blocked: position count": 233,
+          "opened": 149,
+          "blocked: open structure count": 22,
+          "no trade: no liquid structure": 8
+        },
+        "opened": 149,
+        "closed": 147,
+        "unresolved": 2,
+        "total_pnl": -22803.0,
+        "win_rate": 0.245,
+        "mean_pnl": -155.12,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 23,
+            "pnl": -1665.0
+          },
+          "bear_put_spread": {
+            "n": 83,
+            "pnl": -19156.0
+          },
+          "bull_call_spread": {
+            "n": 34,
+            "pnl": -919.0
+          },
+          "long_strangle": {
+            "n": 7,
+            "pnl": -1063.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 0,
+          "loss": 109,
+          "expiry": 36
+        }
+      }
+    },
+    "take none / stop 50% / 28 DTE / bearish off": {
+      "all": {
+        "n": 61,
+        "pnl": -4257.0,
+        "win_rate": 0.41,
+        "mean": -69.79,
+        "max_drawdown": 5836.0
+      },
+      "summary": {
+        "variant": "take none / stop 50% / 28 DTE / bearish off",
+        "outcomes": {
+          "no trade: other": 1481,
+          "no trade: bearish off": 968,
+          "blocked: position lock": 791,
+          "no trade: over budget": 629,
+          "blocked: stress test": 562,
+          "blocked: chain liquidity": 185,
+          "opened": 62,
+          "blocked: position count": 56,
+          "no trade: no liquid structure": 7,
+          "blocked: open structure count": 3
+        },
+        "opened": 62,
+        "closed": 61,
+        "unresolved": 1,
+        "total_pnl": -4257.0,
+        "win_rate": 0.41,
+        "mean_pnl": -69.79,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 23,
+            "pnl": -2432.0
+          },
+          "bull_call_spread": {
+            "n": 31,
+            "pnl": -214.0
+          },
+          "long_strangle": {
+            "n": 7,
+            "pnl": -1611.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 0,
+          "loss": 31,
+          "expiry": 28
+        }
+      }
+    },
+    "take none / stop 50% / 28 DTE / bearish on": {
+      "all": {
+        "n": 122,
+        "pnl": -23476.0,
+        "win_rate": 0.295,
+        "mean": -192.43,
+        "max_drawdown": 24783.0
+      },
+      "summary": {
+        "variant": "take none / stop 50% / 28 DTE / bearish on",
+        "outcomes": {
+          "no trade: other": 1481,
+          "blocked: position lock": 1299,
+          "no trade: over budget": 679,
+          "blocked: stress test": 508,
+          "blocked: chain liquidity": 316,
+          "blocked: position count": 235,
+          "opened": 124,
+          "blocked: open structure count": 55,
+          "no trade: no liquid structure": 8
+        },
+        "opened": 124,
+        "closed": 122,
+        "unresolved": 2,
+        "total_pnl": -23476.0,
+        "win_rate": 0.295,
+        "mean_pnl": -192.43,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 23,
+            "pnl": -2778.0
+          },
+          "bear_put_spread": {
+            "n": 64,
+            "pnl": -16872.0
+          },
+          "bull_call_spread": {
+            "n": 30,
+            "pnl": -2022.0
+          },
+          "long_strangle": {
+            "n": 5,
+            "pnl": -1804.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 0,
+          "loss": 80,
+          "expiry": 40
+        }
+      }
+    },
+    "take none / stop none / 28 DTE / bearish off": {
+      "all": {
+        "n": 53,
+        "pnl": -2435.0,
+        "win_rate": 0.509,
+        "mean": -45.94,
+        "max_drawdown": 7083.0
+      },
+      "summary": {
+        "variant": "take none / stop none / 28 DTE / bearish off",
+        "outcomes": {
+          "no trade: other": 1481,
+          "no trade: bearish off": 968,
+          "blocked: position lock": 832,
+          "no trade: over budget": 629,
+          "blocked: stress test": 506,
+          "blocked: chain liquidity": 190,
+          "blocked: position count": 78,
+          "opened": 54,
+          "no trade: no liquid structure": 7
+        },
+        "opened": 54,
+        "closed": 53,
+        "unresolved": 1,
+        "total_pnl": -2435.0,
+        "win_rate": 0.509,
+        "mean_pnl": -45.94,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 22,
+            "pnl": -2759.0
+          },
+          "bull_call_spread": {
+            "n": 27,
+            "pnl": 197.0
+          },
+          "long_strangle": {
+            "n": 4,
+            "pnl": 127.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 0,
+          "loss": 0,
+          "expiry": 51
+        }
+      }
+    },
+    "take none / stop none / 28 DTE / bearish on": {
+      "all": {
+        "n": 85,
+        "pnl": -17857.0,
+        "win_rate": 0.353,
+        "mean": -210.08,
+        "max_drawdown": 20457.0
+      },
+      "summary": {
+        "variant": "take none / stop none / 28 DTE / bearish on",
+        "outcomes": {
+          "no trade: other": 1481,
+          "blocked: position lock": 1443,
+          "no trade: over budget": 679,
+          "blocked: position count": 408,
+          "blocked: stress test": 331,
+          "blocked: chain liquidity": 257,
+          "opened": 87,
+          "blocked: open structure count": 28,
+          "no trade: no liquid structure": 8
+        },
+        "opened": 87,
+        "closed": 85,
+        "unresolved": 2,
+        "total_pnl": -17857.0,
+        "win_rate": 0.353,
+        "mean_pnl": -210.08,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 19,
+            "pnl": -803.0
+          },
+          "bear_put_spread": {
+            "n": 42,
+            "pnl": -13894.0
+          },
+          "bull_call_spread": {
+            "n": 22,
+            "pnl": -2164.0
+          },
+          "long_strangle": {
+            "n": 2,
+            "pnl": -996.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 0,
+          "loss": 0,
+          "expiry": 83
+        }
+      }
+    }
+  },
+  "variants": {
+    "lexicon sentiment": {
+      "all": {
+        "n": 129,
+        "pnl": -8601.0,
+        "win_rate": 0.38,
+        "mean": -66.67,
+        "max_drawdown": 8742.0
+      },
+      "summary": {
+        "variant": "lexicon sentiment",
+        "outcomes": {
+          "no trade: other": 1394,
+          "no trade: bearish off": 1066,
+          "blocked: stress test": 959,
+          "no trade: over budget": 484,
+          "blocked: position lock": 391,
+          "blocked: chain liquidity": 297,
+          "opened": 130,
+          "no trade: no liquid structure": 7,
+          "blocked: open structure count": 2,
+          "blocked: position count": 1
+        },
+        "opened": 130,
+        "closed": 129,
+        "unresolved": 1,
+        "total_pnl": -8601.0,
+        "win_rate": 0.38,
+        "mean_pnl": -66.67,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 37,
+            "pnl": -2120.0
+          },
+          "bull_call_spread": {
+            "n": 80,
+            "pnl": -4936.0
+          },
+          "long_strangle": {
+            "n": 12,
+            "pnl": -1545.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 38,
+          "loss": 78,
+          "expiry": 12
+        }
+      }
+    },
+    "no sentiment": {
+      "all": {
+        "n": 126,
+        "pnl": -8647.0,
+        "win_rate": 0.389,
+        "mean": -68.63,
+        "max_drawdown": 8788.0
+      },
+      "summary": {
+        "variant": "no sentiment",
+        "outcomes": {
+          "no trade: other": 1394,
+          "no trade: bearish off": 1066,
+          "blocked: stress test": 972,
+          "no trade: over budget": 484,
+          "blocked: position lock": 381,
+          "blocked: chain liquidity": 297,
+          "opened": 127,
+          "no trade: no liquid structure": 7,
+          "blocked: open structure count": 2,
+          "blocked: position count": 1
+        },
+        "opened": 127,
+        "closed": 126,
+        "unresolved": 1,
+        "total_pnl": -8647.0,
+        "win_rate": 0.389,
+        "mean_pnl": -68.63,
+        "by_strategy": {
+          "iron_condor": {
+            "n": 37,
+            "pnl": -2120.0
+          },
+          "bull_call_spread": {
+            "n": 77,
+            "pnl": -4692.0
+          },
+          "long_strangle": {
+            "n": 12,
+            "pnl": -1835.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 38,
+          "loss": 75,
+          "expiry": 12
+        }
+      }
+    },
+    "mid fills (no spread)": {
+      "all": {
+        "n": 207,
+        "pnl": 379.0,
+        "win_rate": 0.469,
+        "mean": 1.83,
+        "max_drawdown": 8962.0
+      },
+      "summary": {
+        "variant": "mid fills (no spread)",
+        "outcomes": {
+          "no trade: other": 1471,
+          "no trade: bearish off": 968,
+          "blocked: stress test": 925,
+          "blocked: position lock": 618,
+          "no trade: over budget": 494,
+          "opened": 208,
+          "blocked: position count": 13,
+          "blocked: open structure count": 11,
+          "no trade: no liquid structure": 7
+        },
+        "opened": 208,
+        "closed": 207,
+        "unresolved": 1,
+        "total_pnl": 379.0,
+        "win_rate": 0.469,
+        "mean_pnl": 1.83,
+        "by_strategy": {
+          "bull_call_spread": {
+            "n": 158,
+            "pnl": 1988.0
+          },
+          "iron_condor": {
+            "n": 35,
+            "pnl": -869.0
+          },
+          "long_strangle": {
+            "n": 14,
+            "pnl": -740.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 85,
+          "loss": 108,
+          "expiry": 13
+        }
+      }
+    },
+    "double spreads": {
+      "all": {
+        "n": 56,
+        "pnl": -5081.0,
+        "win_rate": 0.357,
+        "mean": -90.73,
+        "max_drawdown": 6134.0
+      },
+      "summary": {
+        "variant": "double spreads",
+        "outcomes": {
+          "no trade: other": 1471,
+          "no trade: bearish off": 968,
+          "blocked: chain liquidity": 798,
+          "blocked: stress test": 770,
+          "no trade: over budget": 494,
+          "blocked: position lock": 183,
+          "opened": 56,
+          "no trade: no liquid structure": 7
+        },
+        "opened": 56,
+        "closed": 56,
+        "unresolved": 0,
+        "total_pnl": -5081.0,
+        "win_rate": 0.357,
+        "mean_pnl": -90.73,
+        "by_strategy": {
+          "bull_call_spread": {
+            "n": 32,
+            "pnl": -2600.0
+          },
+          "iron_condor": {
+            "n": 15,
+            "pnl": -1412.0
+          },
+          "long_strangle": {
+            "n": 9,
+            "pnl": -1069.0
+          }
+        },
+        "exit_reasons": {
+          "profit": 15,
+          "loss": 36,
+          "expiry": 4
+        }
+      }
+    }
+  },
+  "first_day": "2024-03-01",
+  "last_day": "2026-11-25",
+  "walk_forward": [
+    {
+      "fold": "2025-03-01 to 2025-09-01",
+      "chosen": "take 25% / stop 20% / 14 DTE / bearish off",
+      "chosen_train": {
+        "n": 30,
+        "pnl": -2637.0,
+        "win_rate": 0.467,
+        "mean": -87.9,
+        "max_drawdown": 3495.0
+      },
+      "chosen_test": {
+        "n": 20,
+        "pnl": -156.0,
+        "win_rate": 0.45,
+        "mean": -7.8,
+        "max_drawdown": 2259.0
+      },
+      "live_test": {
+        "n": 26,
+        "pnl": 2976.0,
+        "win_rate": 0.615,
+        "mean": 114.46,
+        "max_drawdown": 867.0
+      },
+      "all_configs_test_median_pnl": 1189.5
+    },
+    {
+      "fold": "2025-09-01 to 2026-03-01",
+      "chosen": "take none / stop none / 21 DTE / bearish off",
+      "chosen_train": {
+        "n": 37,
+        "pnl": 2566.0,
+        "win_rate": 0.595,
+        "mean": 69.35,
+        "max_drawdown": 6076.0
+      },
+      "chosen_test": {
+        "n": 13,
+        "pnl": 25.0,
+        "win_rate": 0.538,
+        "mean": 1.92,
+        "max_drawdown": 3421.0
+      },
+      "live_test": {
+        "n": 26,
+        "pnl": -3168.0,
+        "win_rate": 0.346,
+        "mean": -121.85,
+        "max_drawdown": 4166.0
+      },
+      "all_configs_test_median_pnl": -2116.5
+    },
+    {
+      "fold": "2026-03-01 to 2026-11-25",
+      "chosen": "take none / stop none / 21 DTE / bearish off",
+      "chosen_train": {
+        "n": 50,
+        "pnl": 2591.0,
+        "win_rate": 0.58,
+        "mean": 51.82,
+        "max_drawdown": 6076.0
+      },
+      "chosen_test": {
+        "n": 23,
+        "pnl": -705.0,
+        "win_rate": 0.522,
+        "mean": -30.65,
+        "max_drawdown": 5345.0
+      },
+      "live_test": {
+        "n": 50,
+        "pnl": -3574.0,
+        "win_rate": 0.38,
+        "mean": -71.48,
+        "max_drawdown": 5739.0
+      },
+      "all_configs_test_median_pnl": -3088.0
+    }
+  ],
+  "walk_forward_total": {
+    "chosen": -836.0,
+    "live": -3766.0
+  }
+}

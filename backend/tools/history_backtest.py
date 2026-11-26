@@ -12,7 +12,9 @@ the close, then runs the real router, risk gates and Monte Carlo stress test thr
 * Alpaca keeps no historical option quotes, so bid/ask = close -/+ half the median live spread
   for that symbol and price level (measured on archived Oct-Nov 2026 quotes). Open interest is
   unknown historically, so the open-interest gate is neutral. Any contract that traded that day counts;
-* news is the 10 latest Alpaca headlines before the close, scored like the live bot.
+* news is the 10 latest Alpaca headlines before the close, scored like the live bot. The account's
+  news archive starts on 2026-04-29, so earlier days have no news: sentiment is 0 and the
+  catalyst score is 0, which means long straddles cannot trigger before then.
 Positions still open at expiry settle at intrinsic value. Equity is held at $100k.
 
 Evolution is walk-forward. Every configuration (exit rule x target DTE x bearish switch) runs over
