@@ -101,6 +101,14 @@ class KillSwitchRequest(BaseModel):
 @app.get("/health")
 def health() -> dict[str, object]:
     valid, records = engine.ledger.verify()
+    try:
+        audit_events = engine.audit.count()
+        audit_storage = engine.audit.storage()
+        audit_available = True
+    except Exception:  # noqa: BLE001
+        audit_events = 0
+        audit_storage = {}
+        audit_available = False
     return {
         "status": "ok",
         "mode": settings.volition_mode,
@@ -119,6 +127,13 @@ def health() -> dict[str, object]:
         "scheduler_last_cycle_at": engine.runtime_store.state.last_cycle_at,
         "scheduler_consecutive_failures": engine.runtime_store.state.consecutive_failures,
         "execution_events": len(engine.execution_ledger.recent(limit=100_000)),
+        "audit_events": audit_events,
+        "audit_available": audit_available,
+        **audit_storage,
+        "unresolved_submissions": sum(
+            event.order_id is None and bool(event.client_order_id)
+            for event in engine.execution_ledger.active_orders()
+        ),
     }
 
 
@@ -150,8 +165,14 @@ async def strategy_lab(payload: StrategyLabRequest):
     try:
         return await engine.strategy_lab(payload.symbol, payload.paths, payload.scenario)
     except ValueError as exc:
+        engine.audit.append("strategy_lab_failed", {
+            "request": payload.model_dump(), "error_type": type(exc).__name__,
+        }, symbol=payload.symbol)
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     except Exception as exc:
+        engine.audit.append("strategy_lab_failed", {
+            "request": payload.model_dump(), "error_type": type(exc).__name__,
+        }, symbol=payload.symbol)
         raise HTTPException(status_code=502, detail=f"Simulation failed: {type(exc).__name__}") from exc
 
 
@@ -170,7 +191,10 @@ def kill_switch(payload: KillSwitchRequest) -> dict[str, object]:
     armed = engine.set_kill_switch(payload.armed)
     return {
         "armed": armed,
-        "message": "All new orders are blocked." if armed else "Autonomous cycles may trade when every gate passes.",
+        "message": (
+            "New entries are paused; broker reconciliation and exits continue during market hours when the scheduler is enabled."
+            if armed else "Autonomous entries may trade when every gate passes."
+        ),
     }
 
 

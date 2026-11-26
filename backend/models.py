@@ -32,6 +32,7 @@ class DecisionStatus(str, Enum):
     REJECTED = "rejected"
     NO_TRADE = "no_trade"
     FAILED = "failed"
+    UNCERTAIN = "uncertain"
 
 
 class OptionContract(BaseModel):
@@ -49,6 +50,7 @@ class OptionContract(BaseModel):
     implied_volatility: float
     open_interest: int = 0
     volume: int = 0
+    quote_at: datetime | None = None
 
     @computed_field
     @property
@@ -146,6 +148,7 @@ class TradeLeg(BaseModel):
     mid: float = 0.0
     spread_pct: float = 0.0
     open_interest: int = 0
+    quote_at: datetime | None = None
 
 
 class TradePlan(BaseModel):
@@ -199,7 +202,7 @@ class ExecutionEvent(BaseModel):
     decision_id: str | None = None
     cycle_id: str | None = None
     symbol: str
-    kind: Literal["review", "order_submitted", "order_update", "exit_submitted", "exit_update"]
+    kind: Literal["review", "order_intent", "order_submitted", "order_update", "exit_intent", "exit_submitted", "exit_update"]
     status: str
     order_id: str | None = None
     client_order_id: str | None = None
@@ -510,7 +513,7 @@ class DashboardState(BaseModel):
     order_submission_enabled: bool
     operator_controls_configured: bool
     market_open: bool
-    scheduler_state: Literal["running", "waiting_for_market", "paused"]
+    scheduler_state: Literal["running", "waiting_for_market", "paused", "disabled"]
     next_cycle_at: str
     scheduler_last_heartbeat_at: str | None = None
     scheduler_last_cycle_at: str | None = None

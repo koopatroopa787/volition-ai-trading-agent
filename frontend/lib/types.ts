@@ -98,7 +98,7 @@ export type Passport = {
   created_at: string;
   cycle_id: string;
   symbol: string;
-  status: "executed" | "submitted" | "previewed" | "rejected" | "no_trade" | "failed";
+  status: "executed" | "submitted" | "previewed" | "rejected" | "no_trade" | "failed" | "uncertain";
   plan: TradePlan;
   opinions: AgentOpinion[];
   gates: Gate[];
@@ -212,7 +212,7 @@ export type Dashboard = {
   order_submission_enabled: boolean;
   operator_controls_configured: boolean;
   market_open: boolean;
-  scheduler_state: "running" | "waiting_for_market" | "paused";
+  scheduler_state: "running" | "waiting_for_market" | "paused" | "disabled";
   next_cycle_at: string;
   scheduler_last_heartbeat_at: string | null;
   scheduler_last_cycle_at: string | null;

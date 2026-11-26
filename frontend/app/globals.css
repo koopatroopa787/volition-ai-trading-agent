@@ -272,7 +272,7 @@ strong, b, code, time, dd { font-variant-numeric: tabular-nums; }
 .lifecycle-mark { width: 7px; height: 7px; border-radius: 50%; background: var(--blue); }
 .lifecycle-mark.filled, .lifecycle-mark.simulated_fill { background: var(--green); }
 .lifecycle-mark.risk_veto, .lifecycle-mark.rejected, .lifecycle-mark.failed { background: var(--red); }
-.lifecycle-mark.risk_approved_not_submitted, .lifecycle-mark.market_closed { background: var(--amber); }
+.lifecycle-mark.risk_approved_not_submitted, .lifecycle-mark.market_closed, .lifecycle-mark.submission_unknown { background: var(--amber); }
 .lifecycle-list b { display: block; font-size: 10px; text-transform: capitalize; }
 .lifecycle-list small { display: block; margin-top: 3px; overflow: hidden; color: var(--muted); font-size: 9px; white-space: nowrap; text-overflow: ellipsis; }
 .lifecycle-list > div > strong { color: var(--ink-soft); font-size: 9px; font-weight: 650; text-transform: capitalize; }
@@ -291,10 +291,12 @@ strong, b, code, time, dd { font-variant-numeric: tabular-nums; }
 .decision-mark { width: 7px; height: 7px; border-radius: 50%; background: var(--blue); }
 .decision-mark.executed { background: var(--green); }
 .decision-mark.rejected, .decision-mark.failed { background: var(--red); }
+.decision-mark.uncertain { background: var(--amber); }
 .decision-mark.no_trade { background: #929b96; }
 .decision-status { justify-self: start; padding: 4px 7px; border-radius: 3px; background: #e8ebe8; color: var(--ink-soft); font-size: 9px; text-transform: capitalize; }
 .decision-status.executed { background: var(--green-soft); color: var(--green); }
 .decision-status.rejected, .decision-status.failed { background: var(--red-soft); color: var(--red); }
+.decision-status.uncertain { background: var(--amber-soft); color: var(--amber); }
 .decision-status.no_trade { color: var(--muted); }
 
 .lab-controls { min-height: 70px; display: flex; align-items: stretch; gap: 12px; margin: 7px 0 22px; border-top: 1px solid var(--line-strong); border-bottom: 1px solid var(--line-strong); }

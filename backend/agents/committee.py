@@ -5,10 +5,13 @@ from __future__ import annotations
 import asyncio
 import json
 import re
+import time
 from dataclasses import dataclass
 
 import httpx
 
+from agents.factcheck import facts_from_prompt, review
+from audit import AuditTrail
 from config import Settings
 from models import AccountSnapshot, AgentOpinion, MarketSnapshot, MonteCarloResult, StrategyKind, TradePlan
 
@@ -22,13 +25,37 @@ class Role:
 ROLES = (
     Role("Regime Sentinel", "Judge whether trend and market regime fit the proposed directional exposure."),
     Role("Volatility Architect", "Judge whether the volatility regime and convexity fit the structure."),
-    Role("Adversarial Skeptic", "Identify a concrete, quantified reason the proposal may be too fragile."),
+    Role(
+        "Adversarial Skeptic",
+        "Read limit_checks. Oppose only if an entry has breached true; if none is breached, support. Do not compare numbers yourself and never invent a threshold. "
+        "Quote the breached limit and its value in the summary sentence. Write evidence as two short plain-text strings, for example \"expected_pnl_dollars > 0 is breached\" and \"value -10.36\"; never copy limit_checks entries into evidence.",
+    ),
 )
 
 
+def limit_checks(evidence: dict) -> list[dict[str, object]]:
+    """Do the Skeptic's comparisons in code; a small model reads the result instead of comparing numbers."""
+    proposal, stress = evidence["proposal"], evidence.get("stress_test")
+    checks = [
+        ("max_loss_pct_of_equity <= risk_budget_pct_of_equity", proposal["max_loss_pct_of_equity"],
+         proposal["max_loss_pct_of_equity"] is None or proposal["max_loss_pct_of_equity"] > proposal["risk_budget_pct_of_equity"]),
+        ("router_confidence_0_to_1 >= 0.68", proposal["router_confidence_0_to1"], proposal["router_confidence_0_to1"] < 0.68),
+    ]
+    if stress:
+        floor = stress.get("expected_pnl_floor_dollars", 0.0)
+        checks += [
+            (f"expected_pnl_dollars > {floor:g}" if floor else "expected_pnl_dollars > 0", stress["expected_pnl_dollars"], stress["expected_pnl_dollars"] <= floor),
+            ("probability_profit_pct >= 35", stress["probability_profit_pct"], stress["probability_profit_pct"] < 35),
+            ("probability_near_max_loss_pct <= 60", stress["probability_near_max_loss_pct"],
+             stress["probability_near_max_loss_pct"] > 60),
+        ]
+    return [{"limit": limit, "value": value, "breached": breached} for limit, value, breached in checks]
+
+
 class ReasoningCommittee:
-    def __init__(self, settings: Settings) -> None:
+    def __init__(self, settings: Settings, audit: AuditTrail | None = None) -> None:
         self.settings = settings
+        self.audit = audit
 
     async def deliberate(
         self,
@@ -36,14 +63,47 @@ class ReasoningCommittee:
         plan: TradePlan,
         account: AccountSnapshot | None = None,
         simulation: MonteCarloResult | None = None,
+        cycle_id: str | None = None,
     ) -> list[AgentOpinion]:
         if plan.strategy == StrategyKind.NO_TRADE:
+            if self.audit:
+                self.audit.append("model_skipped", {"reason": "no_trade", "roles": [role.name for role in ROLES]},
+                                  cycle_id=cycle_id, symbol=market.symbol)
             return [self._fallback(role, market, plan) for role in ROLES]
         if not self.settings.reasoning_enabled:
+            if self.audit:
+                self.audit.append("model_skipped", {"reason": "reasoning_disabled", "roles": [role.name for role in ROLES]},
+                                  cycle_id=cycle_id, symbol=market.symbol)
             return [self._fallback(role, market, plan) for role in ROLES]
-        return await asyncio.gather(
-            *(self._ask(role, market, plan, account, simulation) for role in ROLES)
-        )
+        if self.audit:
+            opinions = await asyncio.gather(
+                *(self._ask(role, market, plan, account, simulation, cycle_id) for role in ROLES)
+            )
+        else:
+            opinions = await asyncio.gather(
+                *(self._ask(role, market, plan, account, simulation) for role in ROLES)
+            )
+        return self._factchecked(list(opinions), market, plan, account, simulation, cycle_id)
+
+    def _factchecked(
+        self,
+        opinions: list[AgentOpinion],
+        market: MarketSnapshot,
+        plan: TradePlan,
+        account: AccountSnapshot | None,
+        simulation: MonteCarloResult | None,
+        cycle_id: str | None,
+    ) -> list[AgentOpinion]:
+        """Check each opinion's numbers against the facts the models were given (agents/factcheck.py)."""
+        mode = self.settings.factcheck_mode
+        if mode == "off":
+            return opinions
+        facts = facts_from_prompt(self._evidence(ROLES[0], market, plan, account, simulation))
+        checked, report = review(opinions, facts, mode)
+        if self.audit:
+            self.audit.append("opinion_factcheck", {"mode": mode, "opinions": report},
+                              cycle_id=cycle_id, symbol=market.symbol)
+        return checked
 
     async def _ask(
         self,
@@ -52,6 +112,7 @@ class ReasoningCommittee:
         plan: TradePlan,
         account: AccountSnapshot | None,
         simulation: MonteCarloResult | None,
+        cycle_id: str | None = None,
     ) -> AgentOpinion:
         evidence = self._evidence(role, market, plan, account, simulation)
         system = (
@@ -76,11 +137,14 @@ class ReasoningCommittee:
             "temperature": 0.15,
             "max_tokens": 260,
         }
+        if self.audit:
+            self.audit.append("model_request", {"role": role.name, "request": payload},
+                              cycle_id=cycle_id, symbol=market.symbol)
+        started = time.perf_counter()
         try:
-            # CPU-only local models can need roughly a minute for their first
-            # response while weights are loaded. Keep the call bounded, but
-            # leave enough room for the three independently queued opinions.
-            async with httpx.AsyncClient(timeout=150) as client:
+            # The three opinions queue behind one another on a CPU-only model, so the last one waits for the
+            # other two as well as its own run. Keep the call bounded, but not shorter than that queue.
+            async with httpx.AsyncClient(timeout=self.settings.reasoning_timeout_seconds) as client:
                 headers = {}
                 if self.settings.effective_reasoning_api_key:
                     headers["Authorization"] = f"Bearer {self.settings.effective_reasoning_api_key}"
@@ -90,7 +154,13 @@ class ReasoningCommittee:
                     json=payload,
                 )
                 response.raise_for_status()
-                text = response.json()["choices"][0]["message"]["content"]
+                response_body = response.json()
+                text = response_body["choices"][0]["message"]["content"]
+            if self.audit:
+                self.audit.append("model_response", {
+                    "role": role.name, "response": response_body, "http_status": response.status_code,
+                    "elapsed_ms": round((time.perf_counter() - started) * 1000),
+                }, cycle_id=cycle_id, symbol=market.symbol)
             match = re.search(r"\{.*\}", text, flags=re.DOTALL)
             body = json.loads(match.group(0) if match else text)
             return AgentOpinion(
@@ -104,7 +174,13 @@ class ReasoningCommittee:
                     f"{self.settings.effective_reasoning_model}"
                 ).strip(" ·"),
             )
-        except Exception:  # external reasoning must never take down the risk loop
+        except Exception as exc:  # external reasoning must never take down the risk loop
+            if self.audit:
+                self.audit.append("model_fallback", {
+                    "role": role.name, "error_type": type(exc).__name__,
+                    "http_status": exc.response.status_code if isinstance(exc, httpx.HTTPStatusError) else None,
+                    "elapsed_ms": round((time.perf_counter() - started) * 1000),
+                }, cycle_id=cycle_id, symbol=market.symbol)
             return self._fallback(role, market, plan)
 
     def _evidence(
@@ -149,7 +225,11 @@ class ReasoningCommittee:
                     "probability_near_max_loss_pct": "<= 60",
                 },
             }
-        return {
+            floor = self.settings.expected_pnl_floor(plan.strategy.value, plan.symbol, plan.max_loss)
+            if floor:                                   # index-ETF condors only; every other prompt is unchanged
+                stress_test["expected_pnl_floor_dollars"] = round(floor, 2)
+                stress_test["pass_policy"]["expected_pnl_dollars"] = f"> {floor:.2f}"
+        evidence = {
             "committee_authority": "advisory_only; deterministic risk gates control execution",
             "role": role.name,
             "role_check": self._role_check(role, market, plan, max_loss_pct),
@@ -188,6 +268,9 @@ class ReasoningCommittee:
             },
             "stress_test": stress_test,
         }
+        if role.name == "Adversarial Skeptic":
+            evidence["limit_checks"] = limit_checks(evidence)
+        return evidence
 
     def _role_check(
         self,

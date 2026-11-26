@@ -4,11 +4,13 @@ from __future__ import annotations
 
 import asyncio
 import hashlib
+import logging
 import uuid
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
 from agents.committee import ReasoningCommittee
+from audit import AuditTrail
 from config import ROOT, Settings
 from ledger import DecisionLedger, ExecutionLedger
 from learning import LearningEngine
@@ -42,12 +44,17 @@ class VolitionEngine:
     def __init__(self, settings: Settings) -> None:
         self.settings = settings
         self.provider = MarketProvider(settings)
-        self.router = StrategyRouter()
+        self.router = StrategyRouter(settings.bearish_spreads_enabled, settings.condor_symbols)
         self.risk = RiskConstitution(settings)
-        self.committee = ReasoningCommittee(settings)
+        self.audit = AuditTrail(ROOT / "backend" / "data" / "audit.sqlite3", sensitive_values=[
+            settings.alpaca_api_key, settings.alpaca_secret_key, settings.reasoning_api_key,
+            settings.featherless_api_key, settings.marketaux_api_token, settings.fred_api_key,
+            settings.operator_api_key,
+        ])
+        self.committee = ReasoningCommittee(settings, self.audit)
         self.executor = AlpacaPaperExecutor(settings)
         self.intelligence_provider = IntelligenceProvider(settings)
-        self.simulator = MonteCarloSimulator()
+        self.simulator = MonteCarloSimulator(settings.credit_vol_factor)
         self.learning_engine = LearningEngine()
         self.ledger = DecisionLedger(ROOT / "backend" / "data" / "decisions.jsonl")
         self.execution_ledger = ExecutionLedger(ROOT / "backend" / "data" / "order_events.jsonl")
@@ -55,6 +62,16 @@ class VolitionEngine:
         self.kill_switch = self.runtime_store.state.kill_switch
         self.autonomous = True
         self._cycle_lock = asyncio.Lock()
+
+    def _operational_audit(self, kind: str, payload: object, *, cycle_id: str | None = None,
+                           symbol: str | None = None) -> None:
+        """Audit failures must not block a risk-reducing exit or emergency pause."""
+        try:
+            self.audit.append(kind, payload, cycle_id=cycle_id, symbol=symbol)
+        except Exception as exc:  # noqa: BLE001
+            logging.getLogger("volition.audit").error(
+                "Audit write failed during %s: %s", kind, type(exc).__name__
+            )
 
     async def dashboard(self) -> DashboardState:
         if self.settings.volition_mode == "paper" and self.settings.paper_credentials_configured:
@@ -161,7 +178,9 @@ class VolitionEngine:
             ),
         ]
         scheduler_state = (
-            "paused"
+            "disabled"
+            if self.settings.volition_mode != "paper" or not self.settings.scheduler_enabled
+            else "paused"
             if self.kill_switch or not self.autonomous
             else "running"
             if market_clock.is_open
@@ -188,6 +207,16 @@ class VolitionEngine:
                     bars=bars,
                 )
             )
+        unresolved_orders = [
+            event for event in self.execution_ledger.active_orders()
+            if event.order_id is None and event.client_order_id
+        ]
+        recent_events = self.execution_ledger.recent(limit=20)
+        unresolved_ids = {event.event_id for event in unresolved_orders}
+        visible_events = (
+            unresolved_orders
+            + [event for event in recent_events if event.event_id not in unresolved_ids]
+        )[:20]
         return DashboardState(
             mode=self.settings.volition_mode,  # type: ignore[arg-type]
             data_label=(
@@ -217,10 +246,12 @@ class VolitionEngine:
             scheduler_state=scheduler_state,  # type: ignore[arg-type]
             next_cycle_at=(
                 runtime.next_cycle_at.isoformat()
-                if runtime.next_cycle_at and scheduler_state != "paused"
+                if runtime.next_cycle_at and scheduler_state in {"running", "waiting_for_market"}
                 else "At the next regular market session"
                 if scheduler_state == "waiting_for_market"
-                else "Paused by operator"
+                else "Autonomous scheduler disabled; automated exits are not running"
+                if scheduler_state == "disabled"
+                else "New entries paused; position exits are managed during market hours"
             ),
             scheduler_last_heartbeat_at=(
                 runtime.last_heartbeat_at.isoformat() if runtime.last_heartbeat_at else None
@@ -229,7 +260,7 @@ class VolitionEngine:
             scheduler_last_cycle_status=runtime.last_cycle_status,
             scheduler_last_cycle_message=runtime.last_cycle_message,
             scheduler_consecutive_failures=runtime.consecutive_failures,
-            execution_events=self.execution_ledger.recent(limit=20),
+            execution_events=visible_events,
             reasoning_mode=self.settings.reasoning_mode,  # type: ignore[arg-type]
             reasoning_model=(
                 f"{self.settings.effective_reasoning_provider or 'Model'} · "
@@ -243,7 +274,7 @@ class VolitionEngine:
             deep_scan_limit=self.settings.deep_scan_limit,
         )
 
-    async def _trading_shortlist(self) -> tuple[list[str], list[str]]:
+    async def _trading_shortlist(self, audit_cycle_id: str | None = None) -> tuple[list[str], list[str]]:
         ranked = await self.provider.ranked_symbols(self.settings.watchlist)
         cutoff = datetime.now(timezone.utc) - timedelta(minutes=self.settings.symbol_cooldown_minutes)
         last_reviewed: dict[str, datetime] = {}
@@ -268,39 +299,51 @@ class VolitionEngine:
             key=lambda symbol: last_reviewed[symbol],
         )
         shortlist = (fresh + cooled_by_age)[: self.settings.deep_scan_limit]
+        if audit_cycle_id:
+            self.audit.append("universe_screen", {
+                "watchlist": self.settings.watchlist, "market_pulse": await self.provider.market_pulse(),
+                "ranked": ranked, "cooldown_last_reviewed": last_reviewed,
+                "shortlist": shortlist, "cooling": sorted(cooling),
+            }, cycle_id=audit_cycle_id)
         return shortlist, [symbol for symbol in ranked if symbol in cooling]
 
     async def run_scheduled_cycle(self) -> DecisionPassport | None:
-        """Run only when autonomous trading is enabled and the market is open."""
+        """Manage existing risk whenever open; pause only new entries."""
 
-        if self.kill_switch or not self.autonomous:
-            self.runtime_store.record_cycle("paused", "Scheduled review skipped because the operator pause is armed.")
-            return None
-        if not await self.provider.market_open():
+        tick_id = f"tick-{uuid.uuid4().hex[:14]}"
+        market_open = await self.provider.market_open()
+        self._operational_audit("scheduler_tick", {"market_open": market_open, "kill_switch": self.kill_switch,
+                                                  "autonomous": self.autonomous}, cycle_id=tick_id)
+        if not market_open:
             self.runtime_store.record_cycle("market_closed", "Scheduled review checked in; the market is closed.")
             return None
-        await self.reconcile_orders()
-        await self.manage_positions()
-        return await self.run_cycle()
+        await self.reconcile_orders(audit_cycle_id=tick_id)
+        await self.manage_positions(audit_cycle_id=tick_id)
+        if self.kill_switch or not self.autonomous:
+            self._operational_audit("scheduler_paused", {"kill_switch": self.kill_switch,
+                                                        "autonomous": self.autonomous}, cycle_id=tick_id)
+            self.runtime_store.record_cycle("paused", "New entries paused; existing position exits are still managed.")
+            return None
+        return await self.run_cycle(trigger="scheduled", parent_cycle_id=tick_id)
 
-    async def reconcile_orders(self) -> list[ExecutionEvent]:
+    async def reconcile_orders(self, audit_cycle_id: str | None = None) -> list[ExecutionEvent]:
         """Record broker status changes without rewriting immutable decisions."""
 
         if self.settings.volition_mode != "paper" or not self.settings.paper_credentials_configured:
             return []
-        terminal = {"filled", "canceled", "expired", "rejected", "replaced"}
-        latest_by_order: dict[str, ExecutionEvent] = {}
-        for event in self.execution_ledger.recent(limit=2_000):
-            if event.order_id and event.order_id not in latest_by_order:
-                latest_by_order[event.order_id] = event
         changes: list[ExecutionEvent] = []
-        for order_id, previous in latest_by_order.items():
-            if previous.status.lower() in terminal:
-                continue
+        for previous in self.execution_ledger.active_orders():
             try:
-                body = await self.executor.order(order_id)
+                body = (
+                    await self.executor.order(previous.order_id)
+                    if previous.order_id
+                    else await self.executor.order_by_client_order_id(previous.client_order_id)
+                )
+                self._operational_audit("broker_order_snapshot", {"previous": previous, "broker_response": body},
+                                        cycle_id=audit_cycle_id or previous.cycle_id, symbol=previous.symbol)
                 status = str(body.get("status") or "unknown").lower()
-                if status == previous.status.lower():
+                order_id = str(body.get("id") or previous.order_id or "") or None
+                if status == previous.status.lower() and order_id == previous.order_id:
                     continue
                 kind = "exit_update" if previous.kind.startswith("exit") else "order_update"
                 event = ExecutionEvent(
@@ -322,6 +365,9 @@ class VolitionEngine:
                 )
                 changes.append(self.execution_ledger.append(event))
             except Exception as exc:  # noqa: BLE001
+                self._operational_audit("reconciliation_failed", {
+                    "previous": previous, "error_type": type(exc).__name__,
+                }, cycle_id=audit_cycle_id or previous.cycle_id, symbol=previous.symbol)
                 self.runtime_store.record_cycle(
                     "reconciliation_warning",
                     f"Order reconciliation will retry after {type(exc).__name__}.",
@@ -340,32 +386,68 @@ class VolitionEngine:
             return "expiration window reached (5 DTE or less)"
         return None
 
-    async def manage_positions(self) -> list[ExecutionEvent]:
+    def _stress_passed(self, simulation, plan) -> bool:
+        floor = self.settings.expected_pnl_floor(plan.strategy.value, plan.symbol, plan.max_loss)
+        return (
+            simulation.expected_pnl > floor
+            and simulation.probability_profit >= 0.35
+            and simulation.probability_near_max_loss <= 0.60
+        )
+
+    def _stress_limit(self, plan) -> str:
+        floor = self.settings.expected_pnl_floor(plan.strategy.value, plan.symbol, plan.max_loss)
+        expected = "positive expected P&L" if not floor else f"expected P&L above ${floor:,.0f} (index-ETF condor allowance)"
+        return f"{expected}; PoP ≥ 35%; near-max-loss probability ≤ 60%"
+
+    async def manage_positions(self, audit_cycle_id: str | None = None) -> list[ExecutionEvent]:
         """Apply bounded profit, loss and expiration exits to broker-synced positions."""
 
-        if self.kill_switch or not self.settings.can_submit_orders:
+        if not self.settings.can_submit_orders:
             return []
         account = await self.provider.account()
         positions = await self.provider.positions(account.equity)
-        recent = self.execution_ledger.recent(limit=2_000)
-        terminal_statuses = {"filled", "canceled", "expired", "rejected", "replaced"}
-        latest_exit_by_order: dict[str, ExecutionEvent] = {}
-        for event in recent:
-            if event.kind.startswith("exit") and event.order_id and event.order_id not in latest_exit_by_order:
-                latest_exit_by_order[event.order_id] = event
+        self._operational_audit("position_review_inputs", {"account": account, "positions": positions},
+                                cycle_id=audit_cycle_id)
+        active_exits = [
+            event for event in self.execution_ledger.active_orders()
+            if event.kind.startswith("exit")
+        ]
         submitted: list[ExecutionEvent] = []
         for position in positions:
             reason = self._exit_reason(position)
+            self._operational_audit("position_exit_check", {"position": position, "reason": reason},
+                                    cycle_id=audit_cycle_id, symbol=position.symbol)
             if not reason:
                 continue
             lifecycle_key = f"exit:{position.symbol}:{position.expiration}"
             active_exit = any(
-                event.cycle_id == lifecycle_key and event.status.lower() not in terminal_statuses
-                for event in latest_exit_by_order.values()
+                event.cycle_id == lifecycle_key for event in active_exits
             )
             if active_exit:
+                self._operational_audit("exit_duplicate_blocked", {"position": position, "reason": reason},
+                                        cycle_id=audit_cycle_id, symbol=position.symbol)
                 continue
-            receipt = await self.executor.close_position(position, lifecycle_key, reason)
+            client_order_id = f"volition-exit-{uuid.uuid4().hex[:20]}" if position.raw_legs else None
+            if client_order_id:
+                self._operational_audit("exit_order_intent", {
+                    "position": position, "reason": reason, "client_order_id": client_order_id,
+                }, cycle_id=lifecycle_key, symbol=position.symbol)
+                self.execution_ledger.append(
+                    ExecutionEvent(
+                        event_id=f"event-{uuid.uuid4().hex[:16]}",
+                        cycle_id=lifecycle_key,
+                        symbol=position.symbol,
+                        kind="exit_intent",
+                        status="submission_unknown",
+                        client_order_id=client_order_id,
+                        message="Exit intent persisted before contacting Alpaca; broker confirmation is pending.",
+                    )
+                )
+            receipt = await self.executor.close_position(
+                position, lifecycle_key, reason, client_order_id=client_order_id
+            )
+            self._operational_audit("exit_order_receipt", {"reason": reason, "receipt": receipt},
+                                    cycle_id=lifecycle_key, symbol=position.symbol)
             event = ExecutionEvent(
                 event_id=f"event-{uuid.uuid4().hex[:16]}",
                 cycle_id=lifecycle_key,
@@ -414,18 +496,28 @@ class VolitionEngine:
             items=items,
         )
 
-    async def run_cycle(self, symbol: str | None = None) -> DecisionPassport:
+    async def run_cycle(self, symbol: str | None = None, *, trigger: str = "operator",
+                        parent_cycle_id: str | None = None) -> DecisionPassport:
         if self._cycle_lock.locked():
             raise ValueError("A market review is already running; duplicate cycle blocked.")
         async with self._cycle_lock:
+            cycle_id = f"cycle-{uuid.uuid4().hex[:14]}"
+            self.audit.append("cycle_started", {
+                "trigger": trigger, "requested_symbol": symbol, "parent_cycle_id": parent_cycle_id,
+                "mode": self.settings.volition_mode, "execution_mode": self.settings.execution_mode,
+                "reasoning_model": self.settings.effective_reasoning_model,
+                "kill_switch": self.kill_switch,
+            }, cycle_id=cycle_id, symbol=symbol)
             try:
-                decision = await self._run_cycle(symbol)
+                decision = await self._run_cycle(symbol, cycle_id)
                 self.runtime_store.record_cycle(
                     decision.status.value,
                     f"{decision.symbol} review recorded as {decision.status.value}.",
                 )
                 return decision
             except Exception as exc:
+                self.audit.append("cycle_failed", {"error_type": type(exc).__name__},
+                                  cycle_id=cycle_id, symbol=symbol)
                 self.runtime_store.record_cycle(
                     "failed",
                     f"Review failed safely with {type(exc).__name__}; no retry order was inferred.",
@@ -433,14 +525,15 @@ class VolitionEngine:
                 )
                 raise
 
-    async def _run_cycle(self, symbol: str | None = None) -> DecisionPassport:
-        cycle_id = f"cycle-{uuid.uuid4().hex[:14]}"
+    async def _run_cycle(self, symbol: str | None = None, cycle_id: str | None = None) -> DecisionPassport:
+        cycle_id = cycle_id or f"cycle-{uuid.uuid4().hex[:14]}"
         account = await self.provider.account()
         positions = await self.provider.positions(account.equity)
         account.open_positions = len(positions)
         account.open_structures = sum(position.structure_count for position in positions)
         account.open_risk = round(sum(position.max_loss for position in positions), 2)
         account.open_risk_limit_pct = self.settings.max_portfolio_open_risk_pct
+        self.audit.append("portfolio_inputs", {"account": account, "positions": positions}, cycle_id=cycle_id)
         if symbol:
             requested = symbol.upper()
             if requested not in self.settings.watchlist:
@@ -448,35 +541,52 @@ class VolitionEngine:
             scan_symbols = [requested]
             cooldown_symbols: list[str] = []
         else:
-            scan_symbols, cooldown_symbols = await self._trading_shortlist()
-        markets = await self.provider.markets(symbols=scan_symbols)
+            scan_symbols, cooldown_symbols = await self._trading_shortlist(audit_cycle_id=cycle_id)
+        self.audit.append("scan_selected", {"symbols": scan_symbols, "cooldown_symbols": cooldown_symbols},
+                          cycle_id=cycle_id)
+        markets = await self.provider.markets(symbols=scan_symbols, audit=self.audit, audit_cycle_id=cycle_id)
         if not markets:
             raise ValueError("No shortlisted market evidence was available")
+        self.audit.append("market_snapshots", {"markets": markets}, cycle_id=cycle_id)
 
         plans = [self.router.route(market, account, self.settings.max_risk_per_trade_pct) for market in markets]
         candidate_indexes = [index for index, plan in enumerate(plans) if plan.strategy != StrategyKind.NO_TRADE]
+        candidate_gates = [
+            self.risk.evaluate(plan, account, market, self.kill_switch, positions)
+            for plan, market in zip(plans, markets)
+        ]
+        pending_by_index = [self._pending_order_for(plan.symbol) for plan in plans]
         risk_eligible = [
             index
             for index in candidate_indexes
-            if self.risk.approved(
-                self.risk.evaluate(plans[index], account, markets[index], self.kill_switch, positions)
-            )
-            and self._pending_order_for(plans[index].symbol) is None
+            if self.risk.approved(candidate_gates[index]) and pending_by_index[index] is None
         ]
+        self.audit.append("candidate_screen", {
+            "candidates": [
+                {"symbol": market.symbol, "plan": plan, "gates": gates,
+                 "pending_order": pending_by_index[index],
+                 "risk_eligible": index in risk_eligible}
+                for index, (market, plan, gates) in enumerate(zip(markets, plans, candidate_gates))
+            ]
+        }, cycle_id=cycle_id)
         selection_pool = risk_eligible or candidate_indexes or list(range(len(plans)))
         selected_index = max(selection_pool, key=lambda index: plans[index].confidence)
         market = markets[selected_index]
         plan = plans[selected_index]
-        gates = self.risk.evaluate(plan, account, market, self.kill_switch, positions)
+        gates = list(candidate_gates[selected_index])
+        self.audit.append("candidate_selected", {
+            "selected_index": selected_index, "selection_pool": selection_pool,
+            "risk_eligible": risk_eligible, "candidate_indexes": candidate_indexes,
+            "plan": plan,
+        }, cycle_id=cycle_id, symbol=market.symbol)
         simulation = None
         if plan.strategy != StrategyKind.NO_TRADE:
             try:
                 simulation = self.simulator.simulate(market, plan, 2_500)
-                simulation_passed = (
-                    simulation.expected_pnl > 0
-                    and simulation.probability_profit >= 0.35
-                    and simulation.probability_near_max_loss <= 0.60
-                )
+                self.audit.append("simulation_result", {
+                    "paths_requested": 2_500, "scenario": "base", "result": simulation,
+                }, cycle_id=cycle_id, symbol=market.symbol)
+                simulation_passed = self._stress_passed(simulation, plan)
                 gates.append(
                     GateResult(
                         name="strategy stress test",
@@ -486,10 +596,14 @@ class VolitionEngine:
                             f"${simulation.expected_pnl:,.0f} · near-max-loss "
                             f"{simulation.probability_near_max_loss:.1%}"
                         ),
-                        limit="positive expected P&L; PoP ≥ 35%; near-max-loss probability ≤ 60%",
+                        limit=self._stress_limit(plan),
                     )
                 )
             except (ValueError, ArithmeticError):
+                self.audit.append("simulation_failed", {
+                    "paths_requested": 2_500, "scenario": "base",
+                    "reason": "ValueError or ArithmeticError",
+                }, cycle_id=cycle_id, symbol=market.symbol)
                 gates.append(
                     GateResult(
                         name="strategy stress test",
@@ -499,7 +613,7 @@ class VolitionEngine:
                     )
                 )
 
-        opinions = await self.committee.deliberate(market, plan, account, simulation)
+        opinions = await self.committee.deliberate(market, plan, account, simulation, cycle_id=cycle_id)
 
         pending_order = self._pending_order_for(plan.symbol)
         gates.append(
@@ -509,7 +623,7 @@ class VolitionEngine:
                 observed=(
                     "no pending broker order"
                     if pending_order is None
-                    else f"{pending_order.status} order {pending_order.order_id} is still active"
+                    else f"{pending_order.status} order {pending_order.order_id or pending_order.client_order_id} is still active"
                 ),
                 limit="at most one active entry order per symbol",
             )
@@ -528,12 +642,35 @@ class VolitionEngine:
             )
         )
         approved = self.risk.approved(gates)
+        self.audit.append("decision_evaluated", {
+            "plan": plan, "opinions": opinions, "gates": gates, "approved": approved,
+            "pending_order": pending_order,
+        }, cycle_id=cycle_id, symbol=market.symbol)
 
         if plan.strategy == StrategyKind.NO_TRADE:
             receipt = await self.executor.execute(plan, cycle_id)
             status = DecisionStatus.NO_TRADE
         elif approved:
-            receipt = await self.executor.execute(plan, cycle_id)
+            client_order_id = f"volition-{cycle_id[-14:]}" if self.settings.can_submit_orders else None
+            if client_order_id:
+                self.audit.append("entry_order_intent", {
+                    "order_payload": self.executor.order_payload(plan, client_order_id),
+                    "client_order_id": client_order_id,
+                }, cycle_id=cycle_id, symbol=plan.symbol)
+                self.execution_ledger.append(
+                    ExecutionEvent(
+                        event_id=f"event-{uuid.uuid4().hex[:16]}",
+                        cycle_id=cycle_id,
+                        symbol=plan.symbol,
+                        kind="order_intent",
+                        status="submission_unknown",
+                        client_order_id=client_order_id,
+                        message="Entry intent persisted before contacting Alpaca; broker confirmation is pending.",
+                    )
+                )
+            receipt = await self.executor.execute(plan, cycle_id, client_order_id=client_order_id)
+            self.audit.append("entry_order_receipt", {"receipt": receipt},
+                              cycle_id=cycle_id, symbol=plan.symbol)
             status = (
                 DecisionStatus.EXECUTED
                 if receipt.mode == "demo" and receipt.accepted
@@ -541,6 +678,8 @@ class VolitionEngine:
                 if receipt.mode == "paper" and receipt.accepted
                 else DecisionStatus.PREVIEWED
                 if receipt.accepted
+                else DecisionStatus.UNCERTAIN
+                if receipt.raw_status == "submission_unknown"
                 else DecisionStatus.FAILED
             )
         else:
@@ -586,7 +725,17 @@ class VolitionEngine:
             },
         )
         passport = self.ledger.append(passport)
-        lifecycle_kind = "order_submitted" if passport.status == DecisionStatus.SUBMITTED else "review"
+        self.audit.append("decision_persisted", {
+            "decision_id": passport.decision_id, "status": passport.status,
+            "record_hash": passport.record_hash, "receipt": passport.receipt,
+        }, cycle_id=cycle_id, symbol=market.symbol)
+        lifecycle_kind = (
+            "order_submitted"
+            if passport.status == DecisionStatus.SUBMITTED
+            else "order_update"
+            if passport.receipt.mode == "paper" and passport.receipt.client_order_id
+            else "review"
+        )
         self.execution_ledger.append(
             ExecutionEvent(
                 event_id=f"event-{uuid.uuid4().hex[:16]}",
@@ -605,21 +754,17 @@ class VolitionEngine:
     def _pending_order_for(self, symbol: str) -> ExecutionEvent | None:
         if self.settings.volition_mode != "paper":
             return None
-        terminal = {"filled", "canceled", "expired", "rejected", "replaced"}
-        seen: set[str] = set()
-        for event in self.execution_ledger.recent(limit=2_000):
-            if not event.order_id or event.order_id in seen:
-                continue
-            seen.add(event.order_id)
+        for event in self.execution_ledger.active_orders():
             if (
                 event.symbol == symbol
-                and event.kind in {"order_submitted", "order_update"}
-                and event.status.lower() not in terminal
+                and event.kind in {"review", "order_intent", "order_submitted", "order_update"}
             ):
                 return event
         return None
 
     def set_kill_switch(self, armed: bool) -> bool:
+        previous = self.kill_switch
+        self._operational_audit("operator_kill_switch", {"previous": previous, "requested": armed})
         self.kill_switch = armed
         self.runtime_store.set_kill_switch(armed)
         return self.kill_switch
@@ -645,6 +790,10 @@ class VolitionEngine:
         paths: int = 5_000,
         scenario: str = "base",
     ):
+        lab_id = f"lab-{uuid.uuid4().hex[:14]}"
+        self.audit.append("strategy_lab_requested", {
+            "requested_symbol": symbol, "paths": paths, "scenario": scenario,
+        }, cycle_id=lab_id, symbol=symbol)
         account = await self.provider.account()
         if symbol:
             requested = symbol.upper()
@@ -652,12 +801,15 @@ class VolitionEngine:
                 raise ValueError(f"{requested} is not in the configured watchlist")
             scan_symbols = [requested]
         else:
-            scan_symbols, _ = await self._trading_shortlist()
-        markets = await self.provider.markets(symbols=scan_symbols)
+            scan_symbols, _ = await self._trading_shortlist(audit_cycle_id=lab_id)
+        markets = await self.provider.markets(symbols=scan_symbols, audit=self.audit, audit_cycle_id=lab_id)
         plans = [
             self.router.route(market, account, self.settings.max_risk_per_trade_pct)
             for market in markets
         ]
+        self.audit.append("strategy_lab_inputs", {
+            "account": account, "markets": markets, "plans": plans,
+        }, cycle_id=lab_id)
         if symbol:
             matches = [
                 (market, plan)
@@ -697,11 +849,7 @@ class VolitionEngine:
             lab_market = market.model_copy(update={"market_open": True})
             gates = self.risk.evaluate(plan, account, lab_market, False)
             blocked = [gate for gate in gates if not gate.passed and gate.severity == "block"]
-            simulation_passed = (
-                result.expected_pnl > 0
-                and result.probability_profit >= 0.35
-                and result.probability_near_max_loss <= 0.60
-            )
+            simulation_passed = self._stress_passed(result, plan)
             if blocked or not simulation_passed:
                 reasons = [f"{gate.name}: {gate.observed}" for gate in blocked]
                 if not simulation_passed:
@@ -715,6 +863,9 @@ class VolitionEngine:
                         "eligibility_reason": " · ".join(reasons),
                     }
                 )
+        self.audit.append("strategy_lab_result", {
+            "market": market, "plan": plan, "result": result,
+        }, cycle_id=lab_id, symbol=market.symbol)
         return result
 
     def _demo_passports(self, account, markets, opportunities: list[TradePlan]) -> list[DecisionPassport]:

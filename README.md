@@ -24,6 +24,18 @@ The $100,000 cash balance is the recorded pre-execution baseline. Continuous
 paper execution is now explicitly authorized; deterministic gates, managed
 exits, and the kill switch remain in force.
 
+The operator pause blocks **new entries**, not risk-reducing closes: broker
+reconciliation and managed exits continue during market hours. Disabling the
+scheduler stops both reviews and automated exits, which the interface now labels
+explicitly. Live entry proposals fail closed if any selected option quote lacks
+an exchange timestamp or is older than the configured freshness limit.
+To stop **all** automated orders, including exits, disable order submission in
+the deployment configuration or use Alpaca's broker controls; the entry pause is
+not an all-orders emergency stop.
+Every paper submission now writes a durable intent before contacting Alpaca. If
+the response is lost, the desk checks the broker by client order ID and holds
+the affected symbol rather than guessing that another order is safe.
+
 Volition turns market evidence into risk-defined options structures, routes every candidate through an independent AI committee and a deterministic risk constitution, then executes eligible orders in a dedicated Alpaca paper account. Every decision—including “no trade”—produces a tamper-evident decision passport containing the evidence, agent debate, gates, proposed legs, and Alpaca receipt.
 
 ## Why this entry is different

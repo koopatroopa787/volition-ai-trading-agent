@@ -43,6 +43,11 @@ class MonteCarloSimulator:
     """
 
     _CREDIT_STRATEGIES = {StrategyKind.IRON_CONDOR}
+
+    def __init__(self, credit_vol_factor: float = 1.0) -> None:
+        # Share of implied volatility used to simulate credit structures; 1.0 reproduces the original test.
+        self.credit_vol_factor = credit_vol_factor
+
     _SCENARIOS = {
         "base": (
             "Current evidence",
@@ -96,7 +101,8 @@ class MonteCarloSimulator:
             if contract.implied_volatility > 0
         ]
         implied_vol = statistics.median(contract_ivs) if contract_ivs else 0.0
-        base_volatility = min(1.25, max(0.05, market.realized_volatility, implied_vol))
+        simulated_implied = implied_vol * self.credit_vol_factor if plan.strategy in self._CREDIT_STRATEGIES else implied_vol
+        base_volatility = min(1.25, max(0.05, market.realized_volatility, simulated_implied))
         base_drift = max(
             -0.15,
             min(0.15, market.trend_score * 0.10 + market.news_sentiment * 0.03),
@@ -213,7 +219,8 @@ class MonteCarloSimulator:
             distribution=self._histogram(pnl_values),
             assumptions=[
                 "Underlying paths use geometric Brownian motion; returns are not guaranteed to be normally distributed in real markets.",
-                f"Annual volatility uses the higher of realized volatility and median chain IV ({annual_volatility:.1%}).",
+                f"Annual volatility uses the higher of realized volatility and median chain IV ({annual_volatility:.1%})"
+                + (f", with chain IV scaled to {self.credit_vol_factor:.0%} for credit structures because realized volatility has historically run below implied." if plan.strategy in self._CREDIT_STRATEGIES and self.credit_vol_factor < 1.0 else "."),
                 f"Annual drift is a bounded translation of current trend and news evidence ({annual_drift:+.1%}).",
                 "Option legs settle at expiration intrinsic value; early exercise, dividends and changing volatility are not modelled.",
                 f"Estimated half-spread cost of ${slippage:,.2f} is deducted from every outcome.",

@@ -4,5 +4,6 @@ __pycache__/
 *.py[cod]
 .pytest_cache/
 data/*.jsonl
+data/*.sqlite3*
 data/runtime_state.json*
 tests/

@@ -27,3 +27,5 @@ docs/deck-render/
 docs/*.inspect.ndjson
 docs/video-build/
 .video-tools/
+backend/data/audit.sqlite3*
+*.pre-*-fix-*

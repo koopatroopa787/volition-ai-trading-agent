@@ -68,7 +68,7 @@ This is feasible because Alpaca's option chain exposes quotes, implied volatilit
 
 - Alpaca CLI supplies observable, structured account and option-chain evidence.
 - Alpaca Trading API submits an atomic `mleg` paper order with concrete OCC symbols and position intents.
-- A private Qwen 2.5 model served by Ollama runs independent regime, volatility, and adversarial opinions with visible per-opinion provenance.
+- Featherless runs independent regime, volatility, and adversarial opinions.
 - The deterministic constitution has final veto authority and cannot be overridden by a model response.
 - Decision passports bind evidence, agent opinions, gates, order IDs, and hashes into an auditable ledger.
 
@@ -99,3 +99,4 @@ Alpaca documents that options have separate approval levels, options buying powe
 5. Freeze core strategy logic before the final day; spend the remaining time on resilience, the one-page write-up, video, deck, and public build posts.
 
 The strategy should not maximize trade frequency. In a seven-day judged competition, one catastrophic options mistake is more damaging than several disciplined no-trades.
+

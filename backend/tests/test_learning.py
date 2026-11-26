@@ -6,6 +6,7 @@ from learning import LearningEngine
 from models import (
     DecisionPassport,
     DecisionStatus,
+    ExecutionEvent,
     ExecutionReceipt,
     GateResult,
     StrategyKind,
@@ -43,6 +44,28 @@ class LearningEngineTests(unittest.TestCase):
         self.assertEqual(state.closed_outcomes, 0)
         self.assertEqual(state.stage, "collecting_evidence")
         self.assertEqual(state.common_vetoes[0].gate, "market window")
+
+    def test_immediately_filled_submission_counts_once(self) -> None:
+        state = LearningEngine().summarize(
+            [],
+            [
+                ExecutionEvent(
+                    event_id="entry-filled", symbol="SPY", kind="order_submitted",
+                    status="filled", order_id="entry-1", message="filled",
+                ),
+                ExecutionEvent(
+                    event_id="entry-confirmed", symbol="SPY", kind="order_update",
+                    status="filled", order_id="entry-1", message="filled",
+                ),
+                ExecutionEvent(
+                    event_id="exit-filled", symbol="SPY", kind="exit_submitted",
+                    status="filled", order_id="exit-1", message="filled",
+                ),
+            ],
+        )
+        self.assertEqual(state.paper_executions, 1)
+        self.assertEqual(state.closed_outcomes, 1)
+        self.assertEqual(state.pending_outcomes, 0)
 
 
 if __name__ == "__main__":

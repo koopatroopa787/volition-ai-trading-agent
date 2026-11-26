@@ -4,7 +4,7 @@
 
 “Volition is an autonomous options risk desk. It does not stop at a recommendation: it decides, can refuse, submits only atomic paper structures, reconciles the broker, manages exits, and remembers only verified outcomes.”
 
-Show the paper account, $100,000 portfolio value, Level 3 approval, **Order authority**, scheduler heartbeat, and **Private model** label.
+Show the paper account, $100,000 portfolio value, Level 3 approval, **Order authority**, scheduler heartbeat, and external-model/rule-fallback label.
 
 ## 0:20–0:45 — Broad evidence, focused computation
 
@@ -20,10 +20,6 @@ Open **Strategy Lab**, choose JPM, and run the current-evidence scenario. Point 
 - the exact liquidity and stress-test failures.
 
 Say: “The simulation never grants permission. It can only add another veto.”
-
-Briefly show **Performance**: the broker-sourced equity line, aligned SPY
-benchmark, and honest zero-P&L starting state. “This is account evidence, not a
-backtest substituted for real results.”
 
 ## 1:20–1:45 — The autonomous decision
 

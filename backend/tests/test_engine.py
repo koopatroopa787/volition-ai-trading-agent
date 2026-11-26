@@ -3,12 +3,13 @@ from __future__ import annotations
 import tempfile
 import unittest
 from pathlib import Path
-from unittest.mock import AsyncMock
+from unittest.mock import AsyncMock, Mock
 
 from config import Settings
+from audit import AuditTrail
 from engine import VolitionEngine
 from ledger import DecisionLedger, ExecutionLedger
-from fixtures import demo_account, demo_positions
+from fixtures import demo_account, demo_markets, demo_positions
 from models import AgentOpinion, DecisionStatus, ExecutionEvent, ExecutionReceipt, StrategyKind
 from runtime_state import RuntimeStateStore
 
@@ -19,6 +20,8 @@ class EngineSelectionTests(unittest.IsolatedAsyncioTestCase):
         engine.ledger = DecisionLedger(Path(directory) / "decisions.jsonl")
         engine.execution_ledger = ExecutionLedger(Path(directory) / "order_events.jsonl")
         engine.runtime_store = RuntimeStateStore(Path(directory) / "runtime_state.json")
+        engine.audit = AuditTrail(Path(directory) / "audit.sqlite3")
+        engine.committee.audit = engine.audit
         engine.kill_switch = engine.runtime_store.state.kill_switch
 
     async def test_scheduler_ranks_only_risk_eligible_candidates(self) -> None:
@@ -33,6 +36,64 @@ class EngineSelectionTests(unittest.IsolatedAsyncioTestCase):
         stress = next(gate for gate in decision.gates if gate.name == "strategy stress test")
         self.assertTrue(stress.passed)
         self.assertGreater(decision.evidence["simulation_probability_profit"], 0)
+
+    async def test_cycle_audit_retains_all_candidate_inputs_and_outcome(self) -> None:
+        engine = VolitionEngine(Settings(_env_file=None))
+        engine.provider.positions = AsyncMock(return_value=[])  # type: ignore[method-assign]
+        with tempfile.TemporaryDirectory(prefix="volition-cycle-audit-") as directory:
+            self.isolate(engine, directory)
+            decision = await engine.run_cycle()
+            events = engine.audit.events(cycle_id=decision.cycle_id)
+        kinds = {event["kind"] for event in events}
+        self.assertTrue({
+            "cycle_started", "universe_screen", "portfolio_inputs", "market_snapshots",
+            "candidate_screen", "candidate_selected", "simulation_result", "model_skipped",
+            "decision_evaluated", "decision_persisted",
+        }.issubset(kinds))
+        candidates = next(event["payload"]["candidates"] for event in events if event["kind"] == "candidate_screen")
+        self.assertGreater(len(candidates), 1)
+        self.assertTrue(any(candidate["symbol"] != decision.symbol for candidate in candidates))
+        self.assertIsInstance(next(event["payload"]["result"]["seed"] for event in events
+                                       if event["kind"] == "simulation_result"), int)
+
+    async def test_strategy_lab_result_is_persisted(self) -> None:
+        engine = VolitionEngine(Settings(_env_file=None))
+        with tempfile.TemporaryDirectory(prefix="volition-lab-audit-") as directory:
+            self.isolate(engine, directory)
+            result = await engine.strategy_lab("SPY", 1_000)
+            rows = engine.audit.events()
+        self.assertEqual(result.symbol, "SPY")
+        self.assertIn("strategy_lab_result", [row["kind"] for row in rows])
+        self.assertEqual(next(row["payload"]["result"]["seed"] for row in rows
+                              if row["kind"] == "strategy_lab_result"), result.seed)
+
+    async def test_audit_failure_blocks_new_entry_before_submission(self) -> None:
+        engine = VolitionEngine(Settings(_env_file=None))
+        engine.executor.execute = AsyncMock()  # type: ignore[method-assign]
+        with tempfile.TemporaryDirectory(prefix="volition-audit-failclosed-") as directory:
+            self.isolate(engine, directory)
+            engine.audit.append = Mock(side_effect=OSError("disk full"))  # type: ignore[method-assign]
+            with self.assertRaises(OSError):
+                await engine.run_cycle("SPY")
+        engine.executor.execute.assert_not_awaited()
+
+    async def test_audit_failure_does_not_block_risk_reducing_exit(self) -> None:
+        engine = VolitionEngine(Settings(
+            _env_file=None, volition_mode="paper", execution_mode="paper",
+            allow_order_submission=True, alpaca_api_key="test-key", alpaca_secret_key="test-secret",
+        ))
+        position = demo_positions()[0].model_copy(update={"unrealized_pnl": -200.0})
+        engine.provider.account = AsyncMock(return_value=demo_account())  # type: ignore[method-assign]
+        engine.provider.positions = AsyncMock(return_value=[position])  # type: ignore[method-assign]
+        engine.executor.close_position = AsyncMock(return_value=ExecutionReceipt(
+            mode="paper", accepted=True, order_id="exit-1", raw_status="new", message="accepted",
+        ))  # type: ignore[method-assign]
+        with tempfile.TemporaryDirectory(prefix="volition-audit-exit-") as directory:
+            self.isolate(engine, directory)
+            engine.audit.append = Mock(side_effect=OSError("disk full"))  # type: ignore[method-assign]
+            submitted = await engine.manage_positions()
+        self.assertEqual(len(submitted), 1)
+        engine.executor.close_position.assert_awaited_once()
 
     async def test_explicit_symbol_run_preserves_risk_veto_evidence(self) -> None:
         engine = VolitionEngine(Settings(_env_file=None))
@@ -81,6 +142,13 @@ class EngineSelectionTests(unittest.IsolatedAsyncioTestCase):
             decision = await engine.run_scheduled_cycle()
             self.assertIsNone(decision)
             self.assertEqual(engine.ledger.recent(), [])
+
+    async def test_demo_does_not_claim_scheduler_is_running(self) -> None:
+        engine = VolitionEngine(Settings(_env_file=None))
+        with tempfile.TemporaryDirectory(prefix="volition-scheduler-label-") as directory:
+            self.isolate(engine, directory)
+            dashboard = await engine.dashboard()
+        self.assertEqual(dashboard.scheduler_state, "disabled")
 
     async def test_strategy_lab_supports_every_watchlist_symbol(self) -> None:
         engine = VolitionEngine(Settings(_env_file=None))
@@ -196,6 +264,123 @@ class EngineSelectionTests(unittest.IsolatedAsyncioTestCase):
             )
             submitted = await engine.manage_positions()
 
+        self.assertEqual(submitted, [])
+        engine.executor.close_position.assert_not_awaited()
+
+    async def test_paused_entries_still_manage_existing_positions(self) -> None:
+        engine = VolitionEngine(Settings(_env_file=None))
+        engine.kill_switch = True
+        engine.provider.market_open = AsyncMock(return_value=True)  # type: ignore[method-assign]
+        engine.reconcile_orders = AsyncMock(return_value=[])  # type: ignore[method-assign]
+        engine.manage_positions = AsyncMock(return_value=[])  # type: ignore[method-assign]
+        engine.run_cycle = AsyncMock()  # type: ignore[method-assign]
+        with tempfile.TemporaryDirectory(prefix="volition-paused-exits-") as directory:
+            self.isolate(engine, directory)
+            engine.kill_switch = True
+            decision = await engine.run_scheduled_cycle()
+        self.assertIsNone(decision)
+        engine.reconcile_orders.assert_awaited_once()
+        engine.manage_positions.assert_awaited_once()
+        engine.run_cycle.assert_not_awaited()
+
+    async def test_entry_pause_does_not_block_risk_reducing_exit(self) -> None:
+        engine = VolitionEngine(Settings(_env_file=None, volition_mode="paper", execution_mode="paper", allow_order_submission=True, alpaca_api_key="test-key", alpaca_secret_key="test-secret"))
+        position = demo_positions()[0].model_copy(update={"unrealized_pnl": -200.0})
+        engine.provider.account = AsyncMock(return_value=demo_account())  # type: ignore[method-assign]
+        engine.provider.positions = AsyncMock(return_value=[position])  # type: ignore[method-assign]
+        engine.executor.close_position = AsyncMock(  # type: ignore[method-assign]
+            return_value=ExecutionReceipt(mode="paper", accepted=True, order_id="exit-when-paused", raw_status="new")
+        )
+        with tempfile.TemporaryDirectory(prefix="volition-paused-close-") as directory:
+            self.isolate(engine, directory)
+            engine.kill_switch = True
+            submitted = await engine.manage_positions()
+        self.assertEqual(len(submitted), 1)
+        engine.executor.close_position.assert_awaited_once()
+
+    async def test_unknown_entry_blocks_repeat_until_broker_reconciliation(self) -> None:
+        engine = VolitionEngine(Settings(_env_file=None, volition_mode="paper", alpaca_api_key="test-key", alpaca_secret_key="test-secret"))
+        engine.executor.order_by_client_order_id = AsyncMock(  # type: ignore[method-assign]
+            return_value={"id": "broker-1", "client_order_id": "volition-unknown-1", "status": "new"}
+        )
+        with tempfile.TemporaryDirectory(prefix="volition-unknown-entry-") as directory:
+            self.isolate(engine, directory)
+            engine.execution_ledger.append(
+                ExecutionEvent(
+                    event_id="uncertain-entry",
+                    cycle_id="cycle-1",
+                    symbol="SPY",
+                    kind="review",
+                    status="submission_unknown",
+                    client_order_id="volition-unknown-1",
+                    message="response lost",
+                )
+            )
+            self.assertIsNotNone(engine._pending_order_for("SPY"))
+            changes = await engine.reconcile_orders()
+            self.assertEqual(len(changes), 1)
+            self.assertEqual(changes[0].order_id, "broker-1")
+            self.assertIsNotNone(engine._pending_order_for("SPY"))
+            engine.execution_ledger.append(
+                ExecutionEvent(
+                    event_id="filled-entry",
+                    cycle_id="cycle-1",
+                    symbol="SPY",
+                    kind="order_update",
+                    status="filled",
+                    order_id="broker-1",
+                    client_order_id="volition-unknown-1",
+                    message="filled",
+                )
+            )
+            self.assertIsNone(engine._pending_order_for("SPY"))
+
+    async def test_entry_intent_is_durable_before_broker_request(self) -> None:
+        engine = VolitionEngine(Settings(_env_file=None, volition_mode="paper", execution_mode="paper", allow_order_submission=True, alpaca_api_key="test-key", alpaca_secret_key="test-secret"))
+        engine.provider.account = AsyncMock(return_value=demo_account())  # type: ignore[method-assign]
+        engine.provider.positions = AsyncMock(return_value=[])  # type: ignore[method-assign]
+        engine.provider.markets = AsyncMock(return_value=[demo_markets()[0]])  # type: ignore[method-assign]
+        observed_ids: list[str] = []
+
+        async def broker_submit(_plan, _cycle_id, *, client_order_id):
+            active = engine.execution_ledger.active_orders()
+            self.assertEqual(len(active), 1)
+            self.assertEqual(active[0].kind, "order_intent")
+            self.assertEqual(active[0].client_order_id, client_order_id)
+            observed_ids.append(client_order_id)
+            return ExecutionReceipt(
+                mode="paper", accepted=True, order_id="broker-write-ahead",
+                client_order_id=client_order_id, raw_status="new"
+            )
+
+        engine.executor.execute = broker_submit  # type: ignore[method-assign]
+        with tempfile.TemporaryDirectory(prefix="volition-entry-intent-") as directory:
+            self.isolate(engine, directory)
+            decision = await engine.run_cycle("SPY")
+            self.assertEqual(decision.status, DecisionStatus.SUBMITTED)
+            self.assertEqual(len(observed_ids), 1)
+            self.assertEqual(engine.execution_ledger.active_orders()[0].order_id, "broker-write-ahead")
+
+    async def test_unknown_exit_blocks_duplicate_close_order(self) -> None:
+        engine = VolitionEngine(Settings(_env_file=None, volition_mode="paper", execution_mode="paper", allow_order_submission=True, alpaca_api_key="test-key", alpaca_secret_key="test-secret"))
+        position = demo_positions()[0].model_copy(update={"unrealized_pnl": -200.0})
+        engine.provider.account = AsyncMock(return_value=demo_account())  # type: ignore[method-assign]
+        engine.provider.positions = AsyncMock(return_value=[position])  # type: ignore[method-assign]
+        engine.executor.close_position = AsyncMock()  # type: ignore[method-assign]
+        with tempfile.TemporaryDirectory(prefix="volition-unknown-exit-") as directory:
+            self.isolate(engine, directory)
+            engine.execution_ledger.append(
+                ExecutionEvent(
+                    event_id="uncertain-exit",
+                    cycle_id=f"exit:{position.symbol}:{position.expiration}",
+                    symbol=position.symbol,
+                    kind="exit_submitted",
+                    status="submission_unknown",
+                    client_order_id="volition-exit-unknown-1",
+                    message="response lost",
+                )
+            )
+            submitted = await engine.manage_positions()
         self.assertEqual(submitted, [])
         engine.executor.close_position.assert_not_awaited()
 

@@ -37,7 +37,8 @@ class LearningEngine:
         filled_entry_orders = {
             item.order_id
             for item in execution_events
-            if item.kind == "order_update" and item.status.lower() == "filled" and item.order_id
+            if item.kind in {"order_submitted", "order_update"}
+            and item.status.lower() == "filled" and item.order_id
         }
         paper_executions = len(filled_entry_orders) + sum(
             item.status == DecisionStatus.EXECUTED and item.receipt.mode == "paper"
@@ -50,7 +51,8 @@ class LearningEngine:
             {
                 item.order_id
                 for item in execution_events
-                if item.kind == "exit_update" and item.status.lower() == "filled" and item.order_id
+                if item.kind in {"exit_submitted", "exit_update"}
+                and item.status.lower() == "filled" and item.order_id
             }
         )
         pending_outcomes = max(0, paper_executions - closed_outcomes)

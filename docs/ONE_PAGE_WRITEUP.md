@@ -6,7 +6,7 @@ Volition is an autonomous options risk desk running on a dedicated $100,000 Alpa
 
 ## AI logic
 
-The Regime Sentinel tests directional evidence, the Volatility Architect tests implied-versus-realized volatility and structure fit, and the Adversarial Skeptic searches for a reason not to trade. A private Qwen 2.5 3B model served by Ollama runs these opinions independently on the deployment host. A deterministic strategy router—not the language model—selects actual OCC contracts from Alpaca chain data and calculates quantity, debit/credit, maximum loss, maximum profit, delta, expiry, and liquidity. The model can support, oppose, or abstain; it cannot invent a contract or bypass a gate.
+The Regime Sentinel tests directional evidence, the Volatility Architect tests implied-versus-realized volatility and structure fit, and the Adversarial Skeptic searches for a reason not to trade. Featherless open-source inference runs these opinions independently. A deterministic strategy router—not the language model—selects actual OCC contracts from Alpaca chain data and calculates quantity, debit/credit, maximum loss, maximum profit, delta, expiry, and liquidity. The model can support, oppose, or abstain; it cannot invent a contract or bypass a gate.
 
 Supported decisions are bull call spreads, bear put spreads, iron condors, long straddles, and no trade. Regime rules deliberately choose cash when direction and volatility do not provide a sufficient edge.
 
@@ -24,7 +24,7 @@ The final authority is unit-tested Python with no model in the loop. It blocks a
 - Expiration between 7 and 35 days.
 - Minimum open interest of 500 per leg.
 - Maximum bid/ask spread of 8% per leg.
-- Market open and kill switch clear. AI committee opinions are recorded as advisory evidence; they cannot replace or bypass deterministic permission checks.
+- Market open, kill switch clear, and AI committee consensus.
 
 Every accepted, rejected, or no-trade outcome produces a hash-chained decision passport with the evidence snapshot, three opinions, all gate results, proposed legs, and the execution receipt. This makes the agent's behavior explainable and tamper-evident.
 

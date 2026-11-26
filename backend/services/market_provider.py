@@ -14,6 +14,7 @@ from zoneinfo import ZoneInfo
 
 import httpx
 
+from audit import AuditTrail
 from config import Settings
 from fixtures import demo_account, demo_markets
 from market_universe import MARKET_UNIVERSE
@@ -43,6 +44,16 @@ def _number(value: Any, default: float = 0.0) -> float:
         return float(value)
     except (TypeError, ValueError):
         return default
+
+
+def _timestamp(value: Any) -> datetime | None:
+    if not value:
+        return None
+    try:
+        parsed = datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+        return parsed if parsed.tzinfo else parsed.replace(tzinfo=timezone.utc)
+    except (TypeError, ValueError):
+        return None
 
 
 class MarketProvider:
@@ -80,11 +91,18 @@ class MarketProvider:
         if self.settings.volition_mode == "demo":
             return demo_account()
         if self.cli.available:
-            raw, position_raw = await asyncio.gather(
-                asyncio.to_thread(self.cli.account),
-                asyncio.to_thread(self.cli.positions),
-            )
-            source = "alpaca-paper-cli"
+            try:
+                raw, position_raw = await asyncio.gather(
+                    asyncio.to_thread(self.cli.account),
+                    asyncio.to_thread(self.cli.positions),
+                )
+                source = "alpaca-paper-cli"
+            except Exception:
+                raw, position_raw = await asyncio.gather(
+                    self._get_json(f"{self.PAPER_BASE_URL}/v2/account"),
+                    self._get_json(f"{self.PAPER_BASE_URL}/v2/positions"),
+                )
+                source = "alpaca-paper-api-fallback"
         else:
             raw, position_raw = await asyncio.gather(
                 self._get_json(f"{self.PAPER_BASE_URL}/v2/account"),
@@ -127,7 +145,10 @@ class MarketProvider:
         if self._position_cache and time.monotonic() - self._position_cache[0] <= 30:
             raw = self._position_cache[1]
         elif self.cli.available:
-            raw = await asyncio.to_thread(self.cli.positions)
+            try:
+                raw = await asyncio.to_thread(self.cli.positions)
+            except Exception:
+                raw = await self._get_json(f"{self.PAPER_BASE_URL}/v2/positions")
         else:
             raw = await self._get_json(f"{self.PAPER_BASE_URL}/v2/positions")
         self._position_cache = (time.monotonic(), raw)
@@ -252,6 +273,9 @@ class MarketProvider:
         self,
         market_open: bool | None = None,
         symbols: list[str] | None = None,
+        *,
+        audit: AuditTrail | None = None,
+        audit_cycle_id: str | None = None,
     ) -> list[MarketSnapshot]:
         requested = symbols or self.settings.watchlist
         if self.settings.volition_mode == "demo":
@@ -260,7 +284,7 @@ class MarketProvider:
         if market_open is None:
             market_open = await self.market_open()
         return await asyncio.gather(
-            *(self._live_market(symbol, market_open) for symbol in requested)
+            *(self._live_market(symbol, market_open, audit, audit_cycle_id) for symbol in requested)
         )
 
     async def ranked_symbols(self, symbols: list[str]) -> list[str]:
@@ -449,11 +473,16 @@ class MarketProvider:
             self._clock_cache = (time.monotonic(), clock)
             return clock
 
-        raw = _unwrap(
-            await asyncio.to_thread(self.cli.clock)
-            if self.cli.available
-            else await self._get_json(f"{self.PAPER_BASE_URL}/v2/clock")
-        )
+        used_cli = False
+        if self.cli.available:
+            try:
+                raw = await asyncio.to_thread(self.cli.clock)
+                used_cli = True
+            except Exception:
+                raw = await self._get_json(f"{self.PAPER_BASE_URL}/v2/clock")
+        else:
+            raw = await self._get_json(f"{self.PAPER_BASE_URL}/v2/clock")
+        raw = _unwrap(raw)
         if isinstance(raw, dict) and len(raw) == 1 and "clock" in raw:
             raw = raw["clock"]
         if not isinstance(raw, dict):
@@ -463,7 +492,7 @@ class MarketProvider:
             is_open=bool(raw.get("is_open") if "is_open" in raw else raw.get("isOpen", False)),
             next_open=raw.get("next_open") or raw.get("nextOpen"),
             next_close=raw.get("next_close") or raw.get("nextClose"),
-            source="alpaca-paper-cli" if self.cli.available else "alpaca-paper-api-fallback",
+            source="alpaca-paper-cli" if used_cli else "alpaca-paper-api-fallback",
         )
         self._clock_cache = (time.monotonic(), clock)
         return clock
@@ -497,7 +526,10 @@ class MarketProvider:
             source="demo-simulated-clock",
         )
 
-    async def _live_market(self, symbol: str, market_open: bool) -> MarketSnapshot:
+    async def _live_market(
+        self, symbol: str, market_open: bool,
+        audit: AuditTrail | None = None, audit_cycle_id: str | None = None,
+    ) -> MarketSnapshot:
         bars, intraday_bars = await asyncio.gather(
             self._stock_bars(symbol),
             self._intraday_bars(symbol),
@@ -505,20 +537,32 @@ class MarketProvider:
         closes = [item["close"] for item in bars if item.get("close")]
         spot = closes[-1] if closes else 0.0
         if self.cli.available:
-            target_expiry = self._target_expiry().isoformat()
-            chain_snapshots, contract_metadata, news_raw = await asyncio.gather(
-                asyncio.to_thread(self.cli.option_chain, symbol, spot, target_expiry),
-                self._option_contracts_api(symbol, spot),
-                self._news_evidence(symbol),
-            )
-            chain_raw = self._join_chain_metadata(chain_snapshots, contract_metadata)
-            source = "alpaca-paper-cli+market-data-api"
+            try:
+                target_expiry = self._target_expiry().isoformat()
+                chain_snapshots, contract_metadata, news_raw = await asyncio.gather(
+                    asyncio.to_thread(self.cli.option_chain, symbol, spot, target_expiry),
+                    self._option_contracts_api(symbol, spot),
+                    self._news_evidence(symbol),
+                )
+                chain_raw = self._join_chain_metadata(chain_snapshots, contract_metadata)
+                source = "alpaca-paper-cli+market-data-api"
+            except Exception:
+                chain_raw, news_raw = await asyncio.gather(
+                    self._option_chain_api(symbol, spot),
+                    self._news_api(symbol),
+                )
+                source = "alpaca-paper-api-fallback+market-data-api"
         else:
             chain_raw, news_raw = await asyncio.gather(
                 self._option_chain_api(symbol, spot),
                 self._news_api(symbol),
             )
             source = "alpaca-paper-api-fallback+market-data-api"
+        if audit:
+            audit.append("market_source_data", {
+                "daily_bars": bars, "intraday_bars": intraday_bars,
+                "option_chain": chain_raw, "news": news_raw, "source": source,
+            }, cycle_id=audit_cycle_id, symbol=symbol)
         contracts = self._parse_chain(chain_raw, symbol)
         spot = closes[-1] if closes else self._spot_from_chain(contracts)
         trend = self._trend_score(closes)
@@ -922,6 +966,7 @@ class MarketProvider:
                     implied_volatility=_number(item.get("implied_volatility") or item.get("impliedVolatility") or item.get("iv")),
                     open_interest=int(_number(details.get("open_interest") or item.get("open_interest"))),
                     volume=int(_number(item.get("volume") or latest_trade.get("size") or latest_trade.get("s"))),
+                    quote_at=_timestamp(quote.get("t") or quote.get("timestamp")),
                 )
             )
         return contracts

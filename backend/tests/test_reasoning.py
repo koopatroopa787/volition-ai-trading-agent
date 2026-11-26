@@ -1,8 +1,11 @@
 from __future__ import annotations
 
 import unittest
-from unittest.mock import AsyncMock
+import tempfile
+from pathlib import Path
+from unittest.mock import AsyncMock, Mock, patch
 
+from audit import AuditTrail
 from agents.committee import ROLES, ReasoningCommittee
 from config import Settings
 from fixtures import demo_account, demo_markets
@@ -56,6 +59,33 @@ class ReasoningConfigurationTests(unittest.IsolatedAsyncioTestCase):
 
         self.assertEqual(len(opinions), 3)
         self.assertEqual(committee._ask.await_count, 3)
+
+    async def test_exact_visible_model_exchange_is_audited(self) -> None:
+        settings = Settings(
+            _env_file=None, reasoning_base_url="http://ollama:11434/v1",
+            reasoning_model="qwen2.5:3b", reasoning_allow_unauthenticated=True,
+        )
+        market = demo_markets()[0]
+        plan = StrategyRouter().route(market, demo_account(), 1.25)
+        response = Mock(status_code=200)
+        response.json.return_value = {
+            "model": "qwen2.5:3b", "usage": {"total_tokens": 123},
+            "choices": [{"message": {"content": '{"verdict":"support","confidence":0.8,"summary":"Fits regime","evidence":["trend"]}'}}],
+        }
+        with tempfile.TemporaryDirectory(prefix="volition-model-audit-") as directory:
+            audit = AuditTrail(Path(directory) / "audit.sqlite3")
+            committee = ReasoningCommittee(settings, audit)
+            with patch("agents.committee.httpx.AsyncClient") as client_type:
+                client_type.return_value.__aenter__.return_value.post = AsyncMock(return_value=response)
+                opinions = await committee.deliberate(market, plan, demo_account(), cycle_id="cycle-test")
+            rows = audit.events(cycle_id="cycle-test")
+        self.assertEqual(len(opinions), 3)
+        self.assertEqual([row["kind"] for row in rows].count("model_request"), 3)
+        self.assertEqual([row["kind"] for row in rows].count("model_response"), 3)
+        request = next(row["payload"]["request"] for row in rows if row["kind"] == "model_request")
+        output = next(row["payload"]["response"] for row in rows if row["kind"] == "model_response")
+        self.assertIn("trend_score_minus1_to1", request["messages"][1]["content"])
+        self.assertEqual(output["usage"]["total_tokens"], 123)
 
     def test_model_evidence_has_explicit_units_and_account_relative_risk(self) -> None:
         settings = Settings(_env_file=None)

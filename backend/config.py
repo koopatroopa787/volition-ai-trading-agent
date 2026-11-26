@@ -5,7 +5,7 @@ from __future__ import annotations
 import os
 from functools import lru_cache
 from pathlib import Path
-from typing import Annotated
+from typing import Annotated, Literal
 
 from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings, NoDecode, SettingsConfigDict
@@ -48,6 +48,11 @@ class Settings(BaseSettings):
     reasoning_model: str = ""
     reasoning_provider: str = ""
     reasoning_allow_unauthenticated: bool = False
+    # The three opinions are sent together and a single-slot Ollama answers them one by one (~50 s each on 2 CPUs).
+    reasoning_timeout_seconds: int = Field(default=240, ge=30, le=600)
+    # off: do nothing. shadow: audit-log opinions that misstate the supplied evidence.
+    # enforce: also downgrade such a model opinion to abstain (committee is advisory either way).
+    factcheck_mode: Literal["off", "shadow", "enforce"] = "off"
 
     # Optional free intelligence providers. Missing keys never block trading.
     marketaux_api_token: str = ""
@@ -64,6 +69,18 @@ class Settings(BaseSettings):
         default_factory=lambda: ["SPY", "QQQ", "NVDA", "AAPL", "AMD"]
     )
 
+    # Offline backtests (see the PR notes): the trend signal has no edge and bearish spreads fight the market's drift;
+    # condors have a small premium edge on liquid index ETFs only. Each switch can be reverted from the environment.
+    bearish_spreads_enabled: bool = False                # BEARISH_SPREADS_ENABLED=true restores bear put spreads
+    condor_symbols: Annotated[list[str], NoDecode] = Field(default_factory=lambda: ["SPY", "QQQ", "IWM", "DIA"])   # empty = any symbol
+    # Realized volatility after entry averaged 0.77-0.81 of implied (SPY/VIX, QQQ/VXN, 2005-2026). The stress test
+    # simulates credit structures at this share of implied vol instead of assuming the premium away. 1.0 = old behaviour.
+    credit_vol_factor: float = Field(default=0.85, ge=0.5, le=1.0)
+    # The stress test deducts trading costs from a condor whose measured premium edge is only +6% of risk after costs
+    # (2005-2026 SPY/QQQ simulation), so index-ETF condors may pass with expected P&L down to this share of max loss
+    # below zero. 0 restores the strict "positive expected P&L" rule.
+    condor_expected_pnl_floor_pct: float = Field(default=5.0, ge=0.0, le=15.0)
+
     max_risk_per_trade_pct: float = 1.25
     max_portfolio_open_risk_pct: float = 8.0
     max_symbol_open_risk_pct: float = 2.5
@@ -77,7 +94,7 @@ class Settings(BaseSettings):
     min_dte: int = 7
     max_dte: int = 35
 
-    @field_validator("cors_origins", "watchlist", mode="before")
+    @field_validator("cors_origins", "watchlist", "condor_symbols", mode="before")
     @classmethod
     def split_csv(cls, value: object) -> object:
         if isinstance(value, str):
@@ -113,6 +130,15 @@ class Settings(BaseSettings):
             and self.allow_order_submission
             and self.paper_credentials_configured
         )
+
+    def expected_pnl_floor(self, strategy: str, symbol: str, max_loss: float) -> float:
+        """Lowest expected P&L the stress test accepts: zero, except for condors on the listed index ETFs."""
+
+        if strategy != "iron_condor" or not self.condor_expected_pnl_floor_pct:
+            return 0.0
+        if symbol.upper() not in {item.upper() for item in self.condor_symbols}:
+            return 0.0
+        return -self.condor_expected_pnl_floor_pct / 100 * max_loss
 
     @property
     def operator_auth_required(self) -> bool:

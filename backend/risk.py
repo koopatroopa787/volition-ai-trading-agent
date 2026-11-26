@@ -68,7 +68,19 @@ class RiskConstitution:
             and leg.spread_pct <= self.settings.max_bid_ask_spread_pct
             for leg in plan.legs
         )
-        quote_age = max(0.0, (datetime.now(timezone.utc) - market.captured_at).total_seconds())
+        now = datetime.now(timezone.utc)
+        # Snapshot construction time is not the exchange time of an option quote.
+        # Demo fixtures have no broker timestamps; live orders fail closed.
+        quote_times = (
+            [market.captured_at] * len(plan.legs)
+            if market.source.startswith("demo-")
+            else [leg.quote_at for leg in plan.legs]
+        )
+        quotes_timestamped = bool(quote_times) and all(value is not None for value in quote_times)
+        quote_ages = [
+            (now - value).total_seconds() for value in quote_times if value is not None
+        ] if quotes_timestamped else []
+        quote_age = max(quote_ages) if quote_ages else None
         structure_safe, structure_observed = self._defined_risk_structure(plan)
 
         return [
@@ -187,9 +199,17 @@ class RiskConstitution:
             ),
             GateResult(
                 name="quote freshness",
-                passed=quote_age <= self.settings.max_quote_age_seconds,
-                observed=f"snapshot age {quote_age:.0f}s",
-                limit=f"≤ {self.settings.max_quote_age_seconds}s",
+                passed=(
+                    quote_age is not None
+                    and min(quote_ages) >= -30
+                    and quote_age <= self.settings.max_quote_age_seconds
+                ),
+                observed=(
+                    f"oldest leg quote age {quote_age:.0f}s"
+                    if quote_age is not None
+                    else "one or more option quote timestamps are unavailable"
+                ),
+                limit=f"each option quote ≤ {self.settings.max_quote_age_seconds}s old",
             ),
         ]
 

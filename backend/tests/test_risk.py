@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import unittest
+from datetime import datetime, timedelta, timezone
 
 from config import Settings
 from fixtures import demo_account, demo_markets, demo_positions
@@ -45,11 +46,31 @@ class RiskConstitutionTests(unittest.TestCase):
         self.assertFalse(gate.passed)
 
     def test_stale_market_snapshot_is_rejected(self) -> None:
-        from datetime import timedelta
-
         stale = self.market.model_copy(update={"captured_at": self.market.captured_at - timedelta(hours=1)})
         gates = self.risk.evaluate(self.plan, self.account, stale, False)
         gate = next(item for item in gates if item.name == "quote freshness")
+        self.assertFalse(gate.passed)
+
+    def test_live_stale_leg_quote_is_rejected_even_with_fresh_snapshot(self) -> None:
+        stale_leg = self.plan.legs[0].model_copy(
+            update={"quote_at": datetime.now(timezone.utc) - timedelta(minutes=12)}
+        )
+        fresh_leg = self.plan.legs[1].model_copy(update={"quote_at": datetime.now(timezone.utc)})
+        plan = self.plan.model_copy(update={"legs": [stale_leg, fresh_leg]})
+        market = self.market.model_copy(update={"source": "alpaca-paper-cli+market-data-api"})
+        gate = next(
+            item for item in self.risk.evaluate(plan, self.account, market, False)
+            if item.name == "quote freshness"
+        )
+        self.assertFalse(gate.passed)
+        self.assertIn("oldest leg quote age", gate.observed)
+
+    def test_live_missing_quote_timestamp_is_rejected(self) -> None:
+        market = self.market.model_copy(update={"source": "alpaca-paper-cli+market-data-api"})
+        gate = next(
+            item for item in self.risk.evaluate(self.plan, self.account, market, False)
+            if item.name == "quote freshness"
+        )
         self.assertFalse(gate.passed)
 
     def test_existing_position_blocks_a_second_thesis_for_the_symbol(self) -> None:

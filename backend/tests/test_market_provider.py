@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import unittest
 from datetime import date
+from unittest.mock import AsyncMock, PropertyMock, patch
 
 from config import Settings
 from models import AccountSnapshot, StrategyKind
@@ -34,6 +35,30 @@ class PositionParsingTests(unittest.TestCase):
         self.assertEqual(positions[0].strategy, StrategyKind.LONG_STRANGLE)
         self.assertEqual(positions[0].max_loss, 810.0)
         self.assertEqual(len(positions[0].legs), 2)
+
+    def test_option_chain_preserves_exchange_quote_timestamp(self) -> None:
+        contracts = MarketProvider._parse_chain(
+            {
+                "NVDA260925C00225000": {
+                    "contract": {
+                        "symbol": "NVDA260925C00225000",
+                        "expiration_date": "2026-09-25",
+                        "strike_price": "225",
+                        "type": "call",
+                    },
+                    "latestQuote": {
+                        "t": "2026-09-24T14:30:01.123456789Z",
+                        "bp": 4.1,
+                        "ap": 4.3,
+                    },
+                    "greeks": {"delta": 0.5},
+                    "impliedVolatility": 0.3,
+                }
+            },
+            "NVDA",
+        )
+        self.assertEqual(len(contracts), 1)
+        self.assertEqual(contracts[0].quote_at.isoformat(), "2026-09-24T14:30:01.123456+00:00")
 
     def test_stacked_debit_spreads_preserve_true_structure_count_and_risk(self) -> None:
         raw = [
@@ -83,6 +108,30 @@ class PositionParsingTests(unittest.TestCase):
 
 
 class MarketPulseTests(unittest.IsolatedAsyncioTestCase):
+    async def test_cli_account_failure_uses_rest_fallback(self) -> None:
+        provider = MarketProvider(Settings(_env_file=None, volition_mode="paper"))
+
+        async def broker_payload(url: str, **_kwargs):
+            if url.endswith("/v2/account"):
+                return {
+                    "id": "paper-test",
+                    "status": "ACTIVE",
+                    "equity": "100000",
+                    "last_equity": "100000",
+                    "cash": "100000",
+                    "options_buying_power": "100000",
+                    "options_trading_level": 3,
+                }
+            return []
+
+        provider._get_json = AsyncMock(side_effect=broker_payload)  # type: ignore[method-assign]
+        with patch.object(type(provider.cli), "available", new_callable=PropertyMock, return_value=True):
+            provider.cli.account = unittest.mock.Mock(side_effect=RuntimeError("CLI unavailable"))  # type: ignore[method-assign]
+            provider.cli.positions = unittest.mock.Mock(return_value=[])  # type: ignore[method-assign]
+            account = await provider.account()
+        self.assertEqual(account.source, "alpaca-paper-api-fallback")
+        self.assertEqual(account.equity, 100_000.0)
+
     async def test_demo_pulse_covers_cross_asset_groups(self) -> None:
         provider = MarketProvider(Settings(_env_file=None))
         items = await provider.market_pulse()

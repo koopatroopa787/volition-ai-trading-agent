@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import math
+from collections.abc import Iterable
 from datetime import date
 
 from models import AccountSnapshot, MarketSnapshot, OptionContract, StrategyKind, TradeLeg, TradePlan
@@ -15,6 +16,11 @@ class StrategyRouter:
     and veto a proposal, but they cannot invent option symbols or order legs.
     """
 
+    def __init__(self, bearish_enabled: bool = True, condor_symbols: Iterable[str] | None = None) -> None:
+        # The defaults keep the original behaviour; the engine passes the values from Settings.
+        self.bearish_enabled = bearish_enabled
+        self.condor_symbols = {symbol.upper() for symbol in condor_symbols} if condor_symbols else None   # None = any
+
     def route(self, market: MarketSnapshot, account: AccountSnapshot, risk_pct: float) -> TradePlan:
         if not market.contracts:
             return self._no_trade(market, "No option-chain evidence was available.")
@@ -24,8 +30,20 @@ class StrategyRouter:
         if market.trend_score >= 0.35 and market.news_sentiment > -0.45:
             plan = self._vertical(market, bullish=True)
         elif market.trend_score <= -0.35 and market.news_sentiment < 0.45:
+            if not self.bearish_enabled:
+                return self._no_trade(
+                    market,
+                    "Bearish spreads are switched off: backtests found no edge in the trend signal, and a bearish "
+                    "bet starts against the market's upward drift.",
+                )
             plan = self._vertical(market, bullish=False)
         elif abs(market.trend_score) <= 0.20 and market.iv_rank >= 58 and abs(market.news_sentiment) < 0.50:
+            if self.condor_symbols is not None and market.symbol.upper() not in self.condor_symbols:
+                return self._no_trade(
+                    market,
+                    f"Condors are limited to {', '.join(sorted(self.condor_symbols))}, where the premium edge was "
+                    "measured and trading costs are lowest.",
+                )
             plan = self._iron_condor(market)
         elif market.iv_rank <= 25 and market.catalyst_score >= 0.70:
             plan = self._long_straddle(market)
@@ -121,6 +139,7 @@ class StrategyRouter:
             mid=contract.mid,
             spread_pct=contract.spread_pct,
             open_interest=contract.open_interest,
+            quote_at=contract.quote_at,
         )
 
     @staticmethod
