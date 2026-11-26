@@ -38,19 +38,19 @@ from strategy import StrategyRouter
 
 
 class _ReplayDatetime(datetime):
-    current: datetime
+    current: datetime | None = None
 
     @classmethod
     def now(cls, tz=None):  # noqa: ANN001, ANN206
-        return cls.current
+        return cls.current or datetime.now(tz)
 
 
 class _ReplayDate(date):
-    current: date
+    current: date | None = None
 
     @classmethod
     def today(cls):  # noqa: ANN206
-        return cls.current
+        return cls.current or date.today()
 
 
 # The gates read the wall clock (quote age, days to expiry); replay pins it to each snapshot.
@@ -95,15 +95,18 @@ def natural(quotes: dict, legs: list[tuple[str, int]], opening: bool) -> float |
     return cash
 
 
-def replay(cycles: list[dict], router: StrategyRouter, settings: Settings, name: str) -> Result:
+def replay(cycles, router: StrategyRouter, settings: Settings, name: str,
+           take: float | None = 0.25, stop: float | None = 0.20, exit_dte: int = 5) -> Result:
+    """``cycles`` may be a generator; a cycle may carry prebuilt MarketSnapshots and its own ``quotes``."""
     risk = RiskConstitution(settings)
     simulator = MonteCarloSimulator(settings.credit_vol_factor)
     result = Result(name)
     open_trades: dict[str, Trade] = {}
     for cycle in cycles:
         now = cycle["recorded_at"]
-        markets = [MarketSnapshot.model_validate(item) for item in cycle["markets"]]
-        quotes = {c.symbol: {"bid": c.bid, "ask": c.ask} for m in markets for c in m.contracts}
+        markets = [item if isinstance(item, MarketSnapshot) else MarketSnapshot.model_validate(item)
+                   for item in cycle["markets"]]
+        quotes = cycle.get("quotes") or {c.symbol: {"bid": c.bid, "ask": c.ask} for m in markets for c in m.contracts}
         today = date.fromisoformat(now[:10])
         _ReplayDatetime.current = datetime.fromisoformat(now)
         _ReplayDate.current = _ReplayDate.fromisoformat(now[:10])
@@ -114,8 +117,9 @@ def replay(cycles: list[dict], router: StrategyRouter, settings: Settings, name:
                 continue
             pnl = (trade.entry_cash + exit_cash) * trade.quantity
             dte = (date.fromisoformat(trade.expiration) - today).days
-            reason = ("profit" if pnl >= 0.25 * trade.max_loss else
-                      "loss" if pnl <= -0.20 * trade.max_loss else "expiry" if dte <= 5 else "")
+            reason = ("profit" if take is not None and pnl >= take * trade.max_loss else
+                      "loss" if stop is not None and pnl <= -stop * trade.max_loss else
+                      "expiry" if dte <= exit_dte else "")
             if reason:
                 trade.closed_at, trade.pnl, trade.reason = now, round(pnl, 2), reason
                 del open_trades[symbol]
