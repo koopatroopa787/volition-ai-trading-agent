@@ -31,6 +31,13 @@ class StrategyRouterTests(unittest.TestCase):
             self.assertGreaterEqual(len(plan.legs), 2)
             self.assertTrue(all(leg.symbol.startswith(symbol) for leg in plan.legs))
 
+    def test_research_router_only_picks_strikes_the_liquidity_gate_accepts(self) -> None:
+        market = self.markets["SPY"]
+        thin = StrategyRouter(min_open_interest=10**9).route(market, self.account, 1.25)
+        self.assertEqual(thin.strategy, StrategyKind.NO_TRADE)
+        liquid = StrategyRouter(min_open_interest=1, max_spread_pct=100).route(market, self.account, 1.25)
+        self.assertTrue(all(leg.open_interest >= 1 for leg in liquid.legs))
+
     def test_no_trade_places_no_capital_at_risk(self) -> None:
         plan = self.route("AAPL")
         self.assertEqual(plan.quantity, 0)

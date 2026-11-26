@@ -16,10 +16,16 @@ class StrategyRouter:
     and veto a proposal, but they cannot invent option symbols or order legs.
     """
 
-    def __init__(self, bearish_enabled: bool = True, condor_symbols: Iterable[str] | None = None) -> None:
+    def __init__(self, bearish_enabled: bool = True, condor_symbols: Iterable[str] | None = None,
+                 min_open_interest: int = 0, max_spread_pct: float = 100.0, fit_budget: bool = False) -> None:
         # The defaults keep the original behaviour; the engine passes the values from Settings.
         self.bearish_enabled = bearish_enabled
         self.condor_symbols = {symbol.upper() for symbol in condor_symbols} if condor_symbols else None   # None = any
+        # Legs are only chosen from strikes the risk gate would accept, so a liquid
+        # underlying is never rejected for picking its one thin strike.
+        self.min_open_interest = min_open_interest
+        self.max_spread_pct = max_spread_pct
+        self.fit_budget = fit_budget
 
     def route(self, market: MarketSnapshot, account: AccountSnapshot, risk_pct: float) -> TradePlan:
         if not market.contracts:
@@ -28,7 +34,7 @@ class StrategyRouter:
         budget = account.equity * (risk_pct / 100)
 
         if market.trend_score >= 0.35 and market.news_sentiment > -0.45:
-            plan = self._vertical(market, bullish=True)
+            plan = self._vertical(market, bullish=True, budget=budget if self.fit_budget else None)
         elif market.trend_score <= -0.35 and market.news_sentiment < 0.45:
             if not self.bearish_enabled:
                 return self._no_trade(
@@ -36,7 +42,7 @@ class StrategyRouter:
                     "Bearish spreads are switched off: backtests found no edge in the trend signal, and a bearish "
                     "bet starts against the market's upward drift.",
                 )
-            plan = self._vertical(market, bullish=False)
+            plan = self._vertical(market, bullish=False, budget=budget if self.fit_budget else None)
         elif abs(market.trend_score) <= 0.20 and market.iv_rank >= 58 and abs(market.news_sentiment) < 0.50:
             if self.condor_symbols is not None and market.symbol.upper() not in self.condor_symbols:
                 return self._no_trade(
@@ -118,6 +124,7 @@ class StrategyRouter:
             contract
             for contract in market.contracts
             if contract.option_type == option_type and contract.ask > 0 and contract.bid >= 0
+            and contract.open_interest >= self.min_open_interest and contract.spread_pct <= self.max_spread_pct
         ]
 
     @staticmethod
@@ -148,13 +155,19 @@ class StrategyRouter:
             return 0
         return max(0, (date.fromisoformat(contracts[0].expiration) - date.today()).days)
 
-    def _vertical(self, market: MarketSnapshot, bullish: bool) -> TradePlan:
+    def _vertical(self, market: MarketSnapshot, bullish: bool, budget: float | None = None) -> TradePlan:
         option_type = "call" if bullish else "put"
+        sign = 1 if bullish else -1
         contracts = self._eligible(market, option_type)
-        long_target = 0.55 if bullish else -0.55
-        short_target = 0.25 if bullish else -0.25
-        long_contract = self._closest(contracts, long_target)
-        short_contract = self._closest(contracts, short_target)
+        long_contract = self._closest(contracts, 0.55 * sign)
+        short_contract = None
+        # Prefer the 0.25-delta short; on expensive underlyings narrow the spread
+        # until one structure fits the per-trade budget (the stress test still applies).
+        for short_delta in (0.25, 0.30, 0.35, 0.40, 0.45):
+            short_contract = self._closest(contracts, short_delta * sign)
+            if (budget is None or not long_contract or not short_contract
+                    or (long_contract.mid - short_contract.mid) * 100 <= budget):
+                break
         if not long_contract or not short_contract or long_contract.symbol == short_contract.symbol:
             return self._no_trade(market, "The chain could not form a liquid vertical spread.")
 

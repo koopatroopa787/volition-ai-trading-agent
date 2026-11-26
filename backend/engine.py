@@ -44,6 +44,7 @@ class VolitionEngine:
     def __init__(self, settings: Settings) -> None:
         self.settings = settings
         self.provider = MarketProvider(settings)
+        # ponytail: liquidity-aware legs exist in StrategyRouter but stay off; replay showed no gain (tools/replay_router.py).
         self.router = StrategyRouter(settings.bearish_spreads_enabled, settings.condor_symbols)
         self.risk = RiskConstitution(settings)
         self.audit = AuditTrail(ROOT / "backend" / "data" / "audit.sqlite3", sensitive_values=[
