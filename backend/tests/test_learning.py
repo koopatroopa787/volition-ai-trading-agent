@@ -127,6 +127,20 @@ class ClosedTradeAttributionTests(unittest.TestCase):
         bull = next(c for c in state.candidates if c.strategy == StrategyKind.BULL_CALL_SPREAD)
         self.assertEqual((bull.realized_trades, bull.realized_pnl, bull.win_rate), (1, 400.0, 1.0))
 
+        import csv
+        import tempfile
+        from pathlib import Path
+
+        from learning import write_daily_tables
+
+        with tempfile.TemporaryDirectory(prefix="volition-tables-") as directory:
+            write_daily_tables(Path(directory), ["2026-09-04"], entries, events)
+            day = Path(directory) / "2026-09-04"
+            trades_rows = list(csv.DictReader((day / "trades.csv").open(encoding="utf-8")))
+            self.assertEqual([(row["strategy"], row["entries"], row["pnl"]) for row in trades_rows],
+                             [("bull_call_spread", "2", "400.0")])
+            self.assertEqual(len(list(csv.DictReader((day / "orders.csv").open(encoding="utf-8")))), 4)
+
 
 if __name__ == "__main__":
     unittest.main()

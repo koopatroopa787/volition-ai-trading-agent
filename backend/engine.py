@@ -13,7 +13,7 @@ from agents.committee import ReasoningCommittee
 from audit import AuditTrail
 from config import ROOT, Settings
 from ledger import DecisionLedger, ExecutionLedger
-from learning import LearningEngine
+from learning import LearningEngine, write_daily_tables
 from market_universe import MARKET_GROUPS
 from models import (
     AgentOpinion,
@@ -62,6 +62,7 @@ class VolitionEngine:
         self.kill_switch = self.runtime_store.state.kill_switch
         self.autonomous = True
         self._cycle_lock = asyncio.Lock()
+        self._archived_through: date | None = None
 
     def _operational_audit(self, kind: str, payload: object, *, cycle_id: str | None = None,
                            symbol: str | None = None) -> None:
@@ -308,6 +309,15 @@ class VolitionEngine:
             }, cycle_id=audit_cycle_id)
         return shortlist, [symbol for symbol in ranked if symbol in cooling]
 
+    def daily_rollover(self, today: date | None = None) -> list[str]:
+        """Move finished audit days to compressed archives and write their CSV tables."""
+
+        days = self.audit.archive_closed_days(today)
+        if days:
+            write_daily_tables(self.audit.archive_dir, days, self.ledger.recent(limit=1_000_000),
+                               self.execution_ledger.recent(limit=1_000_000))
+        return days
+
     async def run_scheduled_cycle(self) -> DecisionPassport | None:
         """Manage existing risk whenever open; pause only new entries."""
 
@@ -317,6 +327,13 @@ class VolitionEngine:
                                                   "autonomous": self.autonomous}, cycle_id=tick_id)
         if not market_open:
             self.runtime_store.record_cycle("market_closed", "Scheduled review checked in; the market is closed.")
+            today = datetime.now(timezone.utc).date()
+            if self._archived_through != today:
+                try:
+                    await asyncio.to_thread(self.daily_rollover, today)
+                    self._archived_through = today
+                except Exception as exc:  # noqa: BLE001
+                    logging.getLogger("volition.audit").error("Daily archive failed: %s", exc)
             return None
         await self.reconcile_orders(audit_cycle_id=tick_id)
         await self.manage_positions(audit_cycle_id=tick_id)

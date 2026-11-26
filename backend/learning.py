@@ -6,7 +6,9 @@ summarises decision coverage, approvals, vetoes and missing evidence.
 
 from __future__ import annotations
 
+import csv
 from collections import Counter, defaultdict
+from pathlib import Path
 
 from models import (
     CommonVeto,
@@ -178,3 +180,38 @@ class LearningEngine:
             ],
             lessons=lessons,
         )
+
+
+def write_daily_tables(
+    archive_dir: Path,
+    days: list[str],
+    decisions: list[DecisionPassport],
+    execution_events: list[ExecutionEvent],
+) -> None:
+    """Write small per-day CSVs (decisions, orders, closed trades) next to each archived day."""
+
+    tables: dict[str, tuple[list[str], list[list[object]]]] = {
+        "decisions.csv": (["created_at", "decision_id", "cycle_id", "symbol", "strategy", "status",
+                           "confidence", "max_loss", "max_profit", "blocked_by"],
+                          [[item.created_at.isoformat(), item.decision_id, item.cycle_id, item.symbol,
+                            item.plan.strategy.value, item.status.value, item.plan.confidence,
+                            item.plan.max_loss, item.plan.max_profit, ";".join(item.blocked_by)]
+                           for item in decisions]),
+        "orders.csv": (["recorded_at", "kind", "symbol", "status", "order_id", "decision_id",
+                        "filled_qty", "filled_avg_price"],
+                       [[item.recorded_at.isoformat(), item.kind, item.symbol, item.status, item.order_id,
+                         item.decision_id, item.filled_qty, item.filled_avg_price]
+                        for item in execution_events]),
+        "trades.csv": (["closed_at", "opened_at", "key", "strategy", "entries", "pnl"],
+                       [[trade["closed_at"].isoformat(), trade["opened_at"].isoformat(), trade["key"],
+                         trade["strategy"].value, len(trade["decision_ids"]), trade["pnl"]]
+                        for trade in closed_trades(decisions, execution_events)]),
+    }
+    for day in days:
+        folder = archive_dir / day
+        folder.mkdir(parents=True, exist_ok=True)
+        for name, (header, rows) in tables.items():
+            with (folder / name).open("w", encoding="utf-8", newline="") as handle:
+                writer = csv.writer(handle)
+                writer.writerow(header)
+                writer.writerows(row for row in rows if str(row[0]).startswith(day))
